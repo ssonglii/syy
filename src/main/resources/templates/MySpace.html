@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行安 - 我的空间</title>
+    <link rel="stylesheet" href="../static/css/down.css">
+    <script src="../static/js/jquery-1.8.3.js"></script>
+    <script src="../static/js/syy.js"></script>
+
+    <style>
+        .date-tag {
+            background-color: #e6f3ff; /* 示例背景色，可根据设计调整 */
+            border-radius: 8px;
+            padding: 4px 8px;
+            margin-right: 12px;
+            color: #007bff;
+            font-weight: 600;
+        }
+        .meta img{
+            width: 14px;
+            height: 14px;
+            margin-right: 5px;
+        }
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #212121;
+            max-width: 1200px;
+            margin: 0 auto;
+            margin-top: 70px;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .navbar .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .navbar .logo img {
+            width: 32px;
+            height: 32px;
+            vertical-align: bottom;
+        }
+
+        .navbar .logo span {
+            font-size: 24px;
+            font-weight: bold;
+            line-height: 1; /* 避免行高干扰 */
+            color: #333;
+        }
+
+        .navbar .menu {
+            display: flex;
+            gap: 10px;
+        }
+
+        .navbar .menu a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .menu a:hover {
+            background-color: #eee;
+        }
+
+        .navbar .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+
+        .navbar .user .user-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .navbar .user .user-info img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .navbar .user .user-info span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /*导航下拉图标*/
+        .navbar .user .user-info i img {
+            width: 15px;
+            height: 15px;
+        }
+
+        /* 主内容区通用样式 */
+        main {
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        p.subtitle {
+            color: #666;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        /* 个人资料卡片 */
+        .profile-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            margin-top: 20px;
+        }
+        /* 左侧内容容器：头像 + 信息 */
+        .left-content {
+            display: flex;
+            align-items: center; /* 垂直居中 */
+            gap: 16px; /* 头像与信息之间的间距 */
+        }
+
+        .profile-card .avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+
+        .profile-card .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-card .info {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;//12313
+        }
+
+        .profile-card .info .name-tag {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .profile-card .info .name-tag h2 {
+            font-size: 21px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .profile-card .info .name-tag span {
+            background-color: #e6f3ff;
+            color: #007bff;
+            font-size: 13px;
+            padding: 2px 6px;
+            border-radius: 12px;
+        }
+
+        .profile-card .info p {
+            color: #666;
+            font-size: 16px;
+            margin-top: 7px;
+            margin-bottom: 8px;
+            line-height: 1.4;
+        }
+
+        .profile-card .info .meta {
+            color: #999;
+            font-size: 14px;
+        }
+        .profile-card .info .meta img {
+            width: 14px;
+            height: 14px;
+
+        }
+
+        .profile-card .edit-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 120px;
+            height: 40px;
+            background-color: #007bff;
+            color: #fff;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+
+        .profile-card .edit-btn:hover {
+            background-color: #0056b3;
+        }
+
+        .profile-card .edit-btn img {
+            width: 20px;
+            height: 20px;
+            margin-right: 6px;
+
+        }
+
+        /* 数据统计卡片 */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            /* 让图标和文字左右排布 */
+            display: flex;
+            align-items: center;
+            justify-content: flex-start; /* 内容从左开始排列 */
+        }
+        /* 图标圆形背景容器 */
+        .icon-circle {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            /* 给每个卡片的图标背景设置不同颜色，可根据实际需求调整 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px; /* 与文字保持间距 */
+        }
+        /* 为不同卡片的圆形背景设置颜色，这里只是示例，可按实际需求改 */
+        .stat-card:nth-child(1) .icon-circle {
+            background-color: #cfe2ff;
+        }
+        .stat-card:nth-child(2) .icon-circle {
+            background-color: #d1fae5;
+        }
+        .stat-card:nth-child(3) .icon-circle {
+            background-color: #fce7f3;
+        }
+        .stat-card:nth-child(4) .icon-circle {
+            background-color: #fde6cc;
+        }
+
+        .icon-circle img {
+            width: 30px; /* 调整图标大小，适配圆形背景 */
+            height: 30px;
+        }
+        /* 文字和数字组 */
+        .text-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start; /* 文字左对齐 */
+        }
+
+        .text-group p {
+            font-size: 16px;
+            color: #999;
+            margin: 0; /* 清除默认边距 */
+        }
+
+        .text-group span {
+            font-size: 21px;
+
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* 内容板块通用样式 */
+        .content-section {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .section-title h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title h3 img {
+            width: 20px;
+            height: 20px;
+        }
+
+        .section-title a {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .section-title a:hover {
+            color: #0056b3;
+        }
+
+        .activity-list,
+        .dynamic-list,
+        .published-activity-list,
+        .upcoming-activity-list,
+        .achievement-list {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+        }
+
+        .activity-item,
+        .dynamic-item,
+        .published-activity-item,
+        .upcoming-activity-item,
+        .achievement-item {
+            border-bottom: 1px solid #eee;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+        }
+
+        .activity-item:last-child,
+        .dynamic-item:last-child,
+        .published-activity-item:last-child,
+        .upcoming-activity-item:last-child,
+        .achievement-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        .activity-item h4,
+        .dynamic-item h4,
+        .published-activity-item h4,
+        .upcoming-activity-item h4,
+        .achievement-item h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .activity-item p,
+        .dynamic-item p,
+        .published-activity-item p,
+        .upcoming-activity-item p,
+        .achievement-item p {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+            line-height: 1.4;
+        }
+
+        .activity-item .meta,
+        .dynamic-item .meta,
+        .published-activity-item .meta,
+        .upcoming-activity-item .meta,
+        .achievement-item .meta {
+            font-size: 12px;
+            color: #999;
+        }
+        .activity-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .upcoming-activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .upcoming-activity-item p {
+            color: #666;
+            font-size: 14px;
+        }
+        /* 外层容器：控制整体排版 */
+        .upcoming-activity-wrapper {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        /* 标题容器：独立控制样式 */
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px; /* 与列表保持间距 */
+        }
+        .section-title h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* 活动列表容器：清除默认干扰 */
+        .upcoming-activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        /* 活动项：独立控制内部排版 */
+        .upcoming-activity-item {
+            display: flex;
+            flex-direction: column;
+            padding: 12px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .status-tag {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .status-upcoming {
+            background-color: #fde6cc; /* 橙色背景，代表未开始 */
+            color: #f97316;
+        }
+
+        .status-ongoing {
+            background-color: #d1fae5; /* 绿色背景，代表进行中 */
+            color: #10b981;
+        }
+
+        .status-ended {
+            background-color: #e5e7eb; /* 灰色背景，代表已结束 */
+            color: #6b7280;
+        }
+        .publish-new-btn {
+
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 16px;
+            border-radius: 4px;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 12px;
+            transition: background-color 0.3s;
+            font-size: 14px;
+
+
+            display: flex; /* 保持原本的 flex 布局 */
+            align-items: center; /* 让图标和文字垂直居中 */
+            justify-content: center; /* 可选：让内容整体水平居中，按需求决定 */
+            /* 原有样式... */
+            gap: 6px; /* 替代 margin-right，让图标和文字间距更均匀（可选优化） */
+
+        }
+        .publish-new-btn img{
+            height: 20px;
+            width: 20px;
+        }
+        .publish-new-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* 我的成就板块 */
+        .achievement-list {
+            margin-top: 20px;
+        }
+
+        .achievement-list .achievement-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+
+        .achievement-list .achievement-item img {
+            width: 40px;
+            height: 40px;
+            margin-bottom: 8px;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .content-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<!-- 顶部导航栏 -->
+<header>
+    <div class="navbar">
+        <div class="logo">
+            <img src="/static/image/img/Logo.png" alt="山友缘Logo">
+            <span>行安</span>
+        </div>
+        <div class="menu">
+            <a href="Index.html">首页</a>
+            <a href="AllActivities.html">活动</a>
+            <a href="Discover3.html">动态</a>
+        </div>
+        <div class="user">
+            <div class="user-info">
+                <img src="/static/image/img/游客.png" alt="用户头像">
+                <span>游客</span>
+                <i class="dropdown-trigger">
+                    <img src="/static/image/img/下拉.png" alt="下拉菜单图标">
+                </i>
+                <!-- 下拉菜单 -->
+                <div class="dropdown-menu">
+                    <a href="MySpace.html" class="dropdown-item">我的</a>
+                    <a href="Login.html" class="dropdown-item ">切换账号</a>
+                    <a href="#" class="dropdown-item logout">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 主内容区 -->
+<main>
+    <div>
+        <h1>我的空间</h1>
+        <p>探索你的户外旅程和社交圈子</p>
+    </div>
+    <!-- 个人资料卡片 -->
+    <div class="profile-card">
+        <div class="left-content">
+            <div class="avatar">
+                <img src="" alt="用户头像">
+            </div>
+            <div class="info">
+                <div class="name-tag">
+                    <h2>户外探索者</h2>
+                    <span>普通用户</span>
+                </div>
+                <p>热爱户外，追求自由，用脚步丈量世界</p>
+                <div class="meta">
+
+                </div>
+
+            </div>
+        </div>
+        <a href="MyInfo.html" class="edit-btn">
+            <i><img src="/static/image/img/编辑.png"></i>
+            <span>编辑资料</span>
+        </a>
+    </div>
+    <!-- 数据统计 -->
+    <div class="stats">
+        <div class="stat-card">
+            <!-- 图标容器，用于设置圆形背景 -->
+            <div class="icon-circle">
+                <img src="/static/image/img/活动1.png" alt="参加活动">
+            </div>
+            <div class="text-group">
+                <p>参加活动</p>
+                <span>12</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon-circle">
+                <img src="/static/image/img/动态4.png" alt="发布动态">
+            </div>
+            <div class="text-group">
+                <p>发布动态</p>
+                <span>34</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon-circle">
+                <img src="/static/image/img/活动3.png" alt="发布活动">
+            </div>
+            <div class="text-group">
+                <p>发布活动</p>
+                <span>5</span>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="icon-circle">
+                <img src="/static/image/img/爱心心.png" alt="获得点赞">
+            </div>
+            <div class="text-group">
+                <p>获得点赞</p>
+                <span>276</span>
+            </div>
+        </div>
+    </div>
+    <!-- 主要内容区域 -->
+    <div class="content-section">
+        <!-- 左侧内容 -->
+        <div>
+            <!-- 我参加的活动 -->
+            <div class="activity-list">
+                <div class="section-title">
+                    <h3><i><img src="/static/image/img/活动1.png"></i>我参加的活动</h3>
+                    <a href="MyActivities.html">查看全部</a>
+                </div>
+                <!-- 活动列表项容器，需确保存在 -->
+                <div class="activity-items-container"> <!-- 新增容器，用于存放活动项 -->
+                    <div class="activity-item">
+                        <h4>徒步挑战千佛山（试例，后期从后端获取）</h4>
+                        <span>进行中（通过计算时间，来判断进行中或已结束）</span>
+                        <!-- 新增内容容器，用于字数限制 -->
+                        <div class="content-container">
+                            <p>周六清晨出发，挑战千佛山环线，全程15公里，适合有经验的户外爱好者</p>
+                        </div>
+                        <div class="meta">
+                            <span><i><img src="/static/image/img/日历1.png"></i>2025-07-12</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 我发布的动态 -->
+            <div class="dynamic-list" style="margin-top: 20px;">
+                <div class="section-title">
+                    <h3><i><img src="/static/image/img/动态4.png"></i>我发布的动态</h3>
+                    <a href="MyDynamic.html">查看全部</a>
+                </div>
+                <!-- 动态列表项容器，需确保存在 -->
+                <div class="dynamic-items-container"> <!-- 新增容器，用于存放动态项 -->
+                    <div class="dynamic-item">
+                        <h4>分享户外美景</h4>
+                        <!-- 新增内容容器，用于字数限制 -->
+                        <div class="content-container">
+                            <p>周末徒步拍到的绝美日出，大自然的馈赠太震撼啦~</p>
+                        </div>
+                        <div class="meta">
+                            <span>2025-07-05 14:20</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- 右侧内容 -->
+        <div>
+            <!-- 我发布的活动 -->
+            <div class="published-activity-list">
+                <div class="section-title">
+                    <h3><i><img src="/static/image/img/活动3.png"></i>我发布的活动</h3>
+                    <a href="MyPubAct.html">查看全部</a>
+                </div>
+                <div class="published-activity-item">
+                    <h4>周末休闲露营</h4>
+                    <p>在近郊营地，享受悠闲周末，一起烧烤、看星空</p>
+                    <div class="meta">
+                        <span><i><img src="/static/image/img/日历7.png"></i>2025-07-13</span>
+                        <span><i><img src="/static/image/img/人群.png"></i>12/20人</span>
+                    </div>
+                </div>
+                <a href="pubAct.html" class="publish-new-btn">
+                    <i><img src="/static/image/img/加.png"></i>
+                    <span>发布新活动</span>
+                </a>
+            </div>
+            <!-- 即将到来的活动 -->
+            <div class="upcoming-activity-wrapper"> <!-- 新增外层容器 -->
+                <div class="section-title">
+                    <h3><i><img src="/static/image/img/时钟.png"></i>即将到来的活动</h3>
+                </div>
+                <div class="upcoming-activity-list"> <!-- 仅用于渲染活动列表 -->
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    // ==============================================
+    // 🔥 核心修复：解决后退 CSRF 失效 + 强制刷新
+    // ==============================================
+    window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+            console.log("页面从缓存加载，强制刷新");
+            window.location.reload();
+        }
+    });
+
+    if (window.history && window.history.pushState) {
+        window.history.pushState('forward', null, '');
+        window.addEventListener('popstate', function() {
+            window.history.pushState('forward', null, '');
+            window.location.reload();
+        });
+    }
+
+    // ==============================================
+    // 等待 CSRF_TOKEN 就绪后再加载数据
+    // ==============================================
+    $(window).on('load', function() {
+        let waitCSRF = setInterval(() => {
+            if (window.CSRF_TOKEN !== undefined && window.CSRF_TOKEN !== '') {
+                clearInterval(waitCSRF);
+                startLoadUserData();
+            }
+        }, 50);
+        setTimeout(() => clearInterval(waitCSRF), 2000);
+    });
+
+    // 获取用户统计数据并渲染
+    function fetchAndRenderStats(uid) {
+        fetch(`/user/${uid}`, {
+            headers: {
+                "X-XSRF-TOKEN": window.CSRF_TOKEN,
+                "X-CSRF-Token": window.CSRF_TOKEN
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    if(response.status === 403) {
+                        alert("页面已过期，正在刷新...");
+                        window.location.reload();
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                document.querySelector('.stats .stat-card:nth-child(1) span').textContent = data.joinedActivities;
+                document.querySelector('.stats .stat-card:nth-child(2) span').textContent = data.publishedDynamics;
+                document.querySelector('.stats .stat-card:nth-child(3) span').textContent = data.hostedActivities;
+                document.querySelector('.stats .stat-card:nth-child(4) span').textContent = data.totalLikes;
+            })
+            .catch(error => {
+                console.error("获取统计数据失败:", error);
+            });
+    }
+
+    // 获取并渲染用户参加的活动
+    function fetchAndRenderJoinedActivities(uid) {
+        fetch(`/activities/joined/${uid}`, {
+            headers: {
+                "X-XSRF-TOKEN": window.CSRF_TOKEN,
+                "X-CSRF-Token": window.CSRF_TOKEN
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    if(response.status === 403) {
+                        alert("页面已过期，正在刷新...");
+                        window.location.reload();
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(activities => {
+                renderJoinedActivities(activities);
+            })
+            .catch(error => {
+                console.error("获取参加的活动失败:", error);
+            });
+    }
+
+    // 获取并渲染用户发布的动态
+    function fetchAndRenderPublishedDynamics(uid) {
+        fetch(`/dynamics/published/${uid}`, {
+            headers: {
+                "X-XSRF-TOKEN": window.CSRF_TOKEN,
+                "X-CSRF-Token": window.CSRF_TOKEN
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    if(response.status === 403) {
+                        alert("页面已过期，正在刷新...");
+                        window.location.reload();
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(dynamics => {
+                renderPublishedDynamics(dynamics);
+            })
+            .catch(error => {
+                console.error("获取发布的动态失败:", error);
+            });
+    }
+
+    // 获取并渲染用户发布的活动
+    function fetchAndRenderPublishedActivities(uid) {
+        fetch(`/activities/published/${uid}`, {
+            headers: {
+                "X-XSRF-TOKEN": window.CSRF_TOKEN,
+                "X-CSRF-Token": window.CSRF_TOKEN
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    if(response.status === 403) {
+                        alert("页面已过期，正在刷新...");
+                        window.location.reload();
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(activities => {
+                const perm = sessionStorage.getItem('perm');
+                renderPublishedActivities(activities, perm);
+            })
+            .catch(error => {
+                console.error("获取发布的活动失败:", error);
+            });
+    }
+
+    // 获取并渲染即将到来的活动
+    function fetchAndRenderUpcomingActivities() {
+        fetch(`/activities/upcoming`, {
+            headers: {
+                "X-XSRF-TOKEN": window.CSRF_TOKEN,
+                "X-CSRF-Token": window.CSRF_TOKEN
+            }
+        })
+            .then(response => {
+                if (!response.ok) {
+                    if(response.status === 403) {
+                        alert("页面已过期，正在刷新...");
+                        window.location.reload();
+                    }
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(activities => {
+                renderUpcomingActivities(activities);
+            })
+            .catch(error => {
+                console.error("获取即将到来的活动失败:", error);
+            });
+    }
+
+    // 字数限制函数
+    function limitTextLength(text, maxLength) {
+        if (!text) return "";
+        return text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+    }
+
+    // 渲染参加的活动
+    function renderJoinedActivities(activities) {
+        const container = document.querySelector('.activity-list .activity-items-container');
+        if (!container) return;
+
+        container.innerHTML = '';
+        if (activities.length === 0) {
+            container.innerHTML = `
+      <div class="activity-item">
+        <h4>暂无参加的活动</h4>
+        <p>快去报名参加活动吧！</p>
+      </div>
+    `;
+            return;
+        }
+
+        const currentTime = new Date().getTime();
+
+        activities.forEach(activity => {
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            item.onclick = () => {
+                window.location.href = `ActivityDetails.html?aid=${activity.aid}&atitle=${encodeURIComponent(activity.atitle || '')}`;
+            };
+            item.style.cursor = 'pointer';
+            const startTime = new Date(activity.start_time).getTime();
+            const endTime = new Date(activity.end_time).getTime();
+
+            let statusText = '';
+            let statusClass = '';
+
+            if (currentTime < startTime) {
+                statusText = '未开始';
+                statusClass = 'status-upcoming';
+            } else if (currentTime >= startTime && currentTime <= endTime) {
+                statusText = '进行中';
+                statusClass = 'status-ongoing';
+            } else {
+                statusText = '已结束';
+                statusClass = 'status-ended';
+            }
+
+            item.innerHTML = `
+      <div class="activity-header">
+        <h4>${activity.atitle}</h4>
+        <span class="status-tag ${statusClass}">${statusText}</span>
+      </div>
+      <div class="content-container">
+        <p>${limitTextLength(activity.adscpt, 32)}</p>
+      </div>
+      <div class="meta">
+        <span><i><img src="/static/image/img/日历1.png"></i>${activity.start_time.split(' ')[0]}</span>
+      </div>
+    `;
+            container.appendChild(item);
+        });
+    }
+
+    // 渲染发布的动态
+    function renderPublishedDynamics(dynamics) {
+        const container = document.querySelector('.dynamic-list .dynamic-items-container');
+        if (!container) return;
+
+        container.innerHTML = '';
+        if (dynamics.length === 0) {
+            container.innerHTML = `
+                <div class="dynamic-item">
+                    <h4>暂无发布的动态</h4>
+                    <p>快去发布动态分享你的户外经历吧！</p>
+                </div>
+            `;
+            return;
+        }
+
+        dynamics.forEach(dynamic => {
+            const item = document.createElement('div');
+            item.className = 'dynamic-item';
+            item.onclick = () => {
+                window.location.href = `dynDetails.html?did=${dynamic.did}`;
+            };
+            item.style.cursor = 'pointer';
+            item.innerHTML = `
+                <h4>${dynamic.dtitle}</h4>
+                <div class="content-container">
+                    <p>${limitTextLength(dynamic.content, 32)}</p>
+                </div>
+                <div class="meta">
+                    <span>${dynamic.create_time}</span>
+                    <span><i><img src="/static/image/img/爱心9.png"></i>${dynamic.like_count}</span>
+                    <span><i><img src="/static/image/img/评论.png"></i>${dynamic.comment_count}</span>
+                </div>
+            `;
+            container.appendChild(item);
+        });
+    }
+
+    // 渲染用户发布的活动
+    function renderPublishedActivities(activities, perm) {
+        const container = document.querySelector('.published-activity-list');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        if (activities.length === 0) {
+            let tipHtml = '';
+            let btnHtml = '';
+
+            if (perm === '1') {
+                tipHtml = `
+ <div class="section-title">
+                    <h3><i><img src="/static/image/img/活动3.png"></i>我发布的活动</h3>
+                    <a href="MyPubAct.html">查看全部</a>
+                </div>
+                <div class="published-activity-item">
+                    <h4>暂无发布的活动</h4>
+                    <p>前去认证即可发布活动！</p>
+                </div>
+            `;
+                btnHtml = `
+                <a href="Certification.html" class="publish-new-btn auth-btn">
+                    <img src="/static/image/img/认证.png">
+                    <span>去认证</span>
+                </a>
+            `;
+            } else {
+                tipHtml = `
+ <div class="section-title">
+                    <h3><i><img src="/static/image/img/活动3.png"></i>我发布的活动</h3>
+                    <a href="MyPubAct.html">查看全部</a>
+                </div>
+                <div class="published-activity-item">
+                    <h4>暂无发布的活动</h4>
+                    <p>快去发布活动吧！</p>
+                </div>
+            `;
+                btnHtml = `
+                <a href="pubAct.html" class="publish-new-btn">
+                    <img src="/static/image/img/加.png">
+                    <span>发布新活动</span>
+                </a>
+            `;
+            }
+
+            container.innerHTML = tipHtml + btnHtml;
+            return;
+        }
+
+        const titleHtml = `
+        <div class="section-title">
+            <h3><i><img src="/static/image/img/活动3.png"></i>我发布的活动</h3>
+            <a href="MyPubAct.html">查看全部</a>
+        </div>
+    `;
+        container.innerHTML += titleHtml;
+
+        activities.forEach(activity => {
+            const item = document.createElement('div');
+            item.className = 'published-activity-item';
+            item.onclick = () => {
+                window.location.href = `ActivityDetails.html?aid=${activity.aid}&atitle=${encodeURIComponent(activity.atitle || '')}`;
+            };
+            item.style.cursor = 'pointer';
+            item.innerHTML = `
+            <h4>${activity.atitle}</h4>
+            <p>${limitTextLength(activity.adscpt, 32)}</p>
+            <div class="meta">
+                <span><i><img src="/static/image/img/日历7.png"></i>${activity.start_time.split(' ')[0]}</span>
+                <span><i><img src="/static/image/img/人群.png"></i>${activity.current_people}/${activity.max_people}人</span>
+            </div>
+        `;
+            container.appendChild(item);
+        });
+        // target="_blank"
+        let actionBtnHtml = '';
+        if (perm === '1') {
+            actionBtnHtml = `
+            <a href="Certification.html" class="publish-new-btn auth-btn" >
+                <i><img src="/static/image/img/认证.png"></i>
+                <span>去认证</span>
+            </a>
+        `;
+        } else {
+            actionBtnHtml = `
+            <a href="${window.location.origin}/pubAct.html" class="publish-new-btn">
+                <i><img src="/static/image/img/加.png"></i>
+                <span>发布新活动</span>
+            </a>
+        `;
+        }
+        container.innerHTML += actionBtnHtml;
+    }
+
+    // 渲染即将到来的活动
+    function renderUpcomingActivities(activities) {
+        const container = document.querySelector('.upcoming-activity-list');
+        if (!container) return;
+
+        container.innerHTML = '';
+        if (activities.length === 0) {
+            container.innerHTML = `
+            <div class="upcoming-activity-item">
+                <h4>暂无即将到来的活动</h4>
+                <p>敬请期待新活动！</p>
+            </div>
+        `;
+            return;
+        }
+
+        activities.forEach(activity => {
+            const item = document.createElement('div');
+            item.className = 'upcoming-activity-item';
+            item.onclick = () => {
+                window.location.href = `ActivityDetails.html?aid=${activity.aid}&atitle=${encodeURIComponent(activity.atitle || '')}`;
+            };
+            item.style.cursor = 'pointer';
+            item.innerHTML = `
+            <div class="flex items-center">
+                <div class="date-tag">
+                    <span>${activity.start_time.split(' ')[0].split('-')[1]}/${activity.start_time.split(' ')[0].split('-')[2]}</span>
+                </div>
+                <div>
+                    <h4>${activity.atitle}</h4>
+                    <p>${limitTextLength(activity.adscpt, 17)}</p><p>还有${getDaysBefore(activity.start_time)}天开始</p>
+                </div>
+            </div>
+        `;
+            container.appendChild(item);
+        });
+    }
+
+    // 计算距离活动开始的天数
+    function getDaysBefore(startTime) {
+        const now = new Date();
+        const startDate = new Date(startTime);
+        const timeDiff = startDate.getTime() - now.getTime();
+        return Math.ceil(timeDiff / (1000 * 3600 * 24));
+    }
+
+    // 统一入口
+    function startLoadUserData() {
+        const uid = sessionStorage.getItem('uid');
+        const perm = sessionStorage.getItem('perm');
+
+        if (uid) {
+            fetchAndRenderStats(uid);
+            fetchAndRenderJoinedActivities(uid);
+            fetchAndRenderPublishedDynamics(uid);
+            fetchAndRenderPublishedActivities(uid);
+            fetchAndRenderUpcomingActivities();
+        } else {
+            console.warn("未获取到uid，无法查询用户信息");
+        }
+    }
+</script>
+</body>
+</html>

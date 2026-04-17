@@ -1,0 +1,1267 @@
+<!--<!DOCTYPE html>-->
+<!--<html lang="zh-CN">-->
+<!--<head>-->
+<!--    <meta charset="UTF-8">-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+<!--    <title>发布动态 - 山友缘户外服务系统</title>-->
+<!--    <script src="https://cdn.tailwindcss.com"></script>-->
+<!--    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">-->
+<!--    <script src="../static/js/syy.js"></script>-->
+<!--    <script src="../static/js/jquery-1.8.3.js"></script>-->
+<!--    &lt;!&ndash; Tailwind CSS 配置 &ndash;&gt;-->
+<!--    <script>-->
+<!--        tailwind.config = {-->
+<!--            theme: {-->
+<!--                extend: {-->
+<!--                    colors: {-->
+<!--                        primary: '#165DFF',-->
+<!--                        secondary: '#36D399',-->
+<!--                        accent: '#FF7D00',-->
+<!--                        dark: '#1E293B',-->
+<!--                        light: '#F8FAFC'-->
+<!--                    },-->
+<!--                    fontFamily: {-->
+<!--                        inter: ['Inter', 'system-ui', 'sans-serif'],-->
+<!--                    },-->
+<!--                },-->
+<!--            }-->
+<!--        }-->
+<!--    </script>-->
+
+<!--    <style type="text/tailwindcss">-->
+<!--        @layer utilities {-->
+<!--            .content-auto {-->
+<!--                content-visibility: auto;-->
+<!--            }-->
+<!--            .text-shadow {-->
+<!--                text-shadow: 0 2px 4px rgba(0,0,0,0.1);-->
+<!--            }-->
+<!--            .bg-gradient-outdoor {-->
+<!--                background: linear-gradient(135deg, #165DFF 0%, #36D399 100%);-->
+<!--            }-->
+<!--            .card-hover {-->
+<!--                transition: all 0.3s ease;-->
+<!--            }-->
+<!--            .card-hover:hover {-->
+<!--                transform: translateY(-5px);-->
+<!--                box-shadow: 0 10px 25px -5px rgba(22, 93, 255, 0.1), 0 10px 10px -5px rgba(22, 93, 255, 0.04);-->
+<!--            }-->
+<!--            .upload-area {-->
+<!--                @apply border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer transition-all duration-300;-->
+<!--            }-->
+<!--            .upload-area:hover {-->
+<!--                @apply border-primary bg-blue-50;-->
+<!--            }-->
+<!--            .tag-item {-->
+<!--                @apply inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-primary text-sm mr-2 mb-2;-->
+<!--            }-->
+<!--            .tag-item .remove-tag {-->
+<!--                @apply ml-1 text-blue-600 hover:text-blue-800 cursor-pointer;-->
+<!--            }-->
+<!--        }-->
+<!--    </style>-->
+<!--</head>-->
+<!--<body class="bg-gray-50 font-inter text-dark">-->
+<!--&lt;!&ndash; 顶部导航栏 &ndash;&gt;-->
+<!--<header class="bg-white shadow-md fixed w-full z-50 transition-all duration-300" id="navbar">-->
+<!--    <div class="container mx-auto px-4 py-3 flex items-center justify-between">-->
+<!--        &lt;!&ndash; 左侧Logo &ndash;&gt;-->
+<!--        <div class="flex items-center space-x-2">-->
+<!--            <div class="text-primary text-2xl">-->
+<!--                <i class="fa fa-tree"></i>-->
+<!--            </div>-->
+<!--            <span class="text-xl font-bold text-dark">山友缘</span>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; 中间导航链接 - 仅在桌面显示 &ndash;&gt;-->
+<!--        <nav class="hidden md:flex items-center space-x-8">-->
+<!--            <a href="#" class="text-gray-600 hover:text-primary transition-colors">首页</a>-->
+<!--            <a href="#" class="text-gray-600 hover:text-primary transition-colors">活动</a>-->
+<!--            <a href="#" class="text-primary font-medium border-b-2 border-primary pb-1">动态</a>-->
+<!--            <a href="#" class="text-gray-600 hover:text-primary transition-colors">装备</a>-->
+<!--            <a href="#" class="text-gray-600 hover:text-primary transition-colors">社区</a>-->
+<!--        </nav>-->
+
+<!--        &lt;!&ndash; 右侧用户信息 &ndash;&gt;-->
+<!--        <div class="flex items-center space-x-4">-->
+<!--            <button class="hidden md:block px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg">-->
+<!--                <i class="fa fa-plus mr-1"></i> 发布活动-->
+<!--            </button>-->
+
+<!--            <div class="relative group">-->
+<!--                <button class="flex items-center space-x-2">-->
+<!--                    <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-primary">-->
+<!--                        <img src="https://picsum.photos/id/64/200/200" alt="用户头像" class="w-full h-full object-cover">-->
+<!--                    </div>-->
+<!--                    <span class="hidden md:inline text-gray-700 font-medium">山小友</span>-->
+<!--                    <i class="fa fa-caret-down text-gray-500"></i>-->
+<!--                </button>-->
+
+<!--                &lt;!&ndash; 用户下拉菜单 &ndash;&gt;-->
+<!--                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 hidden group-hover:block transition-all duration-300 transform origin-top-right scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100">-->
+<!--                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">-->
+<!--                        <i class="fa fa-user mr-2 text-gray-500"></i> 个人主页-->
+<!--                    </a>-->
+<!--                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">-->
+<!--                        <i class="fa fa-cog mr-2 text-gray-500"></i> 设置-->
+<!--                    </a>-->
+<!--                    <div class="border-t border-gray-100 my-1"></div>-->
+<!--                    <a href="#" class="block px-4 py-2 text-red-600 hover:bg-gray-100">-->
+<!--                        <i class="fa fa-sign-out mr-2"></i> 退出登录-->
+<!--                    </a>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; 移动端菜单按钮 &ndash;&gt;-->
+<!--            <button class="md:hidden text-gray-700" id="mobile-menu-button">-->
+<!--                <i class="fa fa-bars text-xl"></i>-->
+<!--            </button>-->
+<!--        </div>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; 移动端导航菜单 &ndash;&gt;-->
+<!--    <div class="md:hidden bg-white shadow-lg absolute w-full left-0 top-full transform -translate-y-full opacity-0 transition-all duration-300 pointer-events-none" id="mobile-menu">-->
+<!--        <div class="container mx-auto px-4 py-3">-->
+<!--            <nav class="flex flex-col space-y-3">-->
+<!--                <a href="#" class="text-gray-600 hover:text-primary transition-colors py-2">首页</a>-->
+<!--                <a href="#" class="text-gray-600 hover:text-primary transition-colors py-2">活动</a>-->
+<!--                <a href="#" class="text-primary font-medium py-2">动态</a>-->
+<!--                <a href="#" class="text-gray-600 hover:text-primary transition-colors py-2">装备</a>-->
+<!--                <a href="#" class="text-gray-600 hover:text-primary transition-colors py-2">社区</a>-->
+<!--                <button class="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg">-->
+<!--                    <i class="fa fa-plus mr-1"></i> 发布活动-->
+<!--                </button>-->
+<!--            </nav>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</header>-->
+
+<!--&lt;!&ndash; 主内容区 &ndash;&gt;-->
+<!--<main class="container mx-auto px-4 pt-24 pb-12">-->
+<!--    &lt;!&ndash; 页面标题 &ndash;&gt;-->
+<!--    <div class="mb-8 text-center">-->
+<!--        <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-2">分享你的户外故事</h1>-->
+<!--        <p class="text-gray-500 max-w-2xl mx-auto">记录旅行中的精彩瞬间，分享户外知识，与志同道合的朋友一起探索大自然的魅力</p>-->
+<!--    </div>-->
+
+<!--    &lt;!&ndash; 动态发布表单 &ndash;&gt;-->
+<!--    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden card-hover">-->
+<!--        &lt;!&ndash; 表单头部 &ndash;&gt;-->
+<!--        <div class="bg-gradient-outdoor p-6 text-white">-->
+<!--            <div class="flex items-center">-->
+<!--                <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-white">-->
+<!--                    <img src="https://picsum.photos/id/64/200/200" alt="用户头像" class="w-full h-full object-cover">-->
+<!--                </div>-->
+<!--                <div class="ml-4">-->
+<!--                    <h3 class="font-semibold">山小友</h3>-->
+<!--                    <p class="text-sm text-blue-100">分享你的户外故事...</p>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; 表单主体 &ndash;&gt;-->
+<!--        <form id="form1" method="post" action="/dynaddAll"enctype="multipart/form-data"  class="p-6 space-y-6">-->
+<!--            &lt;!&ndash; 动态标题 &ndash;&gt;-->
+<!--            <div>-->
+<!--                <label for="dtitle" class="block text-sm font-medium text-gray-700 mb-1">动态标题 <span class="text-red-500">*</span></label>-->
+<!--                <input type="text" id="dtitle" name="dtitle" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="请输入动态标题（如：XX山徒步攻略：新手必看5大技巧）" required>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; 动态内容编辑器 &ndash;&gt;-->
+<!--            <div>-->
+<!--                <label for="content" class="block text-sm font-medium text-gray-700 mb-1">动态内容 <span class="text-red-500">*</span></label>-->
+<!--                <div class="editor-toolbar bg-gray-50 p-2 rounded-t-lg border border-gray-300 border-b-0 flex flex-wrap gap-1">-->
+<!--                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="粗体">-->
+<!--                        <i class="fa fa-bold"></i>-->
+<!--                    </button>-->
+<!--                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="斜体">-->
+<!--                        <i class="fa fa-italic"></i>-->
+<!--                    </button>-->
+<!--                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="下划线">-->
+<!--                        <i class="fa fa-underline"></i>-->
+<!--                    </button>-->
+<!--                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="删除线">-->
+<!--                        <i class="fa fa-strikethrough"></i>-->
+<!--                    </button>-->
+<!--                    <div class="border-r border-gray-300 h-5 my-auto mx-1"></div>-->
+<!--                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="引用">-->
+<!--                        <i class="fa fa-quote-left"></i>-->
+<!--                    </button>-->
+<!--                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="无序列表">-->
+<!--                        <i class="fa fa-list-ul"></i>-->
+<!--                    </button>-->
+<!--                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="有序列表">-->
+<!--                        <i class="fa fa-list-ol"></i>-->
+<!--                    </button>-->
+<!--                    <div class="border-r border-gray-300 h-5 my-auto mx-1"></div>-->
+<!--                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="插入链接">-->
+<!--                        <i class="fa fa-link"></i>-->
+<!--                    </button>-->
+<!--                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="插入图片">-->
+<!--                        <i class="fa fa-image"></i>-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--                <textarea id="content" name="content" rows="10" class="w-full px-4 py-3 border border-gray-300 rounded-b-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="请输入动态内容..." required></textarea>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; 多媒体上传 &ndash;&gt;-->
+<!--            <div>-->
+<!--                <label class="block text-sm font-medium text-gray-700 mb-1">上传图片/视频</label>-->
+<!--                <div class="upload-area" id="media-upload">-->
+<!--                    <div class="mb-3">-->
+<!--                        <i class="fa fa-cloud-upload text-4xl text-gray-400"></i>-->
+<!--                    </div>-->
+<!--                    <p class="text-gray-500 mb-1">点击或拖拽文件到此处上传</p>-->
+<!--                    <p class="text-xs text-gray-400">支持 JPG、PNG、GIF、MP4 格式，最大 10MB</p>-->
+<!--                    <input type="file" id="media" name="media" class="hidden" multiple accept="image/*,video/*">-->
+<!--                </div>-->
+
+<!--                &lt;!&ndash; 预览区域 &ndash;&gt;-->
+<!--                <div id="media-preview" class="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 hidden">-->
+<!--                    &lt;!&ndash; 预览项会动态添加 &ndash;&gt;-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; 分类选择 &ndash;&gt;-->
+<!--            <div>-->
+<!--                <label class="block text-sm font-medium text-gray-700 mb-1">动态分类 <span class="text-red-500">*</span></label>-->
+<!--                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">-->
+<!--                    <label class="category-option relative flex items-center justify-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-all">-->
+<!--                        <input type="radio" name="type" id="lvxingyouji"value="旅行游记" class="absolute opacity-0">-->
+<!--                        <div class="text-center">-->
+<!--                            <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-blue-100 flex items-center justify-center text-primary">-->
+<!--                                <i class="fa fa-map-marker"></i>-->
+<!--                            </div>-->
+<!--                            <span class="text-sm font-medium">旅行游记</span>-->
+<!--                        </div>-->
+<!--                        <div class="absolute top-2 right-2 text-primary opacity-0">-->
+<!--                            <i class="fa fa-check-circle text-lg"></i>-->
+<!--                        </div>-->
+<!--                    </label>-->
+
+<!--                    <label class="category-option relative flex items-center justify-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-all">-->
+<!--                        <input type="radio" name="type"  id="huwaizhishi"value="户外知识" class="absolute opacity-0">-->
+<!--                        <div class="text-center">-->
+<!--                            <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-green-100 flex items-center justify-center text-green-600">-->
+<!--                                <i class="fa fa-book"></i>-->
+<!--                            </div>-->
+<!--                            <span class="text-sm font-medium">户外知识</span>-->
+<!--                        </div>-->
+<!--                        <div class="absolute top-2 right-2 text-green-600 opacity-0">-->
+<!--                            <i class="fa fa-check-circle text-lg"></i>-->
+<!--                        </div>-->
+<!--                    </label>-->
+
+<!--                    <label class="category-option relative flex items-center justify-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-all">-->
+<!--                        <input type="radio" name="type"  id="zhuangbeiceping"value="装备评测" class="absolute opacity-0">-->
+<!--                        <div class="text-center">-->
+<!--                            <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">-->
+<!--                                <i class="fa fa-camera"></i>-->
+<!--                            </div>-->
+<!--                            <span class="text-sm font-medium">装备评测</span>-->
+<!--                        </div>-->
+<!--                        <div class="absolute top-2 right-2 text-orange-600 opacity-0">-->
+<!--                            <i class="fa fa-check-circle text-lg"></i>-->
+<!--                        </div>-->
+<!--                    </label>-->
+
+<!--                    <label class="category-option relative flex items-center justify-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-all">-->
+<!--                        <input type="radio" name="type"  id="huodongzhaomu"value="活动招募" class="absolute opacity-0">-->
+<!--                        <div class="text-center">-->
+<!--                            <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">-->
+<!--                                <i class="fa fa-users"></i>-->
+<!--                            </div>-->
+<!--                            <span class="text-sm font-medium">活动招募</span>-->
+<!--                        </div>-->
+<!--                        <div class="absolute top-2 right-2 text-purple-600 opacity-0">-->
+<!--                            <i class="fa fa-check-circle text-lg"></i>-->
+<!--                        </div>-->
+<!--                    </label>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            &lt;!&ndash; 标签添加 &ndash;&gt;-->
+<!--&lt;!&ndash;            <div>&ndash;&gt;-->
+<!--&lt;!&ndash;                <label class="block text-sm font-medium text-gray-700 mb-1">添加标签</label>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="flex flex-wrap gap-2 mb-3" id="tags-container">&ndash;&gt;-->
+<!--&lt;!&ndash;                    &lt;!&ndash; 标签会动态添加 &ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                <div class="flex">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <input type="text" id="tag-input" class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入标签，按回车添加">&ndash;&gt;-->
+<!--&lt;!&ndash;                    <button type="button" id="add-tag" class="px-4 py-2 bg-primary text-white rounded-r-lg hover:bg-primary/90 transition-colors">&ndash;&gt;-->
+<!--&lt;!&ndash;                        <i class="fa fa-plus"></i>&ndash;&gt;-->
+<!--&lt;!&ndash;                    </button>&ndash;&gt;-->
+<!--&lt;!&ndash;                </div>&ndash;&gt;-->
+<!--&lt;!&ndash;                <p class="text-xs text-gray-400 mt-1">标签有助于你的动态被更多人发现，如：登山、徒步、露营、新手攻略等</p>&ndash;&gt;-->
+<!--&lt;!&ndash;            </div>&ndash;&gt;-->
+
+<!--            &lt;!&ndash; 发布按钮 &ndash;&gt;-->
+<!--            <div class="flex flex-col sm:flex-row sm:justify-between gap-3">-->
+<!--                <button type="button" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">-->
+<!--                    <i class="fa fa-save mr-2 text-gray-600"></i> 保存草稿-->
+<!--                </button>-->
+<!--                <button onclick="addDyn('form1','dynaddAll');"type="button" >-->
+<!--                    <i class="fa fa-paper-plane mr-2"></i> 发布动态-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </form>-->
+<!--    </div>-->
+<!--</main>-->
+<!--&lt;!&ndash;class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg flex items-center justify-center"&ndash;&gt;-->
+<!--&lt;!&ndash; 页脚 &ndash;&gt;-->
+<!--<footer class="bg-dark text-white py-12">-->
+<!--    <div class="container mx-auto px-4">-->
+<!--        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">-->
+<!--            <div>-->
+<!--                <div class="flex items-center space-x-2 mb-4">-->
+<!--                    <div class="text-white text-2xl">-->
+<!--                        <i class="fa fa-tree"></i>-->
+<!--                    </div>-->
+<!--                    <span class="text-xl font-bold">山友缘</span>-->
+<!--                </div>-->
+<!--                <p class="text-gray-400 mb-4">探索自然，分享快乐，连接志同道合的户外爱好者</p>-->
+<!--                <div class="flex space-x-4">-->
+<!--                    <a href="#" class="text-gray-400 hover:text-white transition-colors">-->
+<!--                        <i class="fa fa-weixin text-xl"></i>-->
+<!--                    </a>-->
+<!--                    <a href="#" class="text-gray-400 hover:text-white transition-colors">-->
+<!--                        <i class="fa fa-weibo text-xl"></i>-->
+<!--                    </a>-->
+<!--                    <a href="#" class="text-gray-400 hover:text-white transition-colors">-->
+<!--                        <i class="fa fa-instagram text-xl"></i>-->
+<!--                    </a>-->
+<!--                    <a href="#" class="text-gray-400 hover:text-white transition-colors">-->
+<!--                        <i class="fa fa-youtube-play text-xl"></i>-->
+<!--                    </a>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <h4 class="text-lg font-semibold mb-4">快速链接</h4>-->
+<!--                <ul class="space-y-2">-->
+<!--                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">首页</a></li>-->
+<!--                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">活动</a></li>-->
+<!--                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">动态</a></li>-->
+<!--                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">装备</a></li>-->
+<!--                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">社区</a></li>-->
+<!--                </ul>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <h4 class="text-lg font-semibold mb-4">联系我们</h4>-->
+<!--                <ul class="space-y-2">-->
+<!--                    <li class="flex items-center">-->
+<!--                        <i class="fa fa-map-marker text-gray-400 mr-2 w-5"></i>-->
+<!--                        <span class="text-gray-400">北京市海淀区中关村南大街5号</span>-->
+<!--                    </li>-->
+<!--                    <li class="flex items-center">-->
+<!--                        <i class="fa fa-phone text-gray-400 mr-2 w-5"></i>-->
+<!--                        <span class="text-gray-400">400-123-4567</span>-->
+<!--                    </li>-->
+<!--                    <li class="flex items-center">-->
+<!--                        <i class="fa fa-envelope text-gray-400 mr-2 w-5"></i>-->
+<!--                        <span class="text-gray-400">contact@shanyouyuan.com</span>-->
+<!--                    </li>-->
+<!--                </ul>-->
+<!--            </div>-->
+
+<!--            <div>-->
+<!--                <h4 class="text-lg font-semibold mb-4">订阅我们</h4>-->
+<!--                <p class="text-gray-400 mb-4">订阅我们的通讯，获取最新活动和户外知识</p>-->
+<!--                <div class="flex">-->
+<!--                    <input type="email" placeholder="您的邮箱地址" class="flex-1 px-4 py-2 rounded-l-lg focus:outline-none text-dark">-->
+<!--                    <button class="px-4 py-2 bg-primary text-white rounded-r-lg hover:bg-primary/90 transition-colors">-->
+<!--                        <i class="fa fa-paper-plane"></i>-->
+<!--                    </button>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">-->
+<!--            <p>&copy; 2023 山友缘户外服务系统 版权所有 | 京ICP备12345678号</p>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</footer>-->
+
+<!--&lt;!&ndash; 成功提示弹窗 &ndash;&gt;-->
+<!--<div id="success-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">-->
+<!--    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0" id="modal-content">-->
+<!--        <div class="text-center">-->
+<!--            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">-->
+<!--                <i class="fa fa-check text-2xl text-green-500"></i>-->
+<!--            </div>-->
+<!--            <h3 class="text-xl font-bold text-gray-800 mb-2">发布成功！</h3>-->
+<!--            <p class="text-gray-600 mb-6">您的动态已成功发布，将在审核后展示给所有山友。</p>-->
+<!--            <div class="flex flex-col sm:flex-row gap-3">-->
+<!--                <button id="view-dynamic" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg">-->
+<!--                    查看动态-->
+<!--                </button>-->
+<!--                <button id="new-dynamic" class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">-->
+<!--                    继续发布-->
+<!--                </button>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; JavaScript &ndash;&gt;-->
+<!--<script>-->
+<!--    // 导航栏滚动效果-->
+<!--    window.addEventListener('scroll', function() {-->
+<!--        const navbar = document.getElementById('navbar');-->
+<!--        if (window.scrollY > 10) {-->
+<!--            navbar.classList.add('py-2', 'shadow-lg');-->
+<!--            navbar.classList.remove('py-3', 'shadow-md');-->
+<!--        } else {-->
+<!--            navbar.classList.add('py-3', 'shadow-md');-->
+<!--            navbar.classList.remove('py-2', 'shadow-lg');-->
+<!--        }-->
+<!--    });-->
+
+<!--    // 移动端菜单切换-->
+<!--    document.getElementById('mobile-menu-button').addEventListener('click', function() {-->
+<!--        const mobileMenu = document.getElementById('mobile-menu');-->
+<!--        if (mobileMenu.classList.contains('opacity-0')) {-->
+<!--            mobileMenu.classList.remove('opacity-0', '-translate-y-full', 'pointer-events-none');-->
+<!--            mobileMenu.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');-->
+<!--        } else {-->
+<!--            mobileMenu.classList.add('opacity-0', '-translate-y-full', 'pointer-events-none');-->
+<!--            mobileMenu.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');-->
+<!--        }-->
+<!--    });-->
+
+<!--    // 分类选项切换-->
+<!--    document.querySelectorAll('.category-option').forEach(option => {-->
+<!--        option.addEventListener('click', function() {-->
+<!--            // 移除其他选项的选中状态-->
+<!--            document.querySelectorAll('.category-option').forEach(opt => {-->
+<!--                opt.classList.remove('border-primary', 'bg-blue-50');-->
+<!--                opt.querySelector('i').classList.add('opacity-0');-->
+<!--            });-->
+
+<!--            // 添加当前选项的选中状态-->
+<!--            this.classList.add('border-primary', 'bg-blue-50');-->
+<!--            this.querySelector('i').classList.remove('opacity-0');-->
+
+<!--            // 选中对应的单选按钮-->
+<!--            this.querySelector('input').checked = true;-->
+<!--        });-->
+<!--    });-->
+
+<!--    // 上传区域交互-->
+<!--    const uploadArea = document.getElementById('media-upload');-->
+<!--    const mediaFile = document.getElementById('media');-->
+<!--    const mediaPreview = document.getElementById('media-preview');-->
+
+<!--    uploadArea.addEventListener('click', () => {-->
+<!--        mediaFile.click();-->
+<!--    });-->
+
+<!--    uploadArea.addEventListener('dragover', (e) => {-->
+<!--        e.preventDefault();-->
+<!--        uploadArea.classList.add('border-primary', 'bg-blue-50');-->
+<!--    });-->
+
+<!--    uploadArea.addEventListener('dragleave', () => {-->
+<!--        uploadArea.classList.remove('border-primary', 'bg-blue-50');-->
+<!--    });-->
+
+<!--    uploadArea.addEventListener('drop', (e) => {-->
+<!--        e.preventDefault();-->
+<!--        uploadArea.classList.remove('border-primary', 'bg-blue-50');-->
+
+<!--        if (e.dataTransfer.files.length > 0) {-->
+<!--            handleFiles(e.dataTransfer.files);-->
+<!--        }-->
+<!--    });-->
+
+<!--    mediaFile.addEventListener('change', (e) => {-->
+<!--        if (e.target.files.length > 0) {-->
+<!--            handleFiles(e.target.files);-->
+<!--        }-->
+<!--    });-->
+
+<!--    function handleFiles(files) {-->
+<!--        mediaPreview.classList.remove('hidden');-->
+
+<!--        for (let i = 0; i < files.length; i++) {-->
+<!--            const file = files[i];-->
+<!--            const fileType = file.type;-->
+<!--            const isImage = fileType.startsWith('image/');-->
+<!--            const isVideo = fileType.startsWith('video/');-->
+
+<!--            if (isImage || isVideo) {-->
+<!--                const previewItem = document.createElement('div');-->
+<!--                previewItem.className = 'relative rounded-lg overflow-hidden shadow-md';-->
+
+<!--                const previewContent = document.createElement('div');-->
+<!--                previewContent.className = 'w-full h-24 flex items-center justify-center bg-gray-100';-->
+
+<!--                if (isImage) {-->
+<!--                    const img = document.createElement('img');-->
+<!--                    img.src = URL.createObjectURL(file);-->
+<!--                    img.className = 'w-full h-full object-cover';-->
+<!--                    previewContent.appendChild(img);-->
+<!--                } else {-->
+<!--                    const videoIcon = document.createElement('div');-->
+<!--                    videoIcon.className = 'text-3xl text-gray-400';-->
+<!--                    videoIcon.innerHTML = '<i class="fa fa-film"></i>';-->
+<!--                    previewContent.appendChild(videoIcon);-->
+
+<!--                    const videoName = document.createElement('div');-->
+<!--                    videoName.className = 'absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 truncate';-->
+<!--                    videoName.textContent = file.name;-->
+<!--                    previewContent.appendChild(videoName);-->
+<!--                }-->
+
+<!--                const removeBtn = document.createElement('button');-->
+<!--                removeBtn.className = 'absolute top-1 right-1 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors';-->
+<!--                removeBtn.innerHTML = '<i class="fa fa-times"></i>';-->
+<!--                removeBtn.addEventListener('click', () => {-->
+<!--                    previewItem.remove();-->
+<!--                    if (mediaPreview.children.length === 0) {-->
+<!--                        mediaPreview.classList.add('hidden');-->
+<!--                    }-->
+<!--                });-->
+
+<!--                previewItem.appendChild(previewContent);-->
+<!--                previewItem.appendChild(removeBtn);-->
+<!--                mediaPreview.appendChild(previewItem);-->
+<!--            }-->
+<!--        }-->
+<!--    }-->
+
+<!--    // // 标签添加功能-->
+<!--    // const tagsContainer = document.getElementById('tags-container');-->
+<!--    // const tagInput = document.getElementById('tag-input');-->
+<!--    // const addTagBtn = document.getElementById('add-tag');-->
+<!--    //-->
+<!--    // function addTag(tagText) {-->
+<!--    //     if (tagText.trim() === '') return;-->
+<!--    //-->
+<!--    //     const tagItem = document.createElement('div');-->
+<!--    //     tagItem.className = 'tag-item';-->
+<!--    //     tagItem.innerHTML = `-->
+<!--    //     <span>${tagText}</span>-->
+<!--    //     <span class="remove-tag"><i class="fa fa-times-circle"></i></span>-->
+<!--    //   `;-->
+<!--    //-->
+<!--    //     tagItem.querySelector('.remove-tag').addEventListener('click', () => {-->
+<!--    //         tagItem.remove();-->
+<!--    //     });-->
+<!--    //-->
+<!--    //     tagsContainer.appendChild(tagItem);-->
+<!--    //     tagInput.value = '';-->
+<!--    // }-->
+
+<!--    // addTagBtn.addEventListener('click', () => {-->
+<!--    //     addTag(tagInput.value);-->
+<!--    // });-->
+
+<!--    // tagInput.addEventListener('keypress', (e) => {-->
+<!--    //     if (e.key === 'Enter') {-->
+<!--    //         addTag(tagInput.value);-->
+<!--    //     }-->
+<!--    // });-->
+
+<!--    // 表单提交处理-->
+<!--    const dynamicForm = document.getElementById('dynamic-form');-->
+<!--    const successModal = document.getElementById('success-modal');-->
+<!--    const modalContent = document.getElementById('modal-content');-->
+
+<!--    dynamicForm.addEventListener('submit', (e) => {-->
+<!--        e.preventDefault();-->
+
+<!--        // 这里应该添加表单验证逻辑??????-->
+
+<!--        // 模拟表单提交-->
+<!--        setTimeout(() => {-->
+<!--            successModal.classList.remove('hidden');-->
+<!--            setTimeout(() => {-->
+<!--                modalContent.classList.remove('scale-95', 'opacity-0');-->
+<!--                modalContent.classList.add('scale-100', 'opacity-100');-->
+<!--            }, 10);-->
+<!--        }, 500);-->
+<!--    });-->
+
+<!--    // 模态框按钮处理-->
+<!--    document.getElementById('view-dynamic').addEventListener('click', () => {-->
+<!--        modalContent.classList.remove('scale-100', 'opacity-100');-->
+<!--        modalContent.classList.add('scale-95', 'opacity-0');-->
+<!--        setTimeout(() => {-->
+<!--            successModal.classList.add('hidden');-->
+<!--            // 这里应该跳转到动态详情页-->
+<!--            window.location.href = '#';-->
+<!--        }, 300);-->
+<!--    });-->
+
+<!--    document.getElementById('new-dynamic').addEventListener('click', () => {-->
+<!--        modalContent.classList.remove('scale-100', 'opacity-100');-->
+<!--        modalContent.classList.add('scale-95', 'opacity-0');-->
+<!--        setTimeout(() => {-->
+<!--            successModal.classList.add('hidden');-->
+<!--            // 重置表单-->
+<!--            dynamicForm.reset();-->
+<!--            mediaPreview.innerHTML = '';-->
+<!--            mediaPreview.classList.add('hidden');-->
+<!--            tagsContainer.innerHTML = '';-->
+<!--            document.querySelectorAll('.category-option').forEach(opt => {-->
+<!--                opt.classList.remove('border-primary', 'bg-blue-50');-->
+<!--                opt.querySelector('i').classList.add('opacity-0');-->
+<!--            });-->
+<!--        }, 300);-->
+<!--    });-->
+<!--</script>-->
+
+<!--&lt;!&ndash;<form id="form1" method="post" action="/dynaddAll"enctype="multipart/form-data">&ndash;&gt;-->
+<!--&lt;!&ndash;    <table class="tb1">&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <tr>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            <td>发布人id：</td><td><input type="text" name="uid" id="uid"readonly="readonly" /></td>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        </tr>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td>标题：</td><td><input type="text" name="dtitle" id="dtitle" /></td>&ndash;&gt;-->
+<!--&lt;!&ndash;        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td>描述：</td><td><textarea  rows="6" name="content" id="content" /></textarea ></td>&ndash;&gt;-->
+<!--&lt;!&ndash;        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td>类别： </td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td><input type="radio" id="lvxingyouji" name="type" value="旅行游记"/>旅行游记&ndash;&gt;-->
+<!--&lt;!&ndash;                <input type="radio" id="huwaizhishi" name="type" value="户外知识"/>户外知识&ndash;&gt;-->
+<!--&lt;!&ndash;                <input type="radio" id="zhuangbeiceping" name="type" value="装备测评"/>装备测评&ndash;&gt;-->
+<!--&lt;!&ndash;                <input type="radio" id="huodongzhaomu" name="type" value="活动招募"/>活动招募&ndash;&gt;-->
+
+<!--&lt;!&ndash;            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td>照片：</td><td><input type="file" name="media" id="media" />&ndash;&gt;-->
+<!--&lt;!&ndash;        </td>&ndash;&gt;-->
+<!--&lt;!&ndash;        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        <tr>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;            <td>发布时间： </td><td><input type="text" id="create_time" name="create_time"/></td>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;&lt;!&ndash;        </tr>&ndash;&gt;&ndash;&gt;-->
+<!--&lt;!&ndash;        <tr>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td class="bt"><input type="button" value="发布" onclick="addDyn('form1','dynaddAll');"/>&ndash;&gt;-->
+<!--&lt;!&ndash;            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;            <td class="bt"><input type="reset" value="取消" />&ndash;&gt;-->
+<!--&lt;!&ndash;            </td>&ndash;&gt;-->
+<!--&lt;!&ndash;        </tr>&ndash;&gt;-->
+<!--&lt;!&ndash;    </table></form>&ndash;&gt;-->
+<!--</body>-->
+<!--</html>-->
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>发布动态 - 山友缘户外服务系统</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Tailwind CSS 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#165DFF',
+                        secondary: '#36D399',
+                        accent: '#FF7D00',
+                        dark: '#1E293B',
+                        light: '#F8FAFC'
+                    },
+                    fontFamily: {
+                        inter: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                },
+            }
+        }
+    </script>
+
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .bg-gradient-outdoor {
+                background: linear-gradient(135deg, #165DFF 0%, #36D399 100%);
+            }
+            .card-hover {
+                transition: all 0.3s ease;
+            }
+            .card-hover:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 25px -5px rgba(22, 93, 255, 0.1), 0 10px 10px -5px rgba(22, 93, 255, 0.04);
+            }
+            .upload-area {
+                @apply border-2 border-dashed border-gray-300 rounded-lg p-8 text-center cursor-pointer transition-all duration-300;
+            }
+            .upload-area:hover {
+                @apply border-primary bg-blue-50;
+            }
+            .tag-item {
+                @apply inline-flex items-center px-3 py-1 rounded-full bg-blue-100 text-primary text-sm mr-2 mb-2;
+            }
+            .tag-item .remove-tag {
+                @apply ml-1 text-blue-600 hover:text-blue-800 cursor-pointer;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 font-inter text-dark">
+<!-- 顶部导航栏 -->
+<header class="bg-white shadow-md fixed w-full z-50 transition-all duration-300" id="navbar">
+    <div class="container mx-auto px-4 py-3 flex items-center justify-between">
+        <!-- 左侧Logo -->
+        <div class="flex items-center space-x-2">
+            <div class="text-primary text-2xl">
+                <i class="fa fa-tree"></i>
+            </div>
+            <span class="text-xl font-bold text-dark">山友缘</span>
+        </div>
+
+        <!-- 中间导航链接 - 仅在桌面显示 -->
+        <nav class="hidden md:flex items-center space-x-8">
+            <a href="#" class="text-gray-600 hover:text-primary transition-colors">首页</a>
+            <a href="#" class="text-gray-600 hover:text-primary transition-colors">活动</a>
+            <a href="#" class="text-primary font-medium border-b-2 border-primary pb-1">动态</a>
+            <a href="#" class="text-gray-600 hover:text-primary transition-colors">装备</a>
+            <a href="#" class="text-gray-600 hover:text-primary transition-colors">社区</a>
+        </nav>
+
+        <!-- 右侧用户信息 -->
+        <div class="flex items-center space-x-4">
+            <button class="hidden md:block px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg">
+                <i class="fa fa-plus mr-1"></i> 发布活动
+            </button>
+
+            <div class="relative group">
+                <button class="flex items-center space-x-2">
+                    <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-primary">
+                        <img src="https://picsum.photos/id/64/200/200" alt="用户头像" class="w-full h-full object-cover">
+                    </div>
+                    <span class="hidden md:inline text-gray-700 font-medium">张小明</span>
+                    <i class="fa fa-caret-down text-gray-500"></i>
+                </button>
+
+                <!-- 用户下拉菜单 -->
+                <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 hidden group-hover:block transition-all duration-300 transform origin-top-right scale-95 opacity-0 group-hover:scale-100 group-hover:opacity-100">
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        <i class="fa fa-user mr-2 text-gray-500"></i> 个人主页
+                    </a>
+                    <a href="#" class="block px-4 py-2 text-gray-700 hover:bg-gray-100">
+                        <i class="fa fa-cog mr-2 text-gray-500"></i> 设置
+                    </a>
+                    <div class="border-t border-gray-100 my-1"></div>
+                    <a href="#" class="block px-4 py-2 text-red-600 hover:bg-gray-100">
+                        <i class="fa fa-sign-out mr-2"></i> 退出登录
+                    </a>
+                </div>
+            </div>
+
+            <!-- 移动端菜单按钮 -->
+            <button class="md:hidden text-gray-700" id="mobile-menu-button">
+                <i class="fa fa-bars text-xl"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- 移动端导航菜单 -->
+    <div class="md:hidden bg-white shadow-lg absolute w-full left-0 top-full transform -translate-y-full opacity-0 transition-all duration-300 pointer-events-none" id="mobile-menu">
+        <div class="container mx-auto px-4 py-3">
+            <nav class="flex flex-col space-y-3">
+                <a href="#" class="text-gray-600 hover:text-primary transition-colors py-2">首页</a>
+                <a href="#" class="text-gray-600 hover:text-primary transition-colors py-2">活动</a>
+                <a href="#" class="text-primary font-medium py-2">动态</a>
+                <a href="#" class="text-gray-600 hover:text-primary transition-colors py-2">装备</a>
+                <a href="#" class="text-gray-600 hover:text-primary transition-colors py-2">社区</a>
+                <button class="w-full px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg">
+                    <i class="fa fa-plus mr-1"></i> 发布活动
+                </button>
+            </nav>
+        </div>
+    </div>
+</header>
+
+<!-- 主内容区 -->
+<main class="container mx-auto px-4 pt-24 pb-12">
+    <!-- 页面标题 -->
+    <div class="mb-8 text-center">
+        <h1 class="text-[clamp(1.8rem,4vw,2.5rem)] font-bold text-dark mb-2">分享你的户外故事</h1>
+        <p class="text-gray-500 max-w-2xl mx-auto">记录旅行中的精彩瞬间，分享户外知识，与志同道合的朋友一起探索大自然的魅力</p>
+    </div>
+
+    <!-- 动态发布表单 -->
+    <div class="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden card-hover">
+        <!-- 表单头部 -->
+        <div class="bg-gradient-outdoor p-6 text-white">
+            <div class="flex items-center">
+                <div class="w-12 h-12 rounded-full overflow-hidden border-2 border-white">
+                    <img src="https://picsum.photos/id/64/200/200" alt="用户头像" class="w-full h-full object-cover">
+                </div>
+                <div class="ml-4">
+                    <h3 class="font-semibold">张小明</h3>
+                    <p class="text-sm text-blue-100">分享你的户外故事...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 表单主体 -->
+        <form id="dynamic-form" class="p-6 space-y-6">
+            <!-- 动态标题 -->
+            <div>
+                <label for="title" class="block text-sm font-medium text-gray-700 mb-1">动态标题 <span class="text-red-500">*</span></label>
+                <input type="text" id="title" name="title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="请输入动态标题（如：XX山徒步攻略：新手必看5大技巧）" required>
+            </div>
+
+            <!-- 动态内容编辑器 -->
+            <div>
+                <label for="content" class="block text-sm font-medium text-gray-700 mb-1">动态内容 <span class="text-red-500">*</span></label>
+                <div class="editor-toolbar bg-gray-50 p-2 rounded-t-lg border border-gray-300 border-b-0 flex flex-wrap gap-1">
+                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="粗体">
+                        <i class="fa fa-bold"></i>
+                    </button>
+                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="斜体">
+                        <i class="fa fa-italic"></i>
+                    </button>
+                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="下划线">
+                        <i class="fa fa-underline"></i>
+                    </button>
+                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="删除线">
+                        <i class="fa fa-strikethrough"></i>
+                    </button>
+                    <div class="border-r border-gray-300 h-5 my-auto mx-1"></div>
+                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="引用">
+                        <i class="fa fa-quote-left"></i>
+                    </button>
+                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="无序列表">
+                        <i class="fa fa-list-ul"></i>
+                    </button>
+                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="有序列表">
+                        <i class="fa fa-list-ol"></i>
+                    </button>
+                    <div class="border-r border-gray-300 h-5 my-auto mx-1"></div>
+                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="插入链接">
+                        <i class="fa fa-link"></i>
+                    </button>
+                    <button type="button" class="p-2 hover:bg-gray-200 rounded text-gray-600" title="插入图片">
+                        <i class="fa fa-image"></i>
+                    </button>
+                </div>
+                <textarea id="content" name="content" rows="10" class="w-full px-4 py-3 border border-gray-300 rounded-b-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="请输入动态内容..." required></textarea>
+            </div>
+
+            <!-- 多媒体上传 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">上传图片/视频</label>
+                <div class="upload-area" id="media-upload">
+                    <div class="mb-3">
+                        <i class="fa fa-cloud-upload text-4xl text-gray-400"></i>
+                    </div>
+                    <p class="text-gray-500 mb-1">点击或拖拽文件到此处上传</p>
+                    <p class="text-xs text-gray-400">支持 JPG、PNG、GIF、MP4 格式，最大 10MB</p>
+                    <input type="file" id="media-file" name="media" class="hidden" multiple accept="image/*,video/*">
+                </div>
+
+                <!-- 预览区域 -->
+                <div id="media-preview" class="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 hidden">
+                    <!-- 预览项会动态添加 -->
+                </div>
+            </div>
+
+            <!-- 分类选择 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">动态分类 <span class="text-red-500">*</span></label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <label class="category-option relative flex items-center justify-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-all">
+                        <input type="radio" name="type" value="旅行游记" class="absolute opacity-0">
+                        <div class="text-center">
+                            <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-blue-100 flex items-center justify-center text-primary">
+                                <i class="fa fa-map-marker"></i>
+                            </div>
+                            <span class="text-sm font-medium">旅行游记</span>
+                        </div>
+                        <div class="absolute top-2 right-2 text-primary opacity-0">
+                            <i class="fa fa-check-circle text-lg"></i>
+                        </div>
+                    </label>
+
+                    <label class="category-option relative flex items-center justify-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-all">
+                        <input type="radio" name="type" value="户外知识" class="absolute opacity-0">
+                        <div class="text-center">
+                            <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                <i class="fa fa-book"></i>
+                            </div>
+                            <span class="text-sm font-medium">户外知识</span>
+                        </div>
+                        <div class="absolute top-2 right-2 text-green-600 opacity-0">
+                            <i class="fa fa-check-circle text-lg"></i>
+                        </div>
+                    </label>
+
+                    <label class="category-option relative flex items-center justify-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-all">
+                        <input type="radio" name="type" value="装备评测" class="absolute opacity-0">
+                        <div class="text-center">
+                            <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-orange-100 flex items-center justify-center text-orange-600">
+                                <i class="fa fa-camera"></i>
+                            </div>
+                            <span class="text-sm font-medium">装备评测</span>
+                        </div>
+                        <div class="absolute top-2 right-2 text-orange-600 opacity-0">
+                            <i class="fa fa-check-circle text-lg"></i>
+                        </div>
+                    </label>
+
+                    <label class="category-option relative flex items-center justify-center p-4 border border-gray-300 rounded-lg cursor-pointer hover:border-primary transition-all">
+                        <input type="radio" name="type" value="活动招募" class="absolute opacity-0">
+                        <div class="text-center">
+                            <div class="w-10 h-10 mx-auto mb-2 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                                <i class="fa fa-users"></i>
+                            </div>
+                            <span class="text-sm font-medium">活动招募</span>
+                        </div>
+                        <div class="absolute top-2 right-2 text-purple-600 opacity-0">
+                            <i class="fa fa-check-circle text-lg"></i>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- 标签添加 -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">添加标签</label>
+                <div class="flex flex-wrap gap-2 mb-3" id="tags-container">
+                    <!-- 标签会动态添加 -->
+                </div>
+                <div class="flex">
+                    <input type="text" id="tag-input" class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all" placeholder="输入标签，按回车添加">
+                    <button type="button" id="add-tag" class="px-4 py-2 bg-primary text-white rounded-r-lg hover:bg-primary/90 transition-colors">
+                        <i class="fa fa-plus"></i>
+                    </button>
+                </div>
+                <p class="text-xs text-gray-400 mt-1">标签有助于你的动态被更多人发现，如：登山、徒步、露营、新手攻略等</p>
+            </div>
+
+            <!-- 发布按钮 -->
+            <div class="flex flex-col sm:flex-row sm:justify-between gap-3">
+                <button type="button" class="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors flex items-center justify-center">
+                    <i class="fa fa-save mr-2 text-gray-600"></i> 保存草稿
+                </button>
+                <button type="submit" class="px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg flex items-center justify-center">
+                    <i class="fa fa-paper-plane mr-2"></i> 发布动态
+                </button>
+            </div>
+        </form>
+    </div>
+</main>
+
+<!-- 页脚 -->
+<footer class="bg-dark text-white py-12">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div>
+                <div class="flex items-center space-x-2 mb-4">
+                    <div class="text-white text-2xl">
+                        <i class="fa fa-tree"></i>
+                    </div>
+                    <span class="text-xl font-bold">山友缘</span>
+                </div>
+                <p class="text-gray-400 mb-4">探索自然，分享快乐，连接志同道合的户外爱好者</p>
+                <div class="flex space-x-4">
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-weixin text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-weibo text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-instagram text-xl"></i>
+                    </a>
+                    <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                        <i class="fa fa-youtube-play text-xl"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-semibold mb-4">快速链接</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">活动</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">动态</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">装备</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">社区</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-semibold mb-4">联系我们</h4>
+                <ul class="space-y-2">
+                    <li class="flex items-center">
+                        <i class="fa fa-map-marker text-gray-400 mr-2 w-5"></i>
+                        <span class="text-gray-400">北京市海淀区中关村南大街5号</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fa fa-phone text-gray-400 mr-2 w-5"></i>
+                        <span class="text-gray-400">400-123-4567</span>
+                    </li>
+                    <li class="flex items-center">
+                        <i class="fa fa-envelope text-gray-400 mr-2 w-5"></i>
+                        <span class="text-gray-400">contact@shanyouyuan.com</span>
+                    </li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="text-lg font-semibold mb-4">订阅我们</h4>
+                <p class="text-gray-400 mb-4">订阅我们的通讯，获取最新活动和户外知识</p>
+                <div class="flex">
+                    <input type="email" placeholder="您的邮箱地址" class="flex-1 px-4 py-2 rounded-l-lg focus:outline-none text-dark">
+                    <button class="px-4 py-2 bg-primary text-white rounded-r-lg hover:bg-primary/90 transition-colors">
+                        <i class="fa fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+            <p>&copy; 2023 山友缘户外服务系统 版权所有 | 京ICP备12345678号</p>
+        </div>
+    </div>
+</footer>
+
+<!-- 成功提示弹窗 -->
+<div id="success-modal" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-lg p-6 max-w-md w-full mx-4 transform transition-all duration-300 scale-95 opacity-0" id="modal-content">
+        <div class="text-center">
+            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="fa fa-check text-2xl text-green-500"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">发布成功！</h3>
+            <p class="text-gray-600 mb-6">您的动态已成功发布，将在审核后展示给所有山友。</p>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button id="view-dynamic" class="px-6 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-md hover:shadow-lg">
+                    查看动态
+                </button>
+                <button id="new-dynamic" class="px-6 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                    继续发布
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    // 导航栏滚动效果
+    window.addEventListener('scroll', function() {
+        const navbar = document.getElementById('navbar');
+        if (window.scrollY > 10) {
+            navbar.classList.add('py-2', 'shadow-lg');
+            navbar.classList.remove('py-3', 'shadow-md');
+        } else {
+            navbar.classList.add('py-3', 'shadow-md');
+            navbar.classList.remove('py-2', 'shadow-lg');
+        }
+    });
+
+    // 移动端菜单切换
+    document.getElementById('mobile-menu-button').addEventListener('click', function() {
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenu.classList.contains('opacity-0')) {
+            mobileMenu.classList.remove('opacity-0', '-translate-y-full', 'pointer-events-none');
+            mobileMenu.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto');
+        } else {
+            mobileMenu.classList.add('opacity-0', '-translate-y-full', 'pointer-events-none');
+            mobileMenu.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto');
+        }
+    });
+
+    // 分类选项切换
+    document.querySelectorAll('.category-option').forEach(option => {
+        option.addEventListener('click', function() {
+            // 移除其他选项的选中状态
+            document.querySelectorAll('.category-option').forEach(opt => {
+                opt.classList.remove('border-primary', 'bg-blue-50');
+                opt.querySelector('i').classList.add('opacity-0');
+            });
+
+            // 添加当前选项的选中状态
+            this.classList.add('border-primary', 'bg-blue-50');
+            this.querySelector('i').classList.remove('opacity-0');
+
+            // 选中对应的单选按钮
+            this.querySelector('input').checked = true;
+        });
+    });
+
+    // 上传区域交互
+    const uploadArea = document.getElementById('media-upload');
+    const mediaFile = document.getElementById('media-file');
+    const mediaPreview = document.getElementById('media-preview');
+
+    uploadArea.addEventListener('click', () => {
+        mediaFile.click();
+    });
+
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('border-primary', 'bg-blue-50');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('border-primary', 'bg-blue-50');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('border-primary', 'bg-blue-50');
+
+        if (e.dataTransfer.files.length > 0) {
+            handleFiles(e.dataTransfer.files);
+        }
+    });
+
+    mediaFile.addEventListener('change', (e) => {
+        if (e.target.files.length > 0) {
+            handleFiles(e.target.files);
+        }
+    });
+
+    function handleFiles(files) {
+        mediaPreview.classList.remove('hidden');
+
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const fileType = file.type;
+            const isImage = fileType.startsWith('image/');
+            const isVideo = fileType.startsWith('video/');
+
+            if (isImage || isVideo) {
+                const previewItem = document.createElement('div');
+                previewItem.className = 'relative rounded-lg overflow-hidden shadow-md';
+
+                const previewContent = document.createElement('div');
+                previewContent.className = 'w-full h-24 flex items-center justify-center bg-gray-100';
+
+                if (isImage) {
+                    const img = document.createElement('img');
+                    img.src = URL.createObjectURL(file);
+                    img.className = 'w-full h-full object-cover';
+                    previewContent.appendChild(img);
+                } else {
+                    const videoIcon = document.createElement('div');
+                    videoIcon.className = 'text-3xl text-gray-400';
+                    videoIcon.innerHTML = '<i class="fa fa-film"></i>';
+                    previewContent.appendChild(videoIcon);
+
+                    const videoName = document.createElement('div');
+                    videoName.className = 'absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs p-1 truncate';
+                    videoName.textContent = file.name;
+                    previewContent.appendChild(videoName);
+                }
+
+                const removeBtn = document.createElement('button');
+                removeBtn.className = 'absolute top-1 right-1 w-6 h-6 bg-black/50 rounded-full flex items-center justify-center text-white hover:bg-black/70 transition-colors';
+                removeBtn.innerHTML = '<i class="fa fa-times"></i>';
+                removeBtn.addEventListener('click', () => {
+                    previewItem.remove();
+                    if (mediaPreview.children.length === 0) {
+                        mediaPreview.classList.add('hidden');
+                    }
+                });
+
+                previewItem.appendChild(previewContent);
+                previewItem.appendChild(removeBtn);
+                mediaPreview.appendChild(previewItem);
+            }
+        }
+    }
+
+    // 标签添加功能
+    const tagsContainer = document.getElementById('tags-container');
+    const tagInput = document.getElementById('tag-input');
+    const addTagBtn = document.getElementById('add-tag');
+
+    function addTag(tagText) {
+        if (tagText.trim() === '') return;
+
+        const tagItem = document.createElement('div');
+        tagItem.className = 'tag-item';
+        tagItem.innerHTML = `
+        <span>${tagText}</span>
+        <span class="remove-tag"><i class="fa fa-times-circle"></i></span>
+      `;
+
+        tagItem.querySelector('.remove-tag').addEventListener('click', () => {
+            tagItem.remove();
+        });
+
+        tagsContainer.appendChild(tagItem);
+        tagInput.value = '';
+    }
+
+    addTagBtn.addEventListener('click', () => {
+        addTag(tagInput.value);
+    });
+
+    tagInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            addTag(tagInput.value);
+        }
+    });
+
+    // 表单提交处理
+    const dynamicForm = document.getElementById('dynamic-form');
+    const successModal = document.getElementById('success-modal');
+    const modalContent = document.getElementById('modal-content');
+
+    dynamicForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        // 这里应该添加表单验证逻辑
+
+        // 模拟表单提交
+        setTimeout(() => {
+            successModal.classList.remove('hidden');
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }, 500);
+    });
+
+    // 模态框按钮处理
+    document.getElementById('view-dynamic').addEventListener('click', () => {
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            successModal.classList.add('hidden');
+            // 这里应该跳转到动态详情页
+            window.location.href = '#';
+        }, 300);
+    });
+
+    document.getElementById('new-dynamic').addEventListener('click', () => {
+        modalContent.classList.remove('scale-100', 'opacity-100');
+        modalContent.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            successModal.classList.add('hidden');
+            // 重置表单
+            dynamicForm.reset();
+            mediaPreview.innerHTML = '';
+            mediaPreview.classList.add('hidden');
+            tagsContainer.innerHTML = '';
+            document.querySelectorAll('.category-option').forEach(opt => {
+                opt.classList.remove('border-primary', 'bg-blue-50');
+                opt.querySelector('i').classList.add('opacity-0');
+            });
+        }, 300);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/html">
+<head>
+    <!-- 引入完整的CryptoJS库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/index.js"></script>
+    <meta charset="UTF-8">
+    <title>登录界面</title>
+    <script src="../static/js/jquery-1.8.3.js"></script>
+    <script src="../static/js/MyAjax.js"></script>
+    <script src="../static/js/syy.js"></script>
+    <script src="../static/js/verifyCode.js"></script>
+    <link rel="stylesheet" href="../static/css/login1.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* 模态框样式 */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: #4b5563;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .close-modal-btn {
+            padding: 0.5rem 1.5rem;
+            background-color: #e5e7eb;
+            color: #4b5563;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .close-modal-btn:hover {
+            background-color: #d1d5db;
+        }
+
+        .submit-button {
+            padding: 0.5rem 1.5rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .submit-button:hover {
+            background-color: #2563eb;
+        }
+
+        .unban-form {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+        }
+
+        .form-group-modal {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-textarea:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+    </style>
+    <script>// 前端验证失败时显示login
+    // $(".verify-code-box").after('<div class="verify-code-error">验证码错误，请重新输入</div>');
+    </script>
+</head>
+<body >
+<div class="container">
+    <div class="header">
+        <h1>行安户外社交系统</h1>
+    </div>
+    <div class="main">
+        <form id="form1" action="/loginSYY" method="post">
+
+	    <span><img src="../static/image/img/renTou.png"  class="img1"/>
+		<input type="tel" name="tel" id="tel" value="18281154515" placeholder="手机号">&nbsp&nbsp&nbsp
+		</span><br />
+
+            <span> <img src="../static/image/img/lock1.png" class="img1"/>
+	  <input type="password" name="pwd" id="pwd" value="17180130145Lyq." placeholder="密码">
+                <img src="../static/image/img/yanjing.png" onclick="kejian();" class="img2"/>
+
+	   </span><br />
+            <span class="verify-code-box">
+                 <img src="../static/image/img/code.png"  id="verifyImg"
+                    onclick="refreshVerifyCode()" >
+              <input type="text" name="verifyCode" id="verifyCode"
+           placeholder="请输入验证码">
+        </span><br /><br />
+            <span> &nbsp&nbsp&nbsp<input type="button" value="登录" id="login2"></span>
+            <span> &nbsp&nbsp&nbsp<input type="button" value="注册" id="reg" ></span>
+
+        </form>
+    </div>
+</div>
+<!-- 模态框 - 查看用户详情 -->
+<div id="viewModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-body" id="modalContent">
+            <!-- 模态框内容将通过JavaScript动态生成 -->
+        </div>
+        <div class="modal-footer">
+            <button id="postModalBtn" class="close-modal-btn">提交</button>
+            <button id="closeModalBtn" class="close-modal-btn">关闭</button>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(document).ready(function() {
+        let uid=null;
+        // 初始化验证码
+        generateVerifyCode();
+
+        // 登录按钮点击事件
+        $("#login2").bind("click", function() {
+            var tel = $("#tel").val().trim();
+            var pwd = $("#pwd").val().trim();
+            var verifyCode = $("#verifyCode").val().trim();
+            var telPattern = /^1[3-9]\d{9}$/;
+            var pwdPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+~`\-=\\\[\]{}|;':",.<>/?])[A-Za-z\d!@#$%^&*()_+~`\-=\\\[\]{}|;':",.<>/?]{8,20}$/;
+
+            // 前端表单验证
+            if (!telPattern.test(tel)) {
+                alert("请输入有效的手机号码");
+                generateVerifyCode();
+                $("#tel").focus();
+                return false;
+            }
+            if (!pwdPattern.test(pwd)) {
+                alert("密码需满足：8-20位，包含大小写字母、数字和特殊符号");
+                generateVerifyCode();
+                $("#pwd").focus();
+                return false;
+            }
+            if (verifyCode === "") {
+                alert("请输入验证码");
+                $("#verifyCode").focus();
+                return false;
+            }
+            if (tel && pwd) {
+                $.ajax({
+                    type: "get",
+                    url: "/finduserBytel",
+                    data: { tel, pwd, verifyCode },
+                    async: false,
+                    dataType: "json",
+                    success: function(re) {
+                      //  alert(JSON.stringify(re[0]));
+                        console.log('后端返回数据：', re);
+
+                        // 处理后端错误返回
+
+                        if (re.length > 0 && re[0].errorCode) {
+                            if (re[0].errorCode === "FREQUENCY_LIMITED") {
+                                alert(re[0].message);
+                                generateVerifyCode();
+                                return;
+                            }
+                            //非空，验证码错误
+                            if (re[0].errorCode === "VERIFY_CODE_ERROR") {
+                                alert(re[0].message);
+                                $("#verifyCode").clear();
+                                generateVerifyCode();
+                                return;
+                            }
+                            //非空，密码错误
+                            if ( re[0].errorCode === "PASSWORD_ERROR") {
+                                alert("密码错误！请重新输入");
+                                $("#pwd").val("");
+                                $("#pwd").focus();
+                                return;
+                            }
+                            //非空，用户不存在
+                            if (re[0].errorCode === "USER_NOT_FOUND") {
+                                alert("该手机号未注册，请前往注册");
+                                window.location.replace("../userReg2.html");
+                                return;
+                            }
+
+                        }
+                        if (re[0].id_type.toString().trim() == "1" )
+                        {
+                            // 登录成功逻辑
+                            reToken();
+
+                            $.ajax({
+                                type: "get",
+                                url: "/getUserInfoFromSession",
+                                async: false,
+                                success: function(re) {
+                                    console.log(JSON.stringify(re));
+                                    sessionStorage.setItem("uid", JSON.stringify(re.uid));
+                                    sessionStorage.setItem("tel", tel);
+                                    sessionStorage.setItem("perm", re.perm);
+                                    sessionStorage.setItem("roleCodes", JSON.stringify(re.roleCodes || []));
+                                    sessionStorage.setItem("permissionCodes", JSON.stringify(re.permissionCodes || []));
+                                    console.log("uid", JSON.stringify(re.uid));
+                                    console.log("tel", tel);
+                                    console.log("perm", re.perm);
+                                    console.log("已登录，Session 已设置：", sessionStorage);
+                                    alert("登录成功，进入主界面");
+                                    window.location.replace("Index.html");
+                                }
+                            });
+
+
+                        }
+                        if (re[0].id_type.toString().trim() == "3") {
+                            alert("长时间未登录，您的账号已被封禁！");
+                            uid = re.uid;
+                            // 初始化并拼接模态框内容
+                            let detailHtml = `
+                                <div class="unban-form">
+                                    <h4 class="text-lg font-semibold mb-2">申请解封账号</h4>
+                                    <form id="unbanForm">
+                                        <div class="form-group-modal">
+                                            <label for="unbanReason" class="form-label">申请原因</label>
+                                            <textarea id="unbanReason" class="form-textarea" placeholder="请详细说明您的申请原因..." required></textarea>
+                                        </div>
+
+                                        <div class="form-group-modal">
+                                            <label for="contactInfo" class="form-label">电话号码</label>
+                                            <input type="text" id="contactInfo" class="form-input" placeholder="请填写您注册账号的电话号码" required>
+                                        </div>
+                                    </form>
+                                </div>
+                            `;
+
+                            // 获取模态框内容容器并设置内容
+                            const modalContent = document.getElementById('modalContent');
+                            modalContent.innerHTML = detailHtml;
+
+                            // 显示模态框
+                            document.getElementById('viewModal').classList.add('active');
+                        }
+                        if (re[0].id_type.toString().trim() == "2") {
+                            alert("您的账号还在审核中，请耐心等待！");
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        alert("登录失败，请检查网络连接或稍后再试");
+                        generateVerifyCode();
+                    }
+                });
+            } else {
+                alert("数据填写不完整，不能为空！");
+                generateVerifyCode();
+            }
+        });
+// 关闭模态框
+        $("#closeModal, #closeModalBtn").bind("click", function() {
+            document.getElementById('viewModal').classList.remove('active');
+        });
+
+        // 提交解封申请
+        $("#postModalBtn").bind("click", function() {
+            const reason = $("#unbanReason").val().trim();
+            const contact = $("#contactInfo").val().trim();
+            //alert(contact);
+            const id_type="2";
+
+            if (!reason || !contact) {
+                alert("请填写完整的申请信息");
+                return;
+            }
+            var data0={};
+            data0.tel=contact;
+            data0.id_type=id_type;
+            $.ajax({
+                url: "submitUnbanRequest",
+                type: "post",
+                dataType: "json",
+                async: false,
+                contentType: "application/json;charset=UTF-8",
+                data: JSON.stringify(data0),
+                success: function (response) {
+                    alert("申请提交成功，请耐心等待！");
+                },
+                error: function () {
+                    alert("获取活动数据失败，请稍后重试");
+                }
+            });
+        });
+
+        // 点击模态框背景关闭
+        document.getElementById('viewModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+        // 刷新验证码函数
+        function refreshVerifyCode() {
+            generateVerifyCode();
+        }
+
+        function generateVerifyCode() {
+            $("#verifyImg").attr("src", "/generateVerifyCode?" + new Date().getTime());
+        }
+
+        function reToken() {
+            $.ajax({
+                type: "get",
+                url: "bbs/reToken",
+                data: null,
+                async: false,
+                dataType: "text",
+                success: function(re) {
+                    sessionStorage.setItem("token", re);
+                },
+                error: function(re) {
+                    alert("获取Token失败");
+                }
+            });
+        }
+    });
+</script>
+</body>
+</html>

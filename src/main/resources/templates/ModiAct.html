@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>行安 - 活动修改</title>
+     <link rel="stylesheet" href="../static/css/ModiAct.css">
+    <link rel="stylesheet" href="../static/css/down.css">
+    <script src="../static/js/jquery-3.2.1.min.js"></script>
+    <script src="../static/js/syy.js"></script>
+    <script>
+
+    </script>
+    <style>
+        body{margin-top: 70px;}
+    </style>
+<!--    <meta name="viewport" content="width=device-width, initial-scale=0.7">-->
+</head>
+<body onload="querybyidReb1('Activity','aid')">
+<!-- 顶部导航栏 -->
+<header>
+    <div class="navbar">
+        <div class="logo">
+            <img src="/static/image/img/Logo.png" alt="山友缘Logo">
+            <span>行安</span>
+        </div>
+        <div class="menu">
+            <a href="Index.html">首页</a>
+            <a href="AllActivities.html">活动</a>
+            <a href="Discover3.html">动态</a>
+<!--            <a href="myMessages.html">消息</a>-->
+        </div>
+        <div class="user">
+            <div class="user-info">
+                <img src="/static/image/img/游客.png" alt="用户头像">
+                <span>游客</span>
+                <i class="dropdown-trigger">
+                    <img src="/static/image/img/下拉.png" alt="下拉菜单图标">
+                </i>
+                <!-- 下拉菜单 -->
+                <div class="dropdown-menu">
+                    <a href="MySpace.html" class="dropdown-item">我的</a>
+                    <a href="Login.html" class="dropdown-item ">切换账号</a>
+                    <a href="#" class="dropdown-item logout">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<form id="form1" enctype="multipart/form-data">
+<div id="div333">
+
+    <table class="tb1">
+        <tr>
+            <td>活动号：</td><td><input type="text" name="aid" id="aid"readonly="readonly" /></td>
+        </tr>
+        <tr>
+            <td>发布人id：</td><td><input type="text" name="uid" id="uid"readonly="readonly" /></td>
+        </tr>
+        <tr>
+            <td>标题：</td><td><input type="text" name="atitle" id="atitle"  /></td>
+        </tr>
+        <tr>
+            <td>描述：</td><td><textarea  rows="6" name="adscpt" id="adscpt" /></textarea ></td>
+        </tr>
+        <tr>
+            <td>地点：</td><td><input type="text" name="location" id="location"  /></td>
+        </tr>
+        <tr>
+            <td>类别： </td>
+            <td><input type="radio" id="dengshan" name="type" value="日常登山"/>日常登山
+                <input type="radio" id="zhongchangtu" name="type" value="中长途旅游"/>中长途旅游
+                <input type="radio" id="qita" name="type" value="其他"/>其他
+            </td>
+        </tr>
+        <tr>
+            <td>开始时间： </td><td><input type="text" id="start_time" name="start_time"/></td>
+        </tr>
+        <tr>
+            <td>结束时间： </td><td><input type="text" id="end_time" name="end_time"/></td>
+        </tr>
+        <tr>
+            <td>最大人数：</td><td><input type="number" id="max_people" name="max_people"/>人</td>
+        </tr>
+        <tr>
+            <td>报名开始： </td><td><input type="text" id="sign_up_start" name="sign_up_start"/></td>
+        </tr>
+        <tr>
+            <td>报名结束： </td><td><input type="text" id="sign_up_end" name="sign_up_end"/></td>
+        </tr>
+        <tr>
+        <tr>
+            <td>发布时间： </td><td><input type="text" id="create_time" name="create_time" /></td>
+        </tr>
+        <tr>
+            <td>图片：</td><td> <img  id="aimg" class="tzphoto" src=""  ><!--width="50px"-->
+            <span id="sp1"><input type="button" value="修改或清除图片" onclick="altFile();"></span></td>
+        </tr>
+        <tr>
+            <td class="bt"><input type="button" value="修改" onclick="ModifyAct('form1','/modifyAct')"/>
+            </td>
+            <td class="bt"><input type="button" value="删除" id="shanchu"onclick="ActDel();"/>
+            </td>
+        </tr>
+    </table>
+    </div></form>
+</body>
+</html>

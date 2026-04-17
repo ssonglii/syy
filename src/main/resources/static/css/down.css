@@ -1,0 +1,73 @@
+/* 下拉菜单样式 */
+.user-info {
+    position: relative;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.user-info img {
+    height: 32px;
+    width: 32px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+
+.user-info span {
+    margin-right: 5px;
+}
+
+.dropdown-trigger {
+    display: inline-block;
+}
+
+.dropdown-trigger img {
+    height: 16px;
+    width: 16px;
+    transition: transform 0.2s ease;
+}
+
+/* 下拉菜单容器 */
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 120px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.3s ease;
+}
+
+/* 下拉菜单项 */
+.dropdown-item {
+    display: block;
+    padding: 8px 16px;
+    text-decoration: none;
+    color: #333;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+
+.logout {
+    color: #e74c3c;
+}
+
+/* 显示下拉菜单的状态 */
+.user-info:hover .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.user-info:hover .dropdown-trigger img {
+    transform: rotate(180deg);
+}

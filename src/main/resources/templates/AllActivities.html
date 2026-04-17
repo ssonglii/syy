@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行安 - 活动列表</title>
+
+    <!-- XSS 防护引入（必须加在 jQuery 之后） -->
+    <script src="../static/js/jquery-1.8.3.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script src="../static/js/tools.js"></script>
+    <link rel="stylesheet" href="../static/css/down.css">
+    <script src="../static/js/syy.js"></script>
+
+    <style>
+        body {
+            margin-top:70px;
+            background-color: rgba(225, 234, 233, 0.23);
+        }
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        .navbar .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .navbar .logo span {
+            font-size: 24px;
+            line-height: 1;
+            font-weight: bold;
+            color: #333;
+        }
+        .navbar .logo img {
+            width: 32px;
+            height: 32px;
+            vertical-align: bottom;
+        }
+        .navbar .menu {
+            display: flex;
+            gap: 10px;
+        }
+        .navbar .menu a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        .navbar .menu a:hover {
+            background-color: #eee;
+        }
+        .navbar .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar .user .publish-btn {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .navbar .user .publish-btn:hover {
+            background-color: #f5f5f5;
+        }
+        .navbar .user .user-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .navbar .user .user-info img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+        .navbar .user .user-info span {
+            font-size: 14px;
+            color: #333;
+        }
+        .navbar .user .user-info i img {
+            width: 15px;
+            height: 15px;
+        }
+        .search-container {
+            display: flex;
+            align-items: center;
+            background-color: #dbe1e6;
+            border-radius: 20px;
+            padding: 6px 12px;
+            margin-left: 12px;
+            flex-grow: 1;
+            max-width: 400px;
+        }
+        .search-input {
+            flex-grow: 1;
+            border: none;
+            background-color: transparent;
+            padding: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+        .search-btn {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+        .search-btn i {
+            font-size: 16px;
+            color: #616161;
+        }
+        .section-header {
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .recommend-activities {
+            margin: 0 16px 40px;
+        }
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 16px;
+            padding-left: 12px;
+        }
+        .activity-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            justify-items: center;
+        }
+        .activity-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.3s;
+            width: 100%;
+            max-width: 350px;
+        }
+        .activity-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 191, 165, 0.1);
+        }
+        .activity-thumb {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        .activity-content {
+            padding: 16px;
+        }
+        .activity-type-tag {
+            display: inline-block;
+            background-color: rgba(0, 191, 165, 0.9);
+            color: white;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+        .activity-card-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            height: 48px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .activity-meta {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #616161;
+            margin-bottom: 12px;
+        }
+        .activity-meta i {
+            margin-right: 4px;
+            font-size: 14px;
+        }
+        .activity-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #616161;
+            margin-bottom: 16px;
+        }
+        .stats-item {
+            display: flex;
+            align-items: center;
+        }
+        .stats-item i {
+            margin-right: 4px;
+            font-size: 16px;
+        }
+        .location {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #616161;
+            margin-bottom: 16px;
+        }
+        .location i {
+            margin-right: 4px;
+            font-size: 16px;
+        }
+        .detail-btn {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            background-color: #FF9800;
+            color: white;
+            text-align: center;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .detail-btn:hover {
+            background-color: #F57C00;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .refresh-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s;
+        }
+        .refresh-btn:hover {
+            background-color: #e0e0e0;
+            border-color: #c9c9c9;
+        }
+        .refresh-btn i {
+            font-size: 16px;
+            color: #616161;
+        }
+        @media (max-width: 600px) {
+            .activity-list {
+                grid-template-columns: 1fr;
+            }
+            .activity-card {
+                max-width: none;
+            }
+        }
+        .like-img,
+        .favorite-img {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            transition: transform 0.3s, opacity 0.3s;
+            margin-left: 20px;
+        }
+        .like-img,
+        .favorite-img:hover {
+            transform: scale(1.1);
+            opacity: 0.8;
+        }
+        .like-img,
+        .favorite-img:active {
+            transform: scale(0.95);
+        }
+        .icon-tooltip {
+            position: relative;
+            display: inline-block;
+        }
+        .icon-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 4px 8px;
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+        }
+        .icon-tooltip:hover::after {
+            opacity: 1;
+            visibility: visible;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="navbar">
+        <div class="logo">
+            <img src="/static/image/img/Logo.png" alt="山友缘Logo">
+            <span>行安</span>
+        </div>
+        <div class="menu">
+            <a href="Index.html">首页</a>
+            <a href="AllActivities.html">活动</a>
+            <a href="Discover3.html">动态</a>
+        </div>
+        <div class="user">
+            <div class="user-info">
+                <img src="/static/image/img/游客.png" alt="用户头像">
+                <span>游客</span>
+                <i class="dropdown-trigger">
+                    <img src="/static/image/img/下拉.png" alt="下拉菜单图标">
+                </i>
+                <div class="dropdown-menu">
+                    <a href="MySpace.html" class="dropdown-item">我的</a>
+                    <a href="Login.html" class="dropdown-item ">切换账号</a>
+                    <a href="#" class="dropdown-item logout">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="recommend-activities">
+        <div class="section-header">
+            <h2 class="section-title">活动推荐</h2>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="搜索活动名称/类型" id="searchInput">
+                <button class="search-btn" onclick="searchActivities()">
+                    <i class="fa fa-search">搜索</i>
+                </button>
+            </div>
+        </div>
+        <div class="activity-list" id="activity-list"></div>
+    </div>
+</main>
+
+<script>
+    // ==============================================
+    // 1. 先写强制刷新逻辑，解决后退缓存问题（优先级最高）
+    // ==============================================
+    // 解决后退页面缓存导致的CSRF失效问题：强制页面刷新
+    window.addEventListener('pageshow', function(event) {
+        // 当页面从缓存加载（后退）时，强制刷新
+        if (event.persisted) {
+            console.log("页面从缓存加载，强制刷新");
+            window.location.reload();
+        }
+    });
+
+    // 同时禁用页面缓存，确保每次都是最新请求
+    if (window.history && window.history.pushState) {
+        window.history.pushState('forward', null, '');
+        window.addEventListener('popstate', function() {
+            window.history.pushState('forward', null, '');
+            window.location.reload();
+        });
+    }
+
+    // ==============================================
+    // 2. 等待CSRF_TOKEN加载完成后再执行页面初始化
+    // ==============================================
+    $(window).on('load', function() {
+        // 等待syy.js把CSRF_TOKEN初始化完成
+        let waitCSRF = setInterval(() => {
+            if (window.CSRF_TOKEN !== undefined && window.CSRF_TOKEN !== '') {
+                clearInterval(waitCSRF);
+                console.log("CSRF_TOKEN已就绪，开始加载活动数据");
+                findAllActivities(); // Token就绪后再请求数据
+            }
+        }, 50); // 每50ms检查一次，最多等2秒
+        setTimeout(() => clearInterval(waitCSRF), 2000);
+    });
+
+    // ==============================================
+    // 3. 修复findAllActivities：彻底删除错误的/csrf-token请求
+    // ==============================================
+    function findAllActivities(){
+        // 直接从window.CSRF_TOKEN获取（syy.js已经帮你拿到了）
+        const csrfToken = window.CSRF_TOKEN;
+        if (!csrfToken) {
+            console.error("CSRF_TOKEN未初始化，无法请求数据");
+            alert("页面加载异常，请刷新重试");
+            return;
+        }
+
+        $.ajax({
+            url: "findAllActivities",
+            type: "post",
+            dataType: "json",
+            contentType: "application/json;charset=UTF-8",
+            // 兼容Spring Security默认的CSRF请求头
+            headers: {
+                "X-XSRF-TOKEN": csrfToken,
+                "X-CSRF-Token": csrfToken // 双保险，同时传自定义头
+            },
+            cache: false, // 禁用Ajax缓存
+            success: function(response) {
+                console.log("获取活动数据成功:", response);
+                // 健壮化处理：先校验响应格式，再渲染
+                if (response && response.success === false) {
+                    console.error("CSRF校验失败:", response.message);
+                    alert("页面已过期，正在刷新...");
+                    window.location.reload();
+                    return;
+                }
+                // 确保response是数组
+                const activities = Array.isArray(response) ? response : [];
+                renderRecommendActivities(activities);
+            },
+            error: function(xhr, status, error) {
+                console.error("获取活动数据失败:", status, error, xhr.responseText);
+                // 403 通常是CSRF失效，直接刷新页面
+                if (xhr.status === 403) {
+                    alert("页面已过期，正在刷新...");
+                    window.location.reload();
+                } else {
+                    alert("获取活动数据失败: " + error);
+                }
+            }
+        });
+    }
+
+    // ==============================================
+    // 4. 日期格式化函数（保持不变）
+    // ==============================================
+    function formatDate(dateStr) {
+        if (!dateStr) return "未知时间";
+        if (dateStr.length === 10) {
+            dateStr += " 00:00:00";
+        }
+        const isoDateStr = dateStr.replace(' ', 'T') + 'Z';
+        const date = new Date(isoDateStr);
+        if (isNaN(date.getTime())) {
+            console.warn("无效的日期格式:", dateStr);
+            return dateStr;
+        }
+        return date.toLocaleString("zh-CN", {
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    // ==============================================
+    // 5. XSS安全渲染函数（保持不变，已修复forEach问题）
+    // ==============================================
+    function renderRecommendActivities(activities) {
+        const activityList = document.getElementById("activity-list");
+        activityList.innerHTML = "";
+
+        // 强制确保activities是数组，避免forEach报错
+        if (!Array.isArray(activities)) {
+            console.error("活动数据不是数组:", activities);
+            activityList.innerHTML = `<div class="no-activities">暂无活动数据</div>`;
+            return;
+        }
+
+        if (activities.length === 0) {
+            activityList.innerHTML = `<div class="no-activities">暂无活动数据</div>`;
+            return;
+        }
+
+        activities.forEach(activity => {
+            console.log("渲染活动:", activity);
+
+            // XSS 净化所有用户可编辑内容
+            const safeImg = DOMPurify.sanitize(activity.aimg || '/static/default-activity.png');
+            const safeTitle = DOMPurify.sanitize(activity.atitle || '未命名活动');
+            const safeType = DOMPurify.sanitize(activity.type || '未知类型');
+            const safeLocation = DOMPurify.sanitize(activity.location || '未指定地点');
+
+            const card = document.createElement("div");
+            card.className = "activity-card";
+            card.innerHTML = `
+            <img src="${safeImg}" alt="${safeTitle}" class="activity-thumb">
+            <div class="activity-content">
+                <span class="activity-type-tag">${safeType}</span>
+                <h3 class="activity-card-title">${safeTitle}</h3>
+                <div class="activity-meta">
+                    <i class="fa fa-calendar-o"></i>
+                    <span>${formatDate(activity.start_time)}</span>
+                </div>
+                <div class="location">
+                    <i class="fa fa-map-marker"></i>
+                    <span>${safeLocation}</span>
+                </div>
+                <div class="activity-stats">
+                    <div class="stats-item">
+                        <i class="fa fa-heart-o"></i>
+                        <span>
+                            <div class="icon-tooltip" data-aid="${activity.aid}" data-action="like" id="like-container-${activity.aid}">
+                            <img class="like-img" id="like-img-${activity.aid}" src="" >
+                            <span class="like-count">${activity.likes || 0}</span>
+                            </div>
+                        </span>
+                    </div>
+                    <div class="stats-item">
+                        <i class="fa fa-bookmark-o"></i>
+                        <span>
+                            <div class="icon-tooltip" data-aid="${activity.aid}" data-action="favorite" id="favorite-container-${activity.aid}">
+                            <img class="favorite-img" id="favorite-img-${activity.aid}" src="">
+                            <span class="favorite-count">${activity.collections || 0}</span>
+                            </div>
+                        </span>
+                    </div>
+                </div>
+                <button class="detail-btn">了解详情</button>
+            </div>
+        `;
+
+            const detailBtn = card.querySelector('.detail-btn');
+            detailBtn.addEventListener('click', () => {
+                if (activity.aid) {
+                    window.location.href = `ActivityDetails.html?aid=${activity.aid}&atitle=${encodeURIComponent(safeTitle)}`;
+                } else {
+                    alert("活动ID缺失，无法查看详情");
+                }
+            });
+
+            activityList.appendChild(card);
+
+            if (activity.aid) {
+                isLiked1(activity.aid);
+                isCollected1(activity.aid);
+            }
+        });
+
+        activityList.addEventListener('click', function(e) {
+            const target = e.target.closest('.icon-tooltip[data-action]');
+            if (!target) return;
+            const aid = target.dataset.aid;
+            const action = target.dataset.action;
+            if (action === 'like') likeActivity0(aid);
+            else if (action === 'favorite') favoriteActivity0(aid);
+        });
+    }
+
+    // ==============================================
+    // 6. 修复searchActivities：同步CSRF逻辑
+    // ==============================================
+    function searchActivities(){
+        const keyword = document.getElementById("searchInput").value.trim();
+        if (!keyword) {
+            findAllActivities();
+            return;
+        }
+
+        const csrfToken = window.CSRF_TOKEN;
+        if (!csrfToken) {
+            alert("页面加载异常，请刷新重试");
+            return;
+        }
+
+        $.ajax({
+            url: "findAllActivities0",
+            type: "post",
+            dataType: "json",
+            contentType: "application/json;charset=UTF-8",
+            headers: {
+                "X-XSRF-TOKEN": csrfToken,
+                "X-CSRF-Token": csrfToken
+            },
+            cache: false,
+            data: JSON.stringify({ keyword: keyword }),
+            success: function(response) {
+                if (response && response.success === false) {
+                    console.error("CSRF校验失败:", response.message);
+                    alert("页面已过期，正在刷新...");
+                    window.location.reload();
+                    return;
+                }
+                const activities = Array.isArray(response) ? response : [];
+                renderRecommendActivities(activities);
+            },
+            error: function(xhr, status, error) {
+                if (xhr.status === 403) {
+                    alert("页面已过期，正在刷新...");
+                    window.location.reload();
+                } else {
+                    alert("搜索失败: " + error);
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

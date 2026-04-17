@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>行安 - 我的收藏</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <!-- Tailwind 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#36CFC9',
+            accent: '#FF7D00',
+            dark: '#1D2129',
+            light: '#F2F3F5'
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-shadow {
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+      }
+      .card-hover {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(22, 93, 255, 0.1);
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+      }
+      .animate-slide-up {
+        animation: slideUp 0.5s ease-out;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 font-inter text-dark">
+<!-- 顶部导航栏 -->
+<header class="sticky top-0 z-50 bg-white shadow-sm transition-all duration-300">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16 md:h-20">
+      <!-- Logo 和标题 -->
+      <div class="flex items-center space-x-2">
+        <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+          <i class="fa fa-mountain text-white text-xl"></i>
+        </div>
+        <span class="text-xl font-bold text-dark">行安</span>
+      </div>
+
+      <!-- 主导航 - 桌面端 -->
+      <nav class="hidden md:flex items-center space-x-8">
+        <a href="#" class="text-dark hover:text-primary transition-colors">首页</a>
+        <a href="#" class="text-dark hover:text-primary transition-colors">活动</a>
+        <a href="#" class="text-dark hover:text-primary transition-colors">动态</a>
+        <a href="#" class="text-primary font-medium border-b-2 border-primary pb-1">我的收藏</a>
+        <a href="#" class="text-dark hover:text-primary transition-colors">社区</a>
+      </nav>
+
+      <!-- 用户区域 -->
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <button class="w-10 h-10 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
+            <img src="https://picsum.photos/id/64/200/200" alt="用户头像" class="w-full h-full object-cover">
+          </button>
+        </div>
+
+        <!-- 移动端菜单按钮 -->
+        <button class="md:hidden text-dark hover:text-primary transition-colors" id="mobileMenuBtn">
+          <i class="fa fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 移动端导航菜单 -->
+  <div class="md:hidden hidden bg-white shadow-lg absolute w-full animate-fade-in" id="mobileMenu">
+    <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+      <a href="#" class="text-dark hover:text-primary py-2 transition-colors">首页</a>
+      <a href="#" class="text-dark hover:text-primary py-2 transition-colors">活动</a>
+      <a href="#" class="text-dark hover:text-primary py-2 transition-colors">动态</a>
+      <a href="#" class="text-primary font-medium py-2">我的收藏</a>
+      <a href="#" class="text-dark hover:text-primary py-2 transition-colors">社区</a>
+    </div>
+  </div>
+</header>
+
+<!-- 主内容区 -->
+<main class="container mx-auto px-4 py-8">
+  <!-- 页面标题 -->
+  <div class="mb-8 animate-fade-in">
+    <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark">我的收藏</h1>
+    <p class="text-gray-500 mt-2">这里是您收藏的精彩内容，随时可以查看和管理</p>
+  </div>
+
+    <!-- 筛选和搜索区域 -->
+    <div class="bg-white rounded-xl p-4 mb-8 shadow-sm animate-slide-up" style="animation-delay: 0.1s">
+      <!-- 内容板块切换 -->
+      <div class="flex flex-wrap gap-2 mb-4">
+        <button class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium transition-all hover:bg-primary/90" id="toggleEvents">
+          <i class="fa fa-calendar mr-1"></i> 活动
+        </button>
+        <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200" id="togglePosts">
+          <i class="fa fa-file-text-o mr-1"></i> 动态
+        </button>
+      </div>
+
+    <!-- 活动分类筛选 -->
+    <div class="flex flex-wrap gap-2 mb-4" id="eventsCategories">
+      <button class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium transition-all hover:bg-primary/90">全部活动</button>
+      <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200">日常登山</button>
+      <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200">露营活动</button>
+      <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200">中长途旅行</button>
+      <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200">户外探险</button>
+      <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200">技能培训</button>
+    </div>
+
+    <!-- 动态分类筛选 -->
+    <div class="flex flex-wrap gap-2 mb-4 hidden" id="postsCategories">
+      <button class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium transition-all hover:bg-primary/90">全部动态</button>
+      <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200">装备测评</button>
+      <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200">户外知识</button>
+      <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200">旅行游记</button>
+      <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200">风景摄影</button>
+      <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium transition-all hover:bg-gray-200">经验分享</button>
+    </div>
+
+    <!-- 搜索框 -->
+    <div class="relative w-full md:w-64 lg:w-80">
+      <input type="text" placeholder="搜索收藏内容..." class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+      <i class="fa fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+    </div>
+  </div>
+
+  <!-- 收藏内容列表 -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="collectionList">
+    <!-- 活动类收藏卡片 1 -->
+    <div class="bg-white rounded-xl overflow-hidden card-shadow card-hover animate-slide-up" style="animation-delay: 0.2s" data-type="event" data-category="daily">
+      <div class="relative h-48 overflow-hidden">
+        <img src="https://picsum.photos/id/10/800/600" alt="雪山风景" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+        <div class="absolute top-3 right-3">
+          <button class="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-red-500 hover:bg-white transition-all">
+            <i class="fa fa-heart"></i>
+          </button>
+        </div>
+        <div class="absolute top-3 left-3">
+          <span class="px-2 py-1 bg-primary/90 text-white text-xs rounded-full backdrop-blur-sm">活动</span>
+        </div>
+      </div>
+      <div class="p-5">
+        <div class="flex items-center mb-3">
+          <img src="https://picsum.photos/id/64/100/100" alt="用户头像" class="w-8 h-8 rounded-full object-cover">
+          <span class="ml-2 text-sm font-medium text-gray-700">登山爱好者</span>
+          <span class="ml-auto text-xs text-gray-500">2023-05-12</span>
+        </div>
+        <h3 class="font-bold text-lg mb-2 line-clamp-1">川西雪山徒步路线推荐：四姑娘山三峰登顶</h3>
+        <p class="text-gray-600 text-sm mb-4 line-clamp-2">分享我的四姑娘山三峰登顶经历，详细路线、装备清单和注意事项，适合有一定经验的登山爱好者...</p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+              <i class="fa fa-comment-o mr-1"></i>
+              <span class="text-xs">128</span>
+            </button>
+            <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+              <i class="fa fa-share-alt mr-1"></i>
+              <span class="text-xs">45</span>
+            </button>
+          </div>
+          <span class="text-xs text-gray-500">日常登山</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 活动类收藏卡片 2 -->
+    <div class="bg-white rounded-xl overflow-hidden card-shadow card-hover animate-slide-up" style="animation-delay: 0.3s" data-type="event" data-category="camping">
+      <div class="relative h-48 overflow-hidden">
+        <img src="https://picsum.photos/id/50/800/600" alt="露营装备" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+        <div class="absolute top-3 right-3">
+          <button class="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-red-500 hover:bg-white transition-all">
+            <i class="fa fa-heart"></i>
+          </button>
+        </div>
+        <div class="absolute top-3 left-3">
+          <span class="px-2 py-1 bg-primary/90 text-white text-xs rounded-full backdrop-blur-sm">活动</span>
+        </div>
+      </div>
+      <div class="p-5">
+        <div class="flex items-center mb-3">
+          <img src="https://picsum.photos/id/68/100/100" alt="用户头像" class="w-8 h-8 rounded-full object-cover">
+          <span class="ml-2 text-sm font-medium text-gray-700">露营达人</span>
+          <span class="ml-auto text-xs text-gray-500">2023-09-02</span>
+        </div>
+        <h3 class="font-bold text-lg mb-2 line-clamp-1">冬季露营装备清单：零下15度也能舒适过夜</h3>
+        <p class="text-gray-600 text-sm mb-4 line-clamp-2">分享我在冬季露营的经验和装备清单，包括睡袋、帐篷、睡垫、服装等关键装备的选择和使用技巧...</p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+              <i class="fa fa-comment-o mr-1"></i>
+              <span class="text-xs">143</span>
+            </button>
+            <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+              <i class="fa fa-share-alt mr-1"></i>
+              <span class="text-xs">67</span>
+            </button>
+          </div>
+          <span class="text-xs text-gray-500">露营活动</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 活动类收藏卡片 3 -->
+    <div class="bg-white rounded-xl overflow-hidden card-shadow card-hover animate-slide-up" style="animation-delay: 0.4s" data-type="event" data-category="long-trip">
+      <div class="relative h-48 overflow-hidden">
+        <img src="https://picsum.photos/id/60/800/600" alt="雪山风景" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+        <div class="absolute top-3 right-3">
+          <button class="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-red-500 hover:bg-white transition-all">
+            <i class="fa fa-heart"></i>
+          </button>
+        </div>
+        <div class="absolute top-3 left-3">
+          <span class="px-2 py-1 bg-primary/90 text-white text-xs rounded-full backdrop-blur-sm">活动</span>
+        </div>
+      </div>
+      <div class="p-5">
+        <div class="flex items-center mb-3">
+          <img src="https://picsum.photos/id/69/100/100" alt="用户头像" class="w-8 h-8 rounded-full object-cover">
+          <span class="ml-2 text-sm font-medium text-gray-700">雪山探险者</span>
+          <span class="ml-auto text-xs text-gray-500">2023-10-18</span>
+        </div>
+        <h3 class="font-bold text-lg mb-2 line-clamp-1">贡嘎雪山徒步：从冷嘎措到子梅垭口的绝美旅程</h3>
+        <p class="text-gray-600 text-sm mb-4 line-clamp-2">记录了我从冷嘎措到子梅垭口的徒步之旅，欣赏到了贡嘎雪山的壮丽景色，分享行程安排和拍摄机位...</p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+              <i class="fa fa-comment-o mr-1"></i>
+              <span class="text-xs">207</span>
+            </button>
+            <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+              <i class="fa fa-share-alt mr-1"></i>
+              <span class="text-xs">112</span>
+            </button>
+          </div>
+          <span class="text-xs text-gray-500">中长途旅行</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 动态类收藏卡片 1 -->
+    <div class="bg-white rounded-xl overflow-hidden card-shadow card-hover animate-slide-up" style="animation-delay: 0.5s" data-type="post" data-category="gear-review">
+      <div class="relative h-48 overflow-hidden">
+        <img src="https://picsum.photos/id/20/800/600" alt="登山装备" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+        <div class="absolute top-3 right-3">
+          <button class="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-red-500 hover:bg-white transition-all">
+            <i class="fa fa-heart"></i>
+          </button>
+        </div>
+        <div class="absolute top-3 left-3">
+          <span class="px-2 py-1 bg-secondary/90 text-white text-xs rounded-full backdrop-blur-sm">动态</span>
+        </div>
+      </div>
+      <div class="p-5">
+        <div class="flex items-center mb-3">
+          <img src="https://picsum.photos/id/65/100/100" alt="用户头像" class="w-8 h-8 rounded-full object-cover">
+          <span class="ml-2 text-sm font-medium text-gray-700">装备控</span>
+          <span class="ml-auto text-xs text-gray-500">2023-06-05</span>
+        </div>
+        <h3 class="font-bold text-lg mb-2 line-clamp-1">2023年最新款登山鞋测评：从入门到专业级</h3>
+        <p class="text-gray-600 text-sm mb-4 line-clamp-2">经过半年的测试，我对比了市面上10款主流登山鞋，从舒适性、支撑性、防水性等多个维度进行了详细测评...</p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+              <i class="fa fa-comment-o mr-1"></i>
+              <span class="text-xs">96</span>
+            </button>
+            <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+              <i class="fa fa-share-alt mr-1"></i>
+              <span class="text-xs">78</span>
+            </button>
+          </div>
+          <span class="text-xs text-gray-500">装备测评</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 动态类收藏卡片 2 -->
+    <div class="bg-white rounded-xl overflow-hidden card-shadow card-hover animate-slide-up" style="animation-delay: 0.6s" data-type="post" data-category="knowledge">
+      <div class="relative h-48 overflow-hidden">
+        <img src="https://picsum.photos/id/30/800/600" alt="户外风景" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+        <div class="absolute top-3 right-3">
+          <button class="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-red-500 hover:bg-white transition-all">
+            <i class="fa fa-heart"></i>
+          </button>
+        </div>
+        <div class="absolute top-3 left-3">
+          <span class="px-2 py-1 bg-secondary/90 text-white text-xs rounded-full backdrop-blur-sm">动态</span>
+        </div>
+      </div>
+      <div class="p-5">
+        <div class="flex items-center mb-3">
+          <img src="https://picsum.photos/id/66/100/100" alt="用户头像" class="w-8 h-8 rounded-full object-cover">
+          <span class="ml-2 text-sm font-medium text-gray-700">山野摄影师</span>
+          <span class="ml-auto text-xs text-gray-500">2023-07-21</span>
+        </div>
+        <h3 class="font-bold text-lg mb-2 line-clamp-1">如何在山区拍摄出绝美的日出云海照片？</h3>
+        <p class="text-gray-600 text-sm mb-4 line-clamp-2">分享我在山区拍摄日出云海的经验，包括器材选择、拍摄位置、参数设置以及后期处理技巧，让你的照片脱颖而出...</p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+              <i class="fa fa-comment-o mr-1"></i>
+              <span class="text-xs">215</span>
+            </button>
+            <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+              <i class="fa fa-share-alt mr-1"></i>
+              <span class="text-xs">132</span>
+            </button>
+          </div>
+          <span class="text-xs text-gray-500">户外知识</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 动态类收藏卡片 3 -->
+    <div class="bg-white rounded-xl overflow-hidden card-shadow card-hover animate-slide-up" style="animation-delay: 0.7s" data-type="post" data-category="travel-story">
+      <div class="relative h-48 overflow-hidden">
+        <img src="https://picsum.photos/id/40/800/600" alt="徒步路线" class="w-full h-full object-cover transition-transform duration-700 hover:scale-110">
+        <div class="absolute top-3 right-3">
+          <button class="w-8 h-8 rounded-full bg-white/80 backdrop-blur-sm flex items-center justify-center text-red-500 hover:bg-white transition-all">
+            <i class="fa fa-heart"></i>
+          </button>
+        </div>
+        <div class="absolute top-3 left-3">
+          <span class="px-2 py-1 bg-secondary/90 text-white text-xs rounded-full backdrop-blur-sm">动态</span>
+        </div>
+      </div>
+      <div class="p-5">
+        <div class="flex items-center mb-3">
+          <img src="https://picsum.photos/id/67/100/100" alt="用户头像" class="w-8 h-8 rounded-full object-cover">
+          <span class="ml-2 text-sm font-medium text-gray-700">徒步旅行者</span>
+          <span class="ml-auto text-xs text-gray-500">2023-08-15</span>
+        </div>
+        <h3 class="font-bold text-lg mb-2 line-clamp-1">梅里雪山外转经路线全攻略：12天经典徒步</h3>
+        <p class="text-gray-600 text-sm mb-4 line-clamp-2">详细记录了我完成梅里雪山外转经的全过程，包括路线规划、住宿安排、装备清单、高反应对等实用信息...</p>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+              <i class="fa fa-comment-o mr-1"></i>
+              <span class="text-xs">189</span>
+            </button>
+            <button class="flex items-center text-gray-500 hover:text-primary transition-colors">
+              <i class="fa fa-share-alt mr-1"></i>
+              <span class="text-xs">95</span>
+            </button>
+          </div>
+          <span class="text-xs text-gray-500">旅行游记</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 加载更多 -->
+  <div class="mt-12 text-center animate-slide-up" style="animation-delay: 0.8s">
+    <button id="loadMoreBtn" class="px-8 py-3 bg-white border border-primary text-primary rounded-lg font-medium transition-all hover:bg-primary hover:text-white">
+      加载更多
+      <i class="fa fa-angle-down ml-2"></i>
+    </button>
+  </div>
+</main>
+
+<!-- 页脚 -->
+<footer class="bg-dark text-white py-12 mt-16">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div>
+        <div class="flex items-center space-x-2 mb-4">
+          <div class="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+            <i class="fa fa-mountain text-white text-xl"></i>
+          </div>
+          <span class="text-xl font-bold">山友缘</span>
+        </div>
+        <p class="text-gray-400 text-sm">探索自然，结交志同道合的朋友，一起踏上难忘的户外旅程。</p>
+      </div>
+
+      <div>
+        <h4 class="text-lg font-medium mb-4">快速链接</h4>
+        <ul class="space-y-2">
+          <li><a href="#" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white transition-colors">活动</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white transition-colors">动态</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white transition-colors">我的收藏</a></li>
+          <li><a href="#" class="text-gray-400 hover:text-white transition-colors">社区</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-lg font-medium mb-4">联系我们</h4>
+        <ul class="space-y-2">
+          <li class="flex items-center">
+            <i class="fa fa-envelope-o mr-2 text-gray-400"></i>
+            <a href="mailto:contact@example.com" class="text-gray-400 hover:text-white transition-colors">contact@example.com</a>
+          </li>
+          <li class="flex items-center">
+            <i class="fa fa-phone mr-2 text-gray-400"></i>
+            <span class="text-gray-400">400-123-4567</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fa fa-map-marker mr-2 text-gray-400"></i>
+            <span class="text-gray-400">北京市海淀区中关村南大街5号</span>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-lg font-medium mb-4">关注我们</h4>
+        <div class="flex space-x-4">
+          <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all">
+            <i class="fa fa-weixin"></i>
+          </a>
+          <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all">
+            <i class="fa fa-weibo"></i>
+          </a>
+          <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all">
+            <i class="fa fa-instagram"></i>
+          </a>
+          <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all">
+            <i class="fa fa-youtube-play"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-500 text-sm">
+      <p>&copy; 2023 山友缘户外社区. 保留所有权利.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- JavaScript -->
+<script>
+  // 移动端菜单切换
+  document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+    const mobileMenu = document.getElementById('mobileMenu');
+    mobileMenu.classList.toggle('hidden');
+  });
+
+  // 滚动时导航栏效果
+  window.addEventListener('scroll', function() {
+    const header = document.querySelector('header');
+    if (window.scrollY > 10) {
+      header.classList.add('shadow-md');
+      header.classList.add('bg-white/95');
+      header.classList.add('backdrop-blur-sm');
+    } else {
+      header.classList.remove('shadow-md');
+      header.classList.remove('bg-white/95');
+      header.classList.remove('backdrop-blur-sm');
+    }
+  });
+
+  // 活动/动态板块切换
+  document.getElementById('toggleEvents').addEventListener('click', function() {
+    // 切换按钮样式
+    this.classList.remove('bg-gray-100', 'text-gray-700');
+    this.classList.add('bg-primary', 'text-white');
+
+    document.getElementById('togglePosts').classList.remove('bg-primary', 'text-white');
+    document.getElementById('togglePosts').classList.add('bg-gray-100', 'text-gray-700');
+
+    // 显示活动分类，隐藏动态分类
+    document.getElementById('eventsCategories').classList.remove('hidden');
+    document.getElementById('postsCategories').classList.add('hidden');
+
+    // 显示所有活动类卡片，隐藏动态类卡片
+    filterCollectionItems('event');
+  });
+
+  document.getElementById('togglePosts').addEventListener('click', function() {
+    // 切换按钮样式
+    this.classList.remove('bg-gray-100', 'text-gray-700');
+    this.classList.add('bg-primary', 'text-white');
+
+    document.getElementById('toggleEvents').classList.remove('bg-primary', 'text-white');
+    document.getElementById('toggleEvents').classList.add('bg-gray-100', 'text-gray-700');
+
+    // 隐藏活动分类，显示动态分类
+    document.getElementById('eventsCategories').classList.add('hidden');
+    document.getElementById('postsCategories').classList.remove('hidden');
+
+    // 显示所有动态类卡片，隐藏活动类卡片
+    filterCollectionItems('post');
+  });
+
+  // 分类筛选功能
+  document.querySelectorAll('#eventsCategories button, #postsCategories button').forEach(button => {
+    button.addEventListener('click', function() {
+      // 重置当前容器中所有按钮样式
+      const parentContainer = this.closest('.flex');
+      parentContainer.querySelectorAll('button').forEach(btn => {
+        btn.classList.remove('bg-primary', 'text-white');
+        btn.classList.add('bg-gray-100', 'text-gray-700');
+      });
+
+      // 设置当前按钮样式
+      this.classList.remove('bg-gray-100', 'text-gray-700');
+      this.classList.add('bg-primary', 'text-white');
+
+      // 获取当前选中的分类
+      let category = this.textContent.trim();
+
+      // 确定当前显示的内容类型（活动或动态）
+      const contentType = document.getElementById('eventsCategories').classList.contains('hidden') ? 'post' : 'event';
+
+      // 根据分类筛选内容
+      filterCollectionItems(contentType, category);
+    });
+  });
+
+  // 内容筛选函数
+  function filterCollectionItems(type, category = '全部活动') {
+    const cards = document.querySelectorAll('#collectionList > div');
+
+    // 处理特殊情况：动态的"全部动态"
+    if (type === 'post' && category === '全部活动') {
+      category = '全部动态';
+    }
+
+    cards.forEach(card => {
+      // 检查卡片类型
+      const cardType = card.getAttribute('data-type');
+      const cardCategory = card.getAttribute('data-category');
+
+      // 映射卡片分类到显示文本
+      const categoryMap = {
+        // 活动分类映射
+        'daily': '日常登山',
+        'camping': '露营活动',
+        'long-trip': '中长途旅行',
+        'adventure': '户外探险',
+        'training': '技能培训',
+
+        // 动态分类映射
+        'gear-review': '装备测评',
+        'knowledge': '户外知识',
+        'travel-story': '旅行游记',
+        'photography': '风景摄影',
+        'experience': '经验分享'
+      };
+
+      const displayCategory = categoryMap[cardCategory] || '全部活动';
+
+      // 如果是"全部"类别，则显示所有该类型的卡片
+      if (category === '全部活动' || category === '全部动态') {
+        if (cardType === type) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      }
+      // 否则，只显示匹配类型和分类的卡片
+      else {
+        if (cardType === type && displayCategory === category) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      }
+    });
+  }
+
+  // 搜索功能
+  const searchInput = document.querySelector('input[placeholder="搜索收藏内容..."]');
+  searchInput.addEventListener('input', function() {
+    const searchTerm = this.value.toLowerCase().trim();
+    const cards = document.querySelectorAll('#collectionList > div');
+
+    cards.forEach(card => {
+      const title = card.querySelector('h3').textContent.toLowerCase();
+      const content = card.querySelector('p').textContent.toLowerCase();
+
+      if (title.includes(searchTerm) || content.includes(searchTerm)) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+
+  // 加载更多功能
+  document.getElementById('loadMoreBtn').addEventListener('click', function() {
+    // 模拟加载更多内容
+    this.innerHTML = '<i class="fa fa-spinner fa-spin mr-2"></i> 加载中...';
+
+    // 延迟1秒后添加新内容
+    setTimeout(() => {
+      // 重置按钮文本
+      this.innerHTML = '加载更多 <i class="fa fa-angle-down ml-2"></i>';
+
+      // 这里可以添加实际的加载更多逻辑
+      // 为了演示，我们可以简单地复制现有卡片
+      const collectionList = document.getElementById('collectionList');
+      const cards = document.querySelectorAll('#collectionList > div');
+
+      // 只复制当前可见的卡片
+      const visibleCards = Array.from(cards).filter(card => card.style.display !== 'none');
+
+      if (visibleCards.length === 0) {
+        // 如果没有可见卡片，复制所有卡片
+        visibleCards.push(...cards);
+      }
+
+      // 随机选择一些卡片进行复制
+      for (let i = 0; i < Math.min(3, visibleCards.length); i++) {
+        const randomIndex = Math.floor(Math.random() * visibleCards.length);
+        const clone = visibleCards[randomIndex].cloneNode(true);
+
+        // 重置动画样式
+        clone.classList.remove('animate-slide-up');
+        clone.style.animationDelay = '0s';
+
+        // 添加到列表末尾
+        collectionList.appendChild(clone);
+
+        // 添加动画效果
+        setTimeout(() => {
+          clone.classList.add('animate-slide-up');
+          clone.style.animationDelay = '0.2s';
+        }, 50);
+      }
+    }, 1000);
+  });
+</script>
+</body>
+</html>

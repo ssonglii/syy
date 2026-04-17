@@ -1,0 +1,211 @@
+
+
+/* 导航栏样式 */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+}
+
+/*aaaa*/
+.navbar .logo {
+    /* 保持原本的 inline 或 inline-block 布局（如果没开 flex 的话） */
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.navbar .logo span {
+    font-size: 24px;
+    line-height: 1; /* 避免行高干扰 */
+    font-weight: bold;
+    color: #333;
+}
+
+.navbar .logo img {
+    width: 32px;
+    height: 32px;
+    /* 关键：强制图片底部与文字基线对齐 */
+    vertical-align: bottom;
+}
+/*aaaa*/
+.navbar .menu {
+    display: flex;
+    gap: 10px;
+}
+.navbar .user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.navbar .menu a {
+    text-decoration: none;
+    color: #333;
+    padding: 5px 10px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.navbar .menu a:hover {
+    background-color: #eee;
+}
+
+
+
+.navbar .user .publish-btn {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 6px 12px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.navbar .user .publish-btn:hover {
+    background-color: #f5f5f5;
+}
+
+.navbar .user .user-info {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.navbar .user .user-info img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+}
+
+.navbar .user .user-info span {
+    font-size: 14px;
+    color: #333;
+}
+
+/*导航下拉图标*/
+.navbar .user .user-info i img {
+    width: 15px;
+    height: 15px;
+}
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    margin-top:90px;
+    padding: 20px;
+}
+
+.tb1 {
+    width: 100%;
+    max-width: 600px;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.tb1 td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.tb1 td:first-child {
+    width: 120px;
+    text-align: right;
+    padding-right: 10px;
+}
+
+.tb1 input[type="text"],
+.tb1 input[type="file"] {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.bt input[type="button"],
+.bt input[type="reset"] {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.bt input[type="button"] {
+    background-color: #4CAF50; /* Green */
+    color: white;
+}
+
+.bt #shanchu {
+    background-color: #f44336; /* Red */
+    color: white;
+}
+body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f5f5f5; /* 可选背景色 */
+}
+
+.container {
+    text-align: center; /* 表格在容器内居中 */
+    width: 100%; /* 使容器宽度沾满屏幕 */
+    max-width: 600px; /* 限制最大宽度 */
+}
+
+.tb1 {
+    width:100%;
+    border-collapse: collapse;
+}
+
+.tb1 td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    vertical-align: top; /* 垂直对齐，使多行文本输入框对齐 */
+}
+
+.tb1 td:first-child {
+    width: 120px;
+    text-align: right;
+    padding-right: 10px;
+}
+
+.tb1 input[type="text"],
+.tb1 input[type="file"] {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.tb1 textarea {
+    width: 500px; /* 宽度100% */
+    height: 130px; /* 高度设置为合适值，或根据需要自动调整 */
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    resize: vertical; /* 允许垂直调整大小 */
+    overflow: auto; /* 内容过多时自动出现滚动条 */
+}
+
+.bt input[type="button"],
+.bt input[type="reset"] {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+.tzphoto{
+    width: 250px;
+    height: auto;
+}

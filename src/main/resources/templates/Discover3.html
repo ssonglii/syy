@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/down.css">
+    <title>行安 - 动态社区</title>
+    <script src="../static/js/jquery-1.8.3.js"></script>
+    <!-- XSS 防护核心库 -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script src="../static/js/syy.js"></script>
+    <style>
+        .search-filter-bar {
+            max-width: 1170px;
+            margin: 0 auto;
+            padding: 16px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            margin-bottom: 24px;
+        }
+
+        .search-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            max-width: 600px;
+        }
+
+        #searchInput {
+            flex-grow: 1;
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        #searchBtn {
+            padding: 8px 24px;
+            background-color: #165dff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #searchBtn:hover {
+            background-color: #0e47c4;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+            background-color: #fff;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            border-color: #165dff;
+            color: #165dff;
+            font-weight: bold;
+            background-color: #f5f8ff;
+        }
+        /* 点赞/收藏图标样式 */
+        .action .like-icon {
+            width: 20px;
+            height: 20px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            margin-right: 4px;
+        }
+        .action .like-icon.liked { background-image: url('/static/image/img/爱心_粉.png'); }
+        .action .like-icon.unliked { background-image: url('/static/image/img/爱心_空.png'); }
+
+        .action .collect-icon {
+            width: 24px;
+            height: 24px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            margin-right: 4px;
+        }
+        .action .collect-icon.collected { background-image: url('/static/image/img/星星.png'); }
+        .action .collect-icon.uncollected { background-image: url('/static/image/img/收藏8.png'); }
+        .action .comment-icon {
+            width: 20px;
+            height: 20px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            margin-right: 4px;
+            display: inline-block; /* 确保图标与文字同行 */
+        }
+        /* 点击时图标动画（可选） */
+        .action:hover i { transform: scale(1.1); }
+
+        .post-media {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            max-height: 200px;
+            overflow: hidden;
+            align-items: flex-start;
+        }
+
+        /* 统一图片和视频容器的布局规则 */
+        .post-media > img,
+        .post-media > .video-cover {
+            /* 核心：和纯图片保持完全一致的 flex 规则 */
+            flex: 1 1 calc(25% - 6px); /* 一行最多3个 */
+            max-width: calc(30% - 6px);
+            border-radius: 4px;
+            height: 160px; /* 固定高度，和纯图片一致 */
+            object-fit: cover;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* 视频封面图填满容器，不设固定宽度 */
+        .post-media > .video-cover > img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover;
+            display: block;
+        }
+
+        .more-images {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+            font-size: 14px;
+            border-radius: 4px;
+            max-width: 100px;
+            height: 100px;
+            cursor: pointer;
+        }
+        /* 全局样式重置与基础设置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "微软雅黑", sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            padding-top: 90px; /* 避开顶部固定导航 */
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .navbar .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .navbar .logo span {
+            font-size: 24px;
+            line-height: 1;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .navbar .logo img {
+            width: 32px;
+            height: 32px;
+            vertical-align: bottom;
+        }
+
+        .navbar .menu {
+            display: flex;
+            gap: 10px;
+        }
+
+        .navbar .menu a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .menu a:hover {
+            background-color: #eee;
+        }
+
+        .navbar .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar .user .publish-btn {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .user .publish-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .navbar .user .user-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .navbar .user .user-info img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .navbar .user .user-info span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /*导航下拉图标*/
+        .navbar .user .user-info i img {
+            width: 15px;
+            height: 15px;
+        }
+        /* 动态列表容器样式 */
+        .dynamic-container {
+            max-width: 1200px;
+            margin: 24px auto;
+            padding: 0 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .user-info img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        /* 单个动态帖子样式 */
+        .post {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .post:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .post a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .post h2 {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .post-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 12px;
+        }
+
+        .post-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-username {
+            font-weight: bold;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .post-time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .post-content {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .post-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            color: #999;
+            font-size: 13px;
+        }
+
+        .post-actions .left {
+            display: flex;
+            gap: 16px;
+        }
+
+        .post-actions .action {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            transition: color 0.2s;
+        }
+
+        .post-actions .action:hover {
+            color: #165dff;
+        }
+
+        .post-actions .action i {
+            margin-right: 4px;
+        }
+
+        /* 加载更多按钮样式 */
+        .load-more {
+            text-align: center;
+            margin: 24px 0;
+        }
+
+        .load-more button {
+            background: #165dff;
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .load-more button:hover {
+            opacity: 0.9;
+        }
+
+        .load-more button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 768px) {
+            .dynamic-container {
+                padding: 0 12px;
+            }
+
+            .post h2 {
+                font-size: 16px;
+            }
+
+            .post-content {
+                font-size: 13px;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+<!-- 顶部导航栏 -->
+<header>
+    <div class="navbar">
+        <div class="logo">
+            <img src="/static/image/img/Logo.png" alt="山友缘Logo">
+            <span>行安</span>
+        </div>
+        <div class="menu">
+            <a href="Index.html">首页</a>
+            <a href="AllActivities.html">活动</a>
+            <a href="Discover3.html">动态</a>
+        </div>
+        <div class="user">
+            <div class="user-info">
+                <img src="/static/image/img/游客.png" alt="用户头像">
+                <span>游客</span>
+                <i class="dropdown-trigger">
+                    <img src="/static/image/img/下拉.png" alt="下拉菜单图标">
+                </i>
+                <div class="dropdown-menu">
+                    <a href="MySpace.html" class="dropdown-item">我的</a>
+                    <a href="Login.html" class="dropdown-item ">切换账号</a>
+                    <a href="#" class="dropdown-item logout">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 搜索和筛选栏 -->
+<div class="search-filter-bar">
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="搜索动态内容...">
+        <button id="searchBtn">搜索</button>
+    </div>
+
+    <div class="filter-buttons">
+        <button class="filter-btn active" data-type="all">全部</button>
+        <button class="filter-btn" data-type="旅行游记">旅行游记</button>
+        <button class="filter-btn" data-type="户外知识">户外知识</button>
+        <button class="filter-btn" data-type="装备评测">装备评测</button>
+        <button class="filter-btn" data-type="摄影分享">摄影分享</button>
+    </div>
+</div>
+
+<!-- 动态列表容器 -->
+<div class="dynamic-container" id="dynamicList">
+</div>
+
+<!-- 加载更多按钮 -->
+<div class="load-more" id="loadMoreWrapper">
+    <button id="loadMoreBtn" onclick="loadMoreDynamics()">加载更多</button>
+</div>
+
+<script>
+    function checkLogin() {
+        const uid = sessionStorage.getItem('uid');
+        if (!uid) {
+            alert('请先登录再进行操作');
+            return false;
+        }
+        return true;
+    }
+    let searchKeyword = "";
+    let currentFilter = "all";
+    let page = 1;
+    const pageSize = 10;
+    let hasMore = true;
+
+    $(document).ready(function () {
+        fetchDynamics();
+    });
+
+    async function fetchDynamics(isLoadMore = false) {
+        try {
+            const response = await $.ajax({
+                url: 'DynQueryAll1',
+                type: 'GET',
+                dataType: 'json',
+                data: {
+                    page: page,
+                    pageSize: pageSize,
+                    keyword: searchKeyword,
+                    category: currentFilter
+                }
+            });
+            const dynamics = response;
+
+            if (dynamics.length === 0) {
+                hasMore = false;
+                $('#loadMoreWrapper').hide();
+                return;
+            }
+            if (!isLoadMore) {
+                $('#dynamicList').empty();
+            }
+
+            renderDynamics(dynamics);
+            page++;
+
+            await syncLikeStatus();
+            await syncCollectionStatus();
+
+            if (dynamics.length < pageSize) {
+                hasMore = false;
+                $('#loadMoreBtn').prop('disabled', true);
+                $('#loadMoreWrapper').hide();
+            }
+        } catch (error) {
+            console.error('Error fetching dynamics:', error);
+            alert('动态加载失败，请重试');
+            hasMore = false;
+        }
+    }
+
+    function renderDynamics(dynamics) {
+        const container = $('#dynamicList');
+        $.each(dynamics, function (index, item) {
+
+            // ==================== XSS 安全过滤 ====================
+            const safeTitle = DOMPurify.sanitize(item.dtitle || "");
+            const safeContent = DOMPurify.sanitize(item.content || "");
+            const safeNickname = DOMPurify.sanitize(item.nickname || "匿名用户");
+            const safeCreateTime = DOMPurify.sanitize(item.create_time || "");
+            const safeAvatar = DOMPurify.sanitize(item.avatar || '/static/image/img/游客.png');
+
+            const mediaList = item.media ? item.media.split(',').slice(0, 3) : [];
+            const totalImages = item.media ? item.media.split(',').length : 0;
+            const hasMoreImages = totalImages > 3;
+            const postElement = $('<div class="post"></div>');
+            const postLink = $('<a href="dynDetails.html?did=' + item.did + '"></a>');
+
+            // 安全标题
+            postLink.append('<h2>' + safeTitle + '</h2>');
+
+            const postHeader = $('<div class="post-header"></div>');
+            // 安全头像
+            const avatarImg = $('<img src="' + safeAvatar + '">');
+            const postInfo = $('<div class="post-info"></div>');
+            // 安全昵称
+            postInfo.append('<span class="post-username">' + safeNickname + '</span>');
+            // 安全时间
+            postInfo.append('<span class="post-time">' + safeCreateTime + '</span>');
+            postHeader.append(avatarImg).append(postInfo);
+
+            const postContent = $('<div class="post-content"></div>');
+            const maxLength = 40;
+            // 安全内容
+            if (safeContent.length > maxLength) {
+                postContent.html(safeContent.substring(0, maxLength) + '...');
+            } else {
+                postContent.html(safeContent);
+            }
+
+            const postMedia = $('<div class="post-media"></div>');
+            $.each(mediaList, function (index, mediaUrl) {
+                const path = mediaUrl.trim();
+                const isVideo = path.endsWith('.mp4') || path.endsWith('.mov');
+
+                if (isVideo) {
+                    postMedia.append(`
+                        <div class="video-cover">
+                            <img src="/static/image/img/cover1.png" alt="视频封面">
+                            <div style="
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                                width: 40px;
+                                height: 40px;
+                                background: rgba(0,0,0,0.6);
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                            ">
+                                <div style="
+                                    width: 0;
+                                    height: 0;
+                                    border-left: 12px solid white;
+                                    border-top: 8px solid transparent;
+                                    border-bottom: 8px solid transparent;
+                                    margin-left: 3px;
+                                "></div>
+                            </div>
+                        </div>
+                    `);
+                } else {
+                    postMedia.append('<img src="' + path + '" alt="动态图片">');
+                }
+            });
+            if (hasMoreImages) {
+                const moreImages = $('<div class="more-images">+ ' + (totalImages - 3) + ' 张</div>');
+                postMedia.append(moreImages);
+            }
+
+            const commentAction = $('<div class="action comment-action" onclick="gotoComment(' + item.did + ')"></div>');
+            const commentIcon = $('<span class="comment-icon"></span>');
+            const commentCount = $('<span>' + (item.comment_count || 0) + '</span>');
+            commentIcon.css('background-image', 'url(/static/image/img/气泡.png)');
+            commentAction.append(commentIcon).append(commentCount);
+
+            const postActions = $('<div class="post-actions"></div>');
+            const leftActions = $('<div class="left"></div>');
+
+            const likeAction = $('<div class="action like-action" id="like-btn-' + item.did + '" data-did="' + item.did + '"></div>');
+            const collectAction = $('<div class="action collect-action" id="collect-btn-' + item.did + '" data-did="' + item.did + '"></div>');
+
+            const likeIcon = $('<span class="like-icon ' + (item.isLiked ? 'liked' : 'unliked') + '"></span>');
+            const likeCount = $('<span>' + (item.like_count || 0) + '</span>');
+            likeAction.append(likeIcon).append(likeCount);
+            likeAction.on('click', function () {
+                toggleLike(item.did, this);
+            });
+
+            const collectIcon = $('<span class="collect-icon ' + (item.isCollected ? 'collected' : 'uncollected') + '"></span>');
+            const collectCount = $('<span>' + (item.collect_count || 0) + '</span>');
+            collectAction.append(collectIcon).append(collectCount);
+            collectAction.on('click', function () {
+                toggleCollect(item.did, this);
+            });
+
+            leftActions.append(likeAction).append(commentAction);
+            postActions.append(leftActions).append(collectAction);
+
+            postElement.append(postHeader)
+                .append(postLink)
+                .append(postContent)
+                .append(postMedia)
+                .append(postActions);
+
+            container.append(postElement);
+        });
+    }
+
+    function loadMoreDynamics() {
+        if (hasMore) {
+            fetchDynamics(true);
+        }
+    }
+
+    async function syncLikeStatus() {
+        const uid = sessionStorage.getItem('uid');
+        if (!uid) return;
+        const dynamicIds = $('.like-action').map(function () {
+            return $(this).data('did');
+        }).get();
+        if (dynamicIds.length === 0) return;
+
+        const res = await $.ajax({
+            url: '/checkDlkBatch',
+            type: 'GET',
+            data: { uid: uid, dids: dynamicIds.join(',') },
+        });
+
+        $.each(res, function (did, isLiked) {
+            const $action = $(`.like-action[data-did="${did}"]`);
+            const $icon = $action.find('.like-icon');
+            $icon.removeClass('liked unliked').addClass(isLiked ? 'liked' : 'unliked');
+        });
+    }
+
+    async function syncCollectionStatus() {
+        const uid = sessionStorage.getItem('uid');
+        if (!uid) return;
+        const dynamicIds = $('.collect-action').map(function () {
+            return $(this).data('did');
+        }).get();
+        if (dynamicIds.length === 0) return;
+
+        const res = await $.ajax({
+            url: '/checkDclBatch',
+            type: 'GET',
+            data: { uid: uid, dids: dynamicIds.join(',') },
+        });
+
+        $.each(res, function (did, isCollected) {
+            const $action = $(`.collect-action[data-did="${did}"]`);
+            const $icon = $action.find('.collect-icon');
+            $icon.removeClass('collected uncollected').addClass(isCollected ? 'collected' : 'uncollected');
+        });
+    }
+
+    function toggleLike(did, element) {
+        const uid = sessionStorage.getItem('uid');
+        if (!uid) {
+            alert('请先登录');
+            return;
+        }
+
+        const $action = $(element);
+        const $icon = $action.find('.like-icon');
+        const isLiked = $icon.hasClass('liked');
+        const $countSpan = $action.find('span:last');
+        const currentCount = parseInt($countSpan.text());
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hour = String(now.getHours()).padStart(2, '0');
+        const minute = String(now.getMinutes()).padStart(2, '0');
+        const second = String(now.getSeconds()).padStart(2, '0');
+
+        const likeTime = `${year}/${month}/${day} ${hour}:${minute}:${second}`;
+
+        const dlk = {
+            uid: parseInt(uid),
+            did: did,
+            like_time: likeTime
+        };
+
+        $.ajax({
+            url: isLiked ? '/dlkDel' : '/dlkAdd',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(dlk),
+            success: function (res) {
+                if (res > 0) {
+                    $icon.toggleClass('liked unliked');
+                    $countSpan.text(isLiked ? currentCount - 1 : currentCount + 1);
+                }else if(res== -1){
+                    alert("请登录后再点赞~");
+                }else if(res== -6){
+                    alert("您点赞过于频繁，请10分钟后再试~");
+                }else {
+                    alert(isLiked ? '取消点赞失败' : '点赞失败');
+                }
+            },
+            error: function () {
+                alert('操作失败，请重试');
+            }
+        });
+    }
+
+    function toggleCollect(did, element) {
+        const uid = sessionStorage.getItem('uid');
+        if (!uid) {
+            alert('请先登录');
+            window.location.href = '/Login.html';
+            return;
+        }
+
+        const $action = $(element);
+        const $icon = $action.find('.collect-icon');
+        const isCollected = $icon.hasClass('collected');
+        const $countSpan = $action.find('span:last');
+        const currentCount = parseInt($countSpan.text());
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hour = String(now.getHours()).padStart(2, '0');
+        const minute = String(now.getMinutes()).padStart(2, '0');
+        const second = String(now.getSeconds()).padStart(2, '0');
+
+        const collectTime = `${year}/${month}/${day} ${hour}:${minute}:${second}`;
+        const dcl = {
+            uid: parseInt(uid),
+            did: did,
+            collect_time: collectTime
+        };
+
+        $.ajax({
+            url: isCollected ? '/dclDel' : '/dclAdd',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(dcl),
+            success: function (res) {
+                if (res > 0) {
+                    $icon.toggleClass('collected uncollected');
+                    $countSpan.text(isCollected ? currentCount - 1 : currentCount + 1);
+                }else if(res== -7) {
+                    alert("您收藏过于频繁，请10分钟后再试~");
+                }else if(res== -1){
+                    alert("请登录后再收藏~");
+                }else {
+                    alert(isCollected ? '取消收藏失败' : '收藏失败');
+                }
+            },
+            error: function () {
+                alert('操作失败，请重试');
+            }
+        });
+    }
+
+    function gotoComment(dynamicId) {
+        window.location.href = `dynDetails.html?did=${dynamicId}&focusComment=true`;
+    }
+
+    $('#searchBtn').on('click', function () {
+        searchKeyword = $('#searchInput').val().trim();
+        resetPage();
+        fetchDynamics();
+    });
+
+    $('#searchInput').on('keypress', function (e) {
+        if (e.key === 'Enter') {
+            $('#searchBtn').click();
+        }
+    });
+
+    $('.filter-buttons').on('click', '.filter-btn', function () {
+        $('.filter-btn').removeClass('active');
+        $(this).addClass('active');
+        currentFilter = $(this).data('type');
+        resetPage();
+        fetchDynamics();
+    });
+
+    function resetPage() {
+        page = 1;
+        hasMore = true;
+        $('#loadMoreWrapper').show();
+        $('#loadMoreBtn').prop('disabled', false);
+        $('#dynamicList').empty();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../static/css/down.css">
+  <title>行安 - 动态社区</title>
+  <script src="../static/js/jquery-1.8.3.js"></script>
+  <script src="../static/js/syy.js"></script>
+  <style>
+    /* 审核状态标签样式 */
+    .status-tag {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: bold;
+      color: white;
+      z-index: 10;
+    }
+
+    .status-tag.pending { background-color: #ff9800; } /* 审核中 - 橙色 */
+    .status-tag.approved { background-color: #4caf50; } /* 已审核 - 绿色 */
+    .status-tag.rejected { background-color: #f44336; } /* 已驳回 - 红色 */
+    .search-filter-bar {
+      max-width: 1170px;
+      margin: 0 auto;
+      padding: 16px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      margin-bottom: 24px;
+    }
+
+    .search-container {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      max-width: 600px;
+    }
+
+    #searchInput {
+      flex-grow: 1;
+      padding: 8px 16px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    #searchBtn {
+      padding: 8px 24px;
+      background-color: #165dff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #searchBtn:hover {
+      background-color: #0e47c4;
+    }
+
+    .filter-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .filter-btn {
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      cursor: pointer;
+      background-color: #fff;
+      transition: all 0.3s;
+    }
+
+    .filter-btn.active {
+      border-color: #165dff;
+      color: #165dff;
+      font-weight: bold;
+      background-color: #f5f8ff;
+    }
+    /* 点赞/收藏图标样式 */
+    .action .like-icon {
+      width: 20px;
+      height: 20px;
+      background-repeat: no-repeat;
+      background-size: contain;
+      margin-right: 4px;
+    }
+    .action .like-icon.liked { background-image: url('/static/image/img/爱心_粉.png'); }
+    .action .like-icon.unliked { background-image: url('/static/image/img/爱心_空.png'); }
+
+    .action .collect-icon {
+      width: 24px;
+      height: 24px;
+      background-repeat: no-repeat;
+      background-size: contain;
+      margin-right: 4px;
+    }
+    .action .collect-icon.collected { background-image: url('/static/image/img/星星.png'); }
+    .action .collect-icon.uncollected { background-image: url('/static/image/img/收藏8.png'); }
+    .action .comment-icon {
+      width: 20px;
+      height: 20px;
+      background-repeat: no-repeat;
+      background-size: contain;
+      margin-right: 4px;
+      display: inline-block; /* 确保图标与文字同行 */
+    }
+    /* 点击时图标动画（可选） */
+    .action:hover i { transform: scale(1.1); }
+    .post-media {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+    }
+
+    .post-media img {
+      max-width: 100px;
+      height: auto;
+      border-radius: 4px;
+    }
+
+    .more-images {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+      font-size: 14px;
+      border-radius: 4px;
+      max-width: 100px;
+      height: 100px;
+      cursor: pointer;
+    }
+    /* 全局样式重置与基础设置 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "微软雅黑", sans-serif;
+    }
+
+    body {
+      background-color: #f5f7fa;
+      padding-top: 90px; /* 避开顶部固定导航 */
+    }
+
+    /* 导航栏样式 */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+    }
+
+    /*aaaa*/
+    .navbar .logo {
+      /* 保持原本的 inline 或 inline-block 布局（如果没开 flex 的话） */
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .navbar .logo span {
+      font-size: 24px;
+      line-height: 1; /* 避免行高干扰 */
+      font-weight: bold;
+      color: #333;
+    }
+
+    .navbar .logo img {
+      width: 32px;
+      height: 32px;
+      /* 关键：强制图片底部与文字基线对齐 */
+      vertical-align: bottom;
+    }
+    /*aaaa*/
+    .navbar .menu {
+      display: flex;
+      gap: 10px;
+    }
+
+    .navbar .menu a {
+      text-decoration: none;
+      color: #333;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .navbar .menu a:hover {
+      background-color: #eee;
+    }
+
+    .navbar .user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .navbar .user .publish-btn {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .navbar .user .publish-btn:hover {
+      background-color: #f5f5f5;
+    }
+
+    .navbar .user .user-info {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .navbar .user .user-info img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    .navbar .user .user-info span {
+      font-size: 14px;
+      color: #333;
+    }
+
+    /*导航下拉图标*/
+    .navbar .user .user-info i img {
+      width: 15px;
+      height: 15px;
+    }
+    /* 动态列表容器样式 */
+    .dynamic-container {
+      max-width: 1200px;
+      margin: 24px auto;
+      padding: 0 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    .user-info img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      margin-right: 8px;
+    }
+    /* 单个动态帖子样式 */
+    .post {
+      background: white;
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .post:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .post a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .post h2 {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .post-header img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-right: 12px;
+    }
+
+    .post-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .post-username {
+      font-weight: bold;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .post-time {
+      font-size: 12px;
+      color: #999;
+      margin-top: 2px;
+    }
+
+    .post-content {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .post-media {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .post-media img {
+      max-width: 30%;
+      border-radius: 4px;
+      height: auto;
+      object-fit: cover;
+      flex: 1 1 calc(50% - 8px); /* 让图片每行最多显示两张，可根据需求调整 */
+    }
+
+    .post-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #999;
+      font-size: 13px;
+    }
+
+    .post-actions .left {
+      display: flex;
+      gap: 16px;
+    }
+
+    .post-actions .action {
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: color 0.2s;
+    }
+
+    .post-actions .action:hover {
+      color: #165dff;
+    }
+
+    .post-actions .action i {
+      margin-right: 4px;
+    }
+
+    /* 加载更多按钮样式 */
+    .load-more {
+      text-align: center;
+      margin: 24px 0;
+    }
+
+    .load-more button {
+      background: #165dff;
+      color: white;
+      border: none;
+      padding: 10px 24px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .load-more button:hover {
+      opacity: 0.9;
+    }
+
+    .load-more button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* 响应式适配 */
+    @media (max-width: 768px) {
+      .dynamic-container {
+        padding: 0 12px;
+      }
+
+      .post h2 {
+        font-size: 16px;
+      }
+
+      .post-content {
+        font-size: 13px;
+      }
+
+      .post-media img {
+        flex: 1 1 100%;
+      }
+    }
+
+  </style>
+
+</head>
+
+<body>
+<!-- 顶部导航栏 -->
+<header>
+  <div class="navbar">
+    <div class="logo">
+      <img src="/static/image/img/Logo.png" alt="山友缘Logo">
+      <span>行安</span>
+    </div>
+    <div class="menu">
+      <a href="Index.html">首页</a>
+      <a href="AllActivities.html">活动</a>
+      <a href="Discover3.html">动态</a>
+<!--      <a href="myMessages.html">消息</a>-->
+    </div>
+    <div class="user">
+      <div class="user-info">
+        <img src="/static/image/img/游客.png" alt="用户头像">
+        <span>游客</span>
+        <i class="dropdown-trigger">
+          <img src="/static/image/img/下拉.png" alt="下拉菜单图标">
+        </i>
+        <!-- 下拉菜单 -->
+        <div class="dropdown-menu">
+          <a href="MySpace.html" class="dropdown-item">我的</a>
+          <a href="Login.html" class="dropdown-item ">切换账号</a>
+          <a href="#" class="dropdown-item logout">退出登录</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<!-- 搜索和筛选栏 -->
+<div class="search-filter-bar">
+  <div class="search-container">
+    <input type="text" id="searchInput" placeholder="搜索动态内容...">
+    <button id="searchBtn">搜索</button>
+  </div>
+
+  <div class="filter-buttons">
+    <button class="filter-btn active" data-type="all">全部</button>
+    <button class="filter-btn" data-type="旅行游记">旅行游记</button>
+    <button class="filter-btn" data-type="户外知识">户外知识</button>
+    <button class="filter-btn" data-type="装备评测">装备评测</button>
+    <button class="filter-btn" data-type="摄影分享">摄影分享</button>
+  </div>
+</div>
+
+<!-- 动态列表容器 -->
+<div class="dynamic-container" id="dynamicList">
+  <!-- 这里由 JS 动态渲染 -->
+</div>
+
+<!-- 加载更多按钮 -->
+<div class="load-more" id="loadMoreWrapper">
+  <button id="loadMoreBtn" onclick="loadMoreDynamics()">加载更多</button>
+</div>
+
+<script>
+  function checkLogin() {
+    const uid = sessionStorage.getItem('uid');
+    if (!uid) {
+      alert('请先登录再进行操作');
+      return false;
+    }
+    return true;
+  }
+  let searchKeyword = ""; // 搜索关键词
+  let currentFilter = "all"; // 当前筛选类型（对应filter-btn的data-type）
+  // 模拟分页参数
+  let page = 1;
+  const pageSize = 10;
+  let hasMore = true;
+
+  $(document).ready(function () {
+    fetchMyDynamics();
+  });
+
+  // 获取动态列表（调用后端接口）
+
+    async function fetchMyDynamics(isLoadMore = false) {
+      try {
+        const response = await $.ajax({
+          url: 'DynQueryAll2',
+          type: 'GET',
+          dataType: 'json',
+          data: {
+            page: page,
+            pageSize: pageSize,
+            keyword: searchKeyword,
+            category: currentFilter
+          }
+        });
+      const dynamics = response;
+
+      if (dynamics.length === 0) {
+        hasMore = false;
+        $('#loadMoreWrapper').hide();
+        return;
+      }
+      if (!isLoadMore) {
+        $('#dynamicList').empty(); // 仅首次/搜索/筛选时清空
+      }
+
+      renderMyDynamics(dynamics);
+      page++;
+
+      // 动态渲染完成后，强制同步状态（关键修复）
+      await syncLikeStatus();
+      await syncCollectionStatus();
+
+      if (dynamics.length < pageSize) {
+        hasMore = false;
+        $('#loadMoreBtn').prop('disabled', true);
+        $('#loadMoreWrapper').hide();
+      }
+    } catch (error) {
+      console.error('Error fetching dynamics:', error);
+      alert('动态加载失败，请重试');
+      hasMore = false;
+    }
+  }
+
+  // 渲染动态列表到页面
+  function renderMyDynamics(dynamics) {
+    const container = $('#dynamicList');
+
+    $.each(dynamics, function (index, item) {
+      // 处理媒体数据
+      const mediaList = item.media ? item.media.split(',').slice(0, 3) : [];
+      const totalImages = item.media ? item.media.split(',').length : 0;
+      const hasMoreImages = totalImages > 3;
+
+
+      // 创建动态框元素，并设置相对定位（让状态标签绝对定位基于此）
+      const postElement = $('<div class="post" style="position: relative;"></div>');
+
+      // 创建审核状态标签
+      const statusTag = $('<div class="status-tag"></div>');
+      const statusText = getStatusText(item.status);
+      statusTag.text(statusText);
+
+      // 根据状态设置不同的类名（对应CSS样式）
+      if (item.status === '0') {
+        statusTag.addClass('pending'); // 审核中
+      } else if (item.status === '1') {
+        statusTag.addClass('approved'); // 已审核
+      } else if (item.status === '2') {
+        statusTag.addClass('rejected'); // 已驳回
+      }
+
+      postElement.append(statusTag); // 先添加状态标签，确保显示在上方
+
+      const postLink = $('<a href="dynDetails.html?did=' + item.did + '"></a>');
+      postLink.append('<h2>' + item.dtitle + '</h2>');
+
+      // 发布者信息
+      const postHeader = $('<div class="post-header"></div>');
+      const avatarImg = $('<img src="' + (item.avatar || '/static/image/img/游客.png') + '">');
+      const postInfo = $('<div class="post-info"></div>');
+      postInfo.append('<span class="post-username">' + (item.nickname || '匿名用户') + '</span>');
+      postInfo.append('<span class="post-time">' + item.create_time + '</span>');
+      postHeader.append(avatarImg).append(postInfo);
+
+      // 动态内容 - 截断处理
+      const postContent = $('<div class="post-content"></div>');
+      const maxLength = 40;
+      if (item.content.length > maxLength) {
+        postContent.html(item.content.substring(0, maxLength) + '...');
+      } else {
+        postContent.html(item.content);
+      }
+
+      // 媒体内容（图片等）
+      const postMedia = $('<div class="post-media"></div>');
+      $.each(mediaList, function (imgIndex, imgUrl) {
+        postMedia.append('<img src="' + imgUrl.trim() + '" alt="动态图片">');
+      });
+      if (hasMoreImages) {
+        const moreImages = $('<div class="more-images">+ ' + (totalImages - 3) + ' 张</div>');
+        postMedia.append(moreImages);
+      }
+
+      // 操作按钮
+      // 评论按钮（新增气泡图标）
+      const commentAction = $('<div class="action comment-action" onclick="gotoComment(' + item.did + ')"></div>');
+      const commentIcon = $('<span class="comment-icon"></span>'); // 气泡图标
+      const commentCount = $('<span>' + (item.comment_count || 0) + '</span>'); // 评论数
+      commentIcon.css('background-image', 'url(/static/image/img/气泡.png)'); // 设置图标背景
+      commentAction.append(commentIcon).append(commentCount); // 组合图标和数字
+      const postActions = $('<div class="post-actions"></div>');
+      const leftActions = $('<div class="left"></div>');
+
+      // 点赞按钮（正确绑定 data-did）
+      // const likeAction = $('<div class="action like-action" data-did="' + item.did + '"></div>'); // ✅ 关键行
+      // 点赞按钮（添加显式 ID，格式：like-btn-{did}）
+      const likeAction = $('<div class="action like-action" id="like-btn-' + item.did + '" data-did="' + item.did + '"></div>');
+      // 收藏按钮（添加显式 ID，格式：collect-btn-{did}）
+      const collectAction = $('<div class="action collect-action" id="collect-btn-' + item.did + '" data-did="' + item.did + '"></div>');
+
+      const likeIcon = $('<span class="like-icon ' + (item.isLiked ? 'liked' : 'unliked') + '"></span>');
+      const likeCount = $('<span>' + (item.like_count || 0) + '</span>');
+      likeAction.append(likeIcon).append(likeCount);
+      likeAction.on('click', function () {
+        toggleLike(item.did, this);
+      });
+
+      // 收藏按钮（正确绑定 data-did）
+      // const collectAction = $('<div class="action collect-action" data-did="' + item.did + '"></div>'); //
+      const collectIcon = $('<span class="collect-icon ' + (item.isCollected ? 'collected' : 'uncollected') + '"></span>');
+      const collectCount = $('<span>' + (item.collect_count || 0) + '</span>');
+      collectAction.append(collectIcon).append(collectCount);
+      collectAction.on('click', function () {
+        toggleCollect(item.did, this);
+      });
+
+      leftActions.append(likeAction).append(commentAction);
+      postActions.append(leftActions).append(collectAction);
+
+      postElement.append(postHeader)
+              .append(postLink)
+              .append(postContent)
+              .append(postMedia)
+              .append(postActions);
+
+      container.append(postElement);
+    });
+  }
+  // 状态码转文本的辅助函数
+  function getStatusText(status) {
+    switch (status) {
+      case '0':
+        return '审核中';
+      case '1':
+        return '已审核';
+      case '2':
+        return '已驳回';
+      default:
+        return '未知状态';
+    }
+  }
+    // 加载更多逻辑
+    function loadMoreDynamics() {
+      if (hasMore) {
+        fetchMyDynamics(true);
+      }
+    }
+
+    // 同步点赞状态（动态渲染后调用）
+    async function syncLikeStatus() {
+      const uid = sessionStorage.getItem('uid');
+      if (!uid) return;
+
+      // 提取所有动态的 did（通过 data-did 属性）
+      const dynamicIds = $('.like-action').map(function () {
+        return $(this).data('did');
+      }).get();
+
+      if (dynamicIds.length === 0) return;
+
+      // 调用后端批量检查接口
+      const res = await $.ajax({
+        url: '/checkDlkBatch',
+        type: 'GET',
+        data: {uid: uid, dids: dynamicIds.join(',')},
+      });
+
+      // 同步状态到前端
+      $.each(res, function (did, isLiked) {
+        const $action = $(`[data-did="${did}"]`).find('.like-action');
+        const $icon = $action.find('.like-icon');
+        $icon.toggleClass('liked unliked', isLiked);
+      });
+    }
+
+    // 同步收藏状态（动态渲染后调用）
+    async function syncCollectionStatus() {
+      const uid = sessionStorage.getItem('uid');
+      if (!uid) return;
+
+      // 提取所有动态的 did（通过 data-did 属性）
+      const dynamicIds = $('.collect-action').map(function () {
+        return $(this).data('did');
+      }).get();
+
+      if (dynamicIds.length === 0) return;
+
+      // 调用后端批量检查接口
+      const res = await $.ajax({
+        url: '/checkDclBatch',
+        type: 'GET',
+        data: {uid: uid, dids: dynamicIds.join(',')},
+      });
+
+      // 同步状态到前端
+      $.each(res, function (did, isCollected) {
+        const $action = $(`[data-did="${did}"]`).find('.collect-action');
+        const $icon = $action.find('.collect-icon');
+        $icon.toggleClass('collected uncollected', isCollected);
+      });
+    }
+
+    // 点赞操作
+    function toggleLike(did, element) {
+      const uid = sessionStorage.getItem('uid');
+      if (!uid) {
+        alert('请先登录');
+        return;
+      }
+
+      const $action = $(element);
+      const $icon = $action.find('.like-icon');
+      const isLiked = $icon.hasClass('liked');
+      const $countSpan = $action.find('span:last');
+      const currentCount = parseInt($countSpan.text());
+      const now = new Date();
+      // 获取年、月、日、时、分、秒，注意月份要 +1（因为 getMonth 返回 0 - 11）
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0'); // 保证月份是两位数，比如 6 月显示为 "06"
+      const day = String(now.getDate()).padStart(2, '0'); // 日期补零
+      const hour = String(now.getHours()).padStart(2, '0'); // 小时补零
+      const minute = String(now.getMinutes()).padStart(2, '0'); // 分钟补零
+      const second = String(now.getSeconds()).padStart(2, '0'); // 秒数补零
+
+      const likeTime = `${year}/${month}/${day} ${hour}:${minute}:${second}`;
+
+      // 构造请求参数
+      const dlk = {
+        uid: parseInt(uid),
+        did: did,
+        like_time: likeTime
+      };
+
+      // 发送请求
+      $.ajax({
+        url: isLiked ? '/dlkDel' : '/dlkAdd',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(dlk),
+        success: function (res) {
+          if (res > 0) {
+            $icon.toggleClass('liked unliked');
+            $countSpan.text(isLiked ? currentCount - 1 : currentCount + 1);
+          } else {
+            alert(isLiked ? '取消点赞失败' : '点赞失败');
+          }
+        },
+        error: function () {
+          alert('操作失败，请重试');
+        }
+      });
+    }
+
+    // 收藏操作
+    function toggleCollect(did, element) {
+      const uid = sessionStorage.getItem('uid');
+      if (!uid) {
+        alert('请先登录');
+        return;
+      }
+
+      const $action = $(element);
+      const $icon = $action.find('.collect-icon');
+      const isCollected = $icon.hasClass('collected');
+      const $countSpan = $action.find('span:last');
+      const currentCount = parseInt($countSpan.text());
+      const now = new Date();
+      // 获取年、月、日、时、分、秒，注意月份要 +1（因为 getMonth 返回 0 - 11）
+      const year = now.getFullYear();
+      const month = String(now.getMonth() + 1).padStart(2, '0'); // 保证月份是两位数，比如 6 月显示为 "06"
+      const day = String(now.getDate()).padStart(2, '0'); // 日期补零
+      const hour = String(now.getHours()).padStart(2, '0'); // 小时补零
+      const minute = String(now.getMinutes()).padStart(2, '0'); // 分钟补零
+      const second = String(now.getSeconds()).padStart(2, '0'); // 秒数补零
+
+      const collectTime = `${year}/${month}/${day} ${hour}:${minute}:${second}`;
+
+      // 构造请求参数
+      const dcl = {
+        uid: parseInt(uid),
+        did: did,
+        collect_time: collectTime
+      };
+
+      // 发送请求
+      $.ajax({
+        url: isCollected ? '/dclDel' : '/dclAdd',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(dcl),
+        success: function (res) {
+          if (res > 0) {
+            $icon.toggleClass('collected uncollected');
+            $countSpan.text(isCollected ? currentCount - 1 : currentCount + 1);
+          } else {
+            alert(isCollected ? '取消收藏失败' : '收藏失败');
+          }
+        },
+        error: function () {
+          alert('操作失败，请重试');
+        }
+      });
+    }
+
+    function gotoComment(dynamicId) {
+      window.location.href = `dynDetails.html?did=${dynamicId}&focusComment=true`;
+    }
+
+    // 搜索按钮点击事件
+    $('#searchBtn').on('click', function () {
+      searchKeyword = $('#searchInput').val().trim();
+      resetPage(); // 重置分页
+      fetchMyDynamics(); // 重新获取数据
+    });
+
+    // 支持回车键搜索
+    $('#searchInput').on('keypress', function (e) {
+      if (e.key === 'Enter') {
+        $('#searchBtn').click();
+      }
+    });
+    // 筛选按钮点击事件
+    $('.filter-buttons').on('click', '.filter-btn', function () {
+      // 切换激活状态
+      $('.filter-btn').removeClass('active');
+      $(this).addClass('active');
+      currentFilter = $(this).data('type'); // 更新当前筛选类型
+      resetPage(); // 重置分页
+      fetchMyDynamics(); // 重新获取数据
+    });
+
+  // 重置分页参数
+  function resetPage() {
+    page = 1;
+    hasMore = true;
+    $('#loadMoreWrapper').show();
+    $('#loadMoreBtn').prop('disabled', false);
+    $('#dynamicList').empty(); // 清空旧数据
+  }
+</script>
+</body>
+
+</html>

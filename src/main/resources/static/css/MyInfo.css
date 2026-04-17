@@ -1,0 +1,103 @@
+
+    /* 基础样式 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.container1 {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 垂直居中 */
+    justify-content: center; /* 水平居中*/
+    text-align: left; /* 文本左对齐 */
+}
+
+/* 表单元素样式 */
+#form1 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+#div3 {
+    margin-top: 20px;
+}
+#div2, #div3 {
+    width: 100%;
+}
+#div3 table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+}
+
+#div3 table tr td:first-child {
+    width: 120px;
+    font-weight: bold;
+    padding-right: 10px;
+}
+
+#div3 table tr td input[type="text"],
+#div3 table tr td input[type="password"] {
+    width: 100%;
+    padding: 5px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+    box-sizing: border-box;
+
+}
+
+/* 按钮样式 */
+.bt input[type="button"],
+.bt input[type="reset"] {
+    margin-top: 10px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.bt input[type="button"] {
+    background-color: #4CAF50; /* 绿色背景 */
+    color: white; /* 白色文本 */
+    /* 禁用“修改提交”按钮，因为我们正在模拟查看模式 */
+    /* pointer-events: none;
+     opacity: 0.6; !* 降低透明度以表示不可点击 *!*/
+}
+
+.bt input[type="reset"] {
+    background-color: #f44336; /* 红色背景 */
+    color: white; /* 白色文本 */
+}
+
+/* 标题样式 */
+#div2 h2 {
+    margin-top: 0;
+    font-size: 40px;
+    justify-content: center;
+}
+#div2 {
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 如果 #div2 是一个高度确定的容器，这也将垂直居中内容 */
+}
+/* 照片样式 */
+.profile-photo {
+    width: 100px; /* 照片宽度 */
+    height: 100px; /* 照片高度，保持宽高比或根据需要调整 */
+    border-radius: 50%; /* 圆形头像效果，如果需要的话 */
+    object-fit: cover; /* 保持图片比例填充元素内容框 */
+    margin-right: 10px; /* 与文本之间的间距 */
+    vertical-align: middle; /* 垂直居中对齐 */
+}
+

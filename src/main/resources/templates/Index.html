@@ -1,0 +1,1692 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行安户外 - 探索自然，结交山友</title>
+    <link rel="stylesheet" href="../static/css/down.css">
+    <script src="../static/js/jquery-1.8.3.js"></script>
+    <script src="../static/js/syy.js"></script>
+    <script type="text/javascript" src="https://webapi.amap.com/maps?v=2.0&key=db3c4276faff4f29b35f47ee83177574"></script>
+    <style>
+        /* 导航header*/
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /*font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;*/
+        }
+
+        body {
+            background-color: rgba(225, 234, 233, 0.23);
+            color: #212121;
+            /*max-width: 700px;*/
+
+            margin: 0 auto;
+            margin-top:10px;
+            position: relative;
+            min-height: 100vh;
+
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        /*aaaa*/
+        .navbar .logo {
+            /* 保持原本的 inline 或 inline-block 布局（如果没开 flex 的话） */
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .navbar .logo span {
+            font-size: 24px;
+            line-height: 1; /* 避免行高干扰 */
+            font-weight: bold;
+            color: #333;
+        }
+
+        .navbar .logo img {
+            width: 32px;
+            height: 32px;
+            /* 关键：强制图片底部与文字基线对齐 */
+            vertical-align: bottom;
+        }
+        /*aaaa*/
+        .navbar .menu {
+            display: flex;
+            gap: 10px;
+        }
+        .navbar .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar .menu a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .menu a:hover {
+            background-color: #eee;
+        }
+
+
+
+        .navbar .user .publish-btn {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .user .publish-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .navbar .user .user-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .navbar .user .user-info img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .navbar .user .user-info span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /*导航下拉图标*/
+        .navbar .user .user-info i img {
+            width: 15px;
+            height: 15px;
+        }
+
+        /* 轮播图容器 */
+        .carousel {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 3/2;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-top:70px;
+        }
+
+        /* 轮播项容器（关键：flex 布局实现水平滚动） */
+        .carousel-inner {
+            display: flex;
+            width: 100%;
+            transition: transform 0.5s ease-in-out; /* 平滑过渡 */
+        }
+
+        /* 单个轮播项 */
+        .carousel-item {
+            flex: 0 0 100%; /* 禁止缩放，固定宽度为 100% */
+            height: 100%;
+            position: relative;
+            background-color: transparent !important;
+        }
+
+        /* 轮播图片 */
+        .carousel-item img {
+            width: 100%;
+            height: 100%; /* 让高度根据宽度和原始比例自动调整 */
+            object-fit: cover; /* 保持原始比例，完整显示图片，可能容器有留白 */
+            object-position: center; /* 居中显示图片 */
+        }
+
+        /* 轮播内容层 */
+        .carousel-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+            color: white;
+        }
+
+        /* 上一张/下一张按钮 */
+        .carousel-control {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            cursor: pointer;
+            z-index: 10;
+            background-color: rgba(0, 0, 0, 0);
+        }
+
+
+        .carousel-control.prev {
+            left: 10px;
+        }
+
+        .carousel-control.prev img {
+            width: 32px;
+            height: 32px;
+            position: relative;
+        }
+
+        .carousel-control.next {
+            right: 10px;
+        }
+
+        .carousel-control.next img {
+            width: 32px;
+            height: 32px;
+            position: relative;
+        }
+        /* 轮播翻页按钮 —— 悬停变色（黑变白） */
+        .carousel-control.prev img {
+            content: url("../static/image/img/翻页1.png");
+        }
+        .carousel-control.prev:hover img {
+            content: url("../static/image/img/翻页11.png");
+        }
+
+        .carousel-control.next img {
+            content: url("../static/image/img/翻页2.png");
+        }
+        .carousel-control.next:hover img {
+            content: url("../static/image/img/翻页22.png");
+        }
+        /* 轮播指示器 */
+        .carousel-dots {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+
+        .carousel-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+        }
+
+        .carousel-dot.active {
+            background-color: rgba(255, 255, 255, 0.8);
+            width: 16px; /* 激活时稍宽 */
+            border-radius: 4px;
+        }
+
+        /* 活动卡片公共样式 quick-function */
+        .activity-type {
+            display: inline-block;
+            background-color: rgba(0, 191, 165, 0.9);
+            color: white;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .activity-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .activity-meta {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            margin-bottom: 12px;
+        }
+
+        .activity-meta i {
+            margin-right: 4px;
+        }
+
+        .activity-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .activity-actions span {
+            font-size: 12px;
+        }
+
+        .btn-signup {
+            background-color: #FF9800;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 16px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-signup:hover {
+            background-color: #F57C00;
+        }
+
+        /* 快捷功能区 */
+        .quick-functions {
+            background-color: white;
+            margin-top: 16px;
+            border-radius: 12px;
+            padding: 16px 0;
+            width: 100%;
+        }
+
+        .function-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+
+        .function-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 让子元素水平居中 */
+            justify-content: center; /* 让子元素垂直居中（若功能项有高度，可确保内容垂直居中） */
+            padding: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .function-item:hover {
+            background-color: #F5F5F5;
+        }
+
+        .function-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: rgba(0, 191, 165, 0.1);
+            display: flex;
+            align-items: center; /* 让图标在.icon内水平居中 */
+            justify-content: center; /* 让图标在.icon内垂直居中 */
+            margin-bottom: 8px;
+            position: relative; /* 若之前没设置，可加上，用于图标定位 */
+        }
+
+        .function-icon img {
+            width: 32px;
+            height: 32px;
+        }
+
+        .function-text {
+            font-size: 12px;
+            font-weight: 500;
+            text-align: center; /* 让文字水平居中 */
+        }
+
+        /* 活动推荐区样式 */
+        .recommend-activities {
+            /*margin: 0 16px 40px;*/
+            margin-top:16px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 16px;
+            padding-left: 12px;
+        }
+
+        .activity-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* 改为两列布局 */
+            gap: 20px; /* 保持间距 */
+            /*justify-items: center; !* 可选：内容居中对齐 *!*/
+            justify-items: stretch;
+        }
+
+        .activity-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.3s;
+            width: 100%; /* 强制卡片宽度 */
+        }
+
+        .activity-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 191, 165, 0.1);
+        }
+
+        .activity-thumb {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+
+            object-position: center; /* 图片居中显示（可选调整） */
+        }
+
+        .activity-content {
+            padding: 16px;
+        }
+
+        .activity-type-tag {
+            display: inline-block;
+            background-color: rgba(0, 191, 165, 0.9);
+            color: white;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .activity-card-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            height: 48px; /* 限制标题高度，防止溢出 */
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .activity-meta {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #616161;
+            margin-bottom: 12px;
+        }
+
+        .activity-meta i {
+            margin-right: 4px;
+            font-size: 14px;
+        }
+
+        .signup-btn {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            background-color: #FF9800;
+            color: white;
+            text-align: center;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .signup-btn:hover {
+            background-color: #F57C00;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .refresh-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background-color: #e0e0e0;
+            border-color: #c9c9c9;
+        }
+
+        .refresh-btn i {
+            font-size: 16px;
+            color: #616161;
+        }
+
+        /* 热门动态区 */
+        .hot-posts {
+            margin: 16px;
+        }
+
+        .post-card {
+            background-color: white;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .post-header {
+            display: flex;
+            padding: 12px;
+        }
+
+        .post-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            margin-right: 12px;
+        }
+
+        .post-user {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .post-username {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .post-time {
+            font-size: 10px;
+            color: #666;
+        }
+
+        .post-content {
+            padding: 0 12px 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .post-images {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-top: 8px;
+        }
+
+        .post-images img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            border-top: 1px solid #EEE;
+        }
+
+        .post-action {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .post-action:hover {
+            color: #00BFA5;
+        }
+
+        .post-action.liked {
+            color: #FF9800;
+        }
+
+        .post-action i {
+            margin-right: 4px;
+        }
+
+        /* 底部导航栏 */
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border-top: 1px solid #EEE;
+            padding: 8px 0;
+            display: flex;
+            justify-content: space-around;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #666;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .nav-item.active {
+            color: #00BFA5;
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 4px;
+        }
+
+        .nav-text {
+            font-size: 10px;
+        }
+        /* 整体三栏布局 */
+        .page-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            gap: 20px;
+        }
+
+        /* 中间主内容区（原来的 main） */
+        .main-content {
+            flex: 1;
+            min-width: 0; /* 防止 flex 子元素溢出 */
+        }
+
+        /* 右侧栏 */
+        .sidebar-right {
+            width: 280px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 70px; /* 和中间内容对齐 */
+        }
+
+        /* 右侧卡片通用样式 */
+        .sidebar-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            padding: 16px;
+        }
+
+        /*!* 天气卡片头部 *!*/
+        /*.weather-header {*/
+        /*    background: #2196F3;*/
+        /*    color: white;*/
+        /*    padding: 20px;*/
+        /*    border-radius: 8px;*/
+        /*    display: flex;*/
+        /*    align-items: center;*/
+        /*    gap: 12px;*/
+        /*    margin-bottom: 12px;*/
+        /*}*/
+        .weather-header .icon {
+            font-size: 36px;
+        }
+        .weather-header .title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .weather-header .sub-title {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* 天气快捷标签 */
+        .weather-tags {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .weather-tag {
+            flex: 1;
+            background: #f5f5f5;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .weather-tag i {
+            font-size: 16px;
+            display: block;
+            margin-bottom: 4px;
+            color: #2196F3;
+        }
+
+        /* 天气详情 */
+        .weather-detail {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 客服/帮助按钮 */
+        .help-btn {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            border-radius: 20px;
+            border: none;
+            margin: 8px 0;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .help-btn.white {
+            background: white;
+            color: #333;
+            border: 1px solid #eee;
+        }
+        .help-btn.white:hover {
+            background: #f5f5f5;
+        }
+        .help-btn.blue {
+            background: #2196F3;
+            color: white;
+        }
+        .help-btn.blue:hover {
+            background: #1976D2;
+        }
+
+
+
+
+
+        /* 天气卡片 - 蓝色头部 */
+        .weather-header {
+            background: #4285F4;
+            color: #fff;
+            padding: 18px 20px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .weather-left {
+            display: flex;
+            flex-direction: column;
+        }
+        .weather-city {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        .weather-desc {
+            font-size: 13px;
+            opacity: 0.9;
+        }
+        .weather-temp {
+            font-size: 32px;
+            font-weight: 300;
+        }
+
+        /* 天气信息网格 */
+        .weather-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .weather-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 12px 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 12px;
+            color: #444;
+        }
+        .weather-item i {
+            font-size: 18px;
+            margin-bottom: 4px;
+        }
+        .weather-item .label {
+            color: #666;
+            margin-bottom: 2px;
+        }
+        .weather-item .value {
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* 户外小贴士轮播卡片 */
+        .tip-slide-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.4;
+            text-align: center;
+        }
+        /* 户外小贴士整体卡片 */
+        .tip-box-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin: 10px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* 小标题 */
+        .tip-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        /* 轮播显示屏区域 */
+        .tip-screen {
+            background-color: #f9fafc;
+            border-radius: 8px;
+            padding: 14px 12px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: #444;
+            text-align: center;
+            line-height: 1.5;
+            transition: opacity 0.3s ease;
+        }
+
+
+
+        /* ========== 左侧栏：热门动态 ========== */
+        .sidebar-left {
+            width: 260px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 70px; /* 和中间内容对齐 */
+        }
+
+        /* 动态标题栏 */
+        .hot-dynamic-header {
+            margin-bottom: 12px;
+        }
+
+        .hot-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #212121;
+            display: block;
+        }
+
+        .hot-subtitle {
+            font-size: 12px;
+            color: #999;
+            display: block;
+            margin-top: 2px;
+        }
+
+        /* 动态条目 */
+        .hot-dynamic-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .hot-dynamic-item:last-child {
+            border-bottom: none;
+        }
+
+        /* 头像 */
+        .hot-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 10px;
+        }
+
+        /* 内容区 */
+        .hot-item-content {
+            flex: 1;
+        }
+
+        .hot-username {
+            font-size: 14px;
+            font-weight: 500;
+            color: #222;
+            margin-bottom: 2px;
+        }
+
+        .hot-text {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .hot-time {
+            font-size: 11px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        /* 查看更多按钮 */
+        .hot-more-btn {
+            width: 100%;
+            padding: 8px;
+            margin-top: 8px;
+            background-color: #f8f9fa;
+            border: none;
+            border-radius: 8px;
+            color: #2196F3;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .hot-more-btn:hover {
+            background-color: #e9ecef;
+        }
+        /* ============================== */
+        /* 响应式布局 · 自适应 */
+        /* ============================== */
+
+        .page-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+            gap: 20px;
+            width: 100%;
+        }
+        .main-content {
+            flex: 1;
+            min-width: 320px; /* 防止中间被挤扁 */
+        }
+        .sidebar-left {
+            width: 260px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 70px;
+        }
+        .sidebar-right {
+            width: 280px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 70px;
+        }
+
+        /*  平板区间：768px ~ 1100px → 隐藏左侧栏 */
+        @media (max-width: 1100px) and (min-width: 768px) {
+            .sidebar-left {
+                display: none; /* 平板隐藏 */
+            }
+            .sidebar-right {
+                width: 240px;
+            }
+            /* 重置 order，避免手机端样式干扰 */
+            .main-content, .sidebar-left, .sidebar-right {
+                order: initial;
+            }
+        }
+
+        /* 🔥 手机端：≤768px → 显示左侧栏 + 调整顺序 */
+        @media (max-width: 768px) {
+            .page-container {
+                flex-direction: column;
+                padding: 0 12px;
+                gap: 20px;
+            }
+            .sidebar-left,
+            .sidebar-right {
+                width: 100%;
+                margin-top: 0;
+            }
+            .activity-list {
+                grid-template-columns: 1fr;
+            }
+            .function-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .carousel {
+                aspect-ratio: 16/9;
+                padding-bottom: 40px;
+            }
+            .carousel-content {
+                bottom: 40px;
+                padding: 40px;
+            }
+
+            /* 顺序：main → left → right */
+            .main-content { order: 1; }
+            .sidebar-left { order: 2; }
+            .sidebar-right { order: 3; }
+        }
+
+        /* 超小屏：只做细节优化，不重复写 order */
+        @media (max-width: 480px) {
+            .navbar .menu a {
+                padding: 4px 6px;
+                font-size: 13px;
+            }
+        }
+
+    </style>
+
+
+</head>
+
+<body>
+<!-- 顶部导航栏 -->
+<header>
+    <div class="navbar">
+        <div class="logo">
+            <img src="/static/image/img/Logo.png" alt="山友缘Logo">
+            <span>行安</span>
+        </div>
+        <div class="menu">
+            <a href="Index.html">首页</a>
+            <a href="AllActivities.html">活动</a>
+            <a href="Discover3.html">动态</a>
+            <!--                <a href="myMessages.html">消息</a>-->
+        </div>
+        <div class="user">
+            <div class="user-info">
+                <img src="/static/image/img/游客.png" alt="用户头像">
+                <span>游客</span>
+                <i class="dropdown-trigger">
+                    <img src="/static/image/img/下拉.png" alt="下拉菜单图标">
+                </i>
+                <!-- 下拉菜单 -->
+                <div class="dropdown-menu">
+                    <a href="MySpace.html" class="dropdown-item">我的</a>
+                    <a href="Login.html" class="dropdown-item ">切换账号</a>
+                    <a href="#" class="dropdown-item logout">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!-- 整体三栏容器 -->
+<div class="page-container">
+    <!-- 左侧栏：热门动态 -->
+    <div class="sidebar-left">
+        <!-- 热门动态卡片 -->
+        <div class="sidebar-card">
+            <div class="hot-dynamic-header">
+                <span class="hot-title">🔥 热门动态</span>
+                <span class="hot-subtitle">最新户外资讯</span>
+            </div>
+
+            <!-- 动态列表 -->
+            <div class="hot-dynamic-list" id="hotDynamicList">
+                <!-- 加载中... -->
+            </div>
+
+            <!-- 查看更多按钮 -->
+            <button class="hot-more-btn" onclick="goToDiscover()">
+                查看更多 →
+            </button>
+        </div>
+    </div>
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <main>
+            <!-- 轮播图区域 -->
+            <div class="carousel">
+                <div class="carousel-inner" id="carousel-inner">
+                    <!-- 轮播项将通过 JS 动态生成 -->
+                </div>
+
+                <!-- 上一张/下一张按钮 -->
+                <button class="carousel-control prev" onclick="prevSlide()">
+                    <img src="../static/image/img/翻页1.png" />
+                </button>
+                <button class="carousel-control next" onclick="nextSlide()">
+                    <img src="../static/image/img/翻页2.png" />
+                </button>
+
+                <!-- 轮播指示器 -->
+                <div class="carousel-dots" id="carousel-dots"></div>
+            </div>
+            <!-- 快捷功能区 -->
+            <div class="quick-functions">
+                <div class="function-grid">
+                    <!-- 发布动态（所有权限可见） -->
+                    <div class="function-item" data-perm="1,2,3" onclick="pubDynamicModal()">
+                        <div class="function-icon">
+                            <img src="../static/image/img/动态1.png" />
+                        </div>
+                        <span class="function-text">发布动态</span>
+                    </div>
+
+                    <!-- 我的行程（普通用户/高级用户可见，perm=1,3） -->
+                    <div class="function-item" data-perm="1,3" onclick="myRouteModal()">
+                        <div class="function-icon">
+                            <img src="../static/image/img/行程3.png" />
+                        </div>
+                        <span class="function-text">我的行程</span>
+                    </div>
+
+                    <!-- 管理（管理员可见，perm=2） -->
+                    <div class="function-item" data-perm="2" onclick="openAdminPanel()">
+                        <div class="function-icon">
+                            <img src="../static/image/img/管理.png" />
+                        </div>
+                        <span class="function-text">管理</span>
+                    </div>
+
+                    <!-- 我的收藏（普通用户/高级用户可见，perm=1,3） -->
+                    <div class="function-item" data-perm="1,3" onclick="openCollectModal()">
+                        <div class="function-icon">
+                            <img src="../static/image/img/收藏1.png" />
+                        </div>
+                        <span class="function-text">我的收藏</span>
+                    </div>
+
+                    <!-- 审核（管理员可见，perm=2） -->
+                    <div class="function-item" data-perm="2" onclick="openAuditPanel()">
+                        <div class="function-icon">
+                            <img src="../static/image/img/审核.png" />
+                        </div>
+                        <span class="function-text">审核</span>
+                    </div>
+
+                    <!-- 我的消息（普通用户/高级用户可见，perm=1,3） -->
+                    <div class="function-item" data-perm="1,3" onclick="openMessageModal()">
+                        <div class="function-icon">
+                            <img src="../static/image/img/消息.png" />
+                        </div>
+                        <span class="function-text">我的空间</span>
+                    </div>
+
+                    <!-- 发布活动（高级用户/管理员可见，perm=2,3） -->
+                    <div class="function-item" data-perm="2,3" onclick="openPublishModal()">
+                        <div class="function-icon">
+                            <img src="../static/image/img/flag.png" />
+                        </div>
+                        <span class="function-text">发布活动</span>
+                    </div>
+                </div>
+            </div>
+            <!-- 活动推荐区 -->
+            <div class="recommend-activities">
+                <div class="section-header">
+                    <h2 class="section-title">活动推荐</h2>
+                    <button class="refresh-btn" onclick="fetchAllActivities0()">
+                        <i class="fa fa-refresh"></i> 刷新推荐
+                    </button>
+                </div>
+                <div class="activity-list" id="activity-list"></div>
+            </div>
+        </main>
+    </div>
+    <!-- 右侧栏 -->
+    <div class="sidebar-right">
+        <!-- 1. 天气组件卡片 -->
+        <div class="sidebar-card">
+            <div class="weather-header">
+                <div class="weather-left">
+                    <div class="weather-city">北京市</div>
+                    <div class="weather-desc">晴☀️</div>
+                </div>
+                <div class="weather-temp">22°</div>
+            </div>
+
+            <div class="weather-grid">
+                <div class="weather-item">
+                    <i>👕</i>
+                    <span class="label">穿衣</span>
+                    <span class="value">春秋装</span>
+                </div>
+                <div class="weather-item">
+                    <i>☀️</i>
+                    <span class="label">紫外线</span>
+                    <span class="value">中等</span>
+                </div>
+                <div class="weather-item">
+                    <i>💨</i>
+                    <span class="label">风力</span>
+                    <span class="value">2级</span>
+                </div>
+                <div class="weather-item">
+                    <i>💧</i>
+                    <span class="label">湿度</span>
+                    <span class="value">45%</span>
+                </div>
+                <div class="weather-item">
+                    <i>🌧️</i>
+                    <span class="label">降水</span>
+                    <span class="value">10%</span>
+                </div>
+                <div class="weather-item">
+                    <i>🌬️️</i>
+                    <span class="label">风向</span>
+                    <span class="value">东北风</span>
+                </div>
+            </div>
+        </div>
+        <!-- 2. 户外小贴士 -->
+        <div class="tip-box-card">
+            <div class="tip-title">📢 户外小贴士</div>
+            <div class="tip-screen" id="tipContent">
+                加载提示中...
+            </div>
+        </div>
+        <!-- 3. 客服/帮助入口 -->
+        <div class="sidebar-card">
+            <!--        <button class="help-btn white" onclick="openService()">客服</button>-->
+            <!--        <button class="help-btn white" onclick="openTips()">户外小贴士</button>-->
+            <button class="help-btn blue" onclick="openHelp()">客服/帮助入口</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 全局变量
+    let currentIndex = 0;
+    let intervalId; // 自动轮播定时器
+    let activities = []; // 存储活动数据
+
+    // 页面加载完成事件
+    window.onload = function() {
+        console.log("window.AMap 是否存在：", window.AMap);
+        fetchAllActivities();
+        startAutoPlay();
+        controlButtonsByPermission(); // 权限控制函数
+        getRealWeather();
+        // showNextTip(); // 这里不要直接调用，防止函数未定义，放到后面
+        loadHotDynamic(); // 加载热门动态
+    };
+
+    function controlButtonsByPermission() {
+        const perm = sessionStorage.getItem("perm") || "1";
+        const functionItems = document.querySelectorAll('.function-item');
+
+        functionItems.forEach(item => {
+            const allowedPerms = item.getAttribute('data-perm').split(',');
+            if (!allowedPerms.includes(perm)) {
+                item.style.display = 'none';
+            }
+        });
+    }
+
+    function fetchAllActivities() {
+        $.ajax({
+            url: "index",
+            type: "post",
+            dataType: "json",
+            async: false,
+            contentType: "application/json;charset=UTF-8",
+            success: function(re) {
+                activities = re;
+                renderCarousel(re);
+                renderRecommendActivities(re);
+            },
+            error: function() {
+                alert("获取数据失败");
+            }
+        });
+    }
+
+    function fetchAllActivities0() {
+        $.ajax({
+            url: "index0",
+            type: "post",
+            dataType: "json",
+            async: false,
+            contentType: "application/json;charset=UTF-8",
+            success: function(re) {
+                activities = re;
+                renderRecommendActivities(re);
+            },
+            error: function() {
+                alert("获取数据失败");
+            }
+        });
+    }
+
+    function renderCarousel(activities) {
+        const carouselInner = document.getElementById("carousel-inner");
+        const carouselDots = document.getElementById("carousel-dots");
+        carouselInner.innerHTML = "";
+        carouselDots.innerHTML = "";
+
+        activities.forEach((activity, index) => {
+            const carouselItem = document.createElement("div");
+            carouselItem.className = "carousel-item";
+            if (index === 0) carouselItem.classList.add("active");
+
+            const img = document.createElement("img");
+            img.src = activity.aimg;
+            img.alt = activity.atitle;
+            img.style.objectFit = "cover";
+
+            carouselItem.addEventListener("click", () => {
+                if (activity.aid) {
+                    window.location.href = `ActivityDetails.html?aid=${activity.aid}`;
+                }
+            });
+
+            const content = document.createElement("div");
+            content.className = "carousel-content";
+            content.innerHTML = `
+                    <span class="activity-type">${activity.type}</span>
+                    <h3 class="activity-title">${activity.atitle}</h3>
+                    <div class="activity-meta">
+                        <i class="fa fa-calendar-o"></i>
+                        <span>${formatDate(activity.start_time)} - ${formatDate(activity.end_time)}</span>
+                    </div>
+                    <div class="activity-actions">
+                        <span><i class="fa fa-user-o"></i> 已报名: ${activity.current_people}/${activity.max_people}人</span>
+                        <button class="btn-signup">了解详情</button>
+                    </div>
+                `;
+
+            carouselItem.appendChild(img);
+            carouselItem.appendChild(content);
+            carouselInner.appendChild(carouselItem);
+
+            const dot = document.createElement("div");
+            dot.className = "carousel-dot";
+            if (index === 0) dot.classList.add("active");
+            dot.addEventListener("click", () => switchSlide(index));
+            carouselDots.appendChild(dot);
+        });
+
+        const itemCount = activities.length;
+        if (itemCount > 1) {
+            carouselInner.style.width = 100 + "%";
+        }
+    }
+
+    function switchSlide(index) {
+        const carouselInner = document.getElementById("carousel-inner");
+        const dots = document.querySelectorAll(".carousel-dot");
+
+        document.querySelector(".carousel-item.active")?.classList.remove("active");
+        dots[currentIndex]?.classList.remove("active");
+
+        currentIndex = index;
+        carouselInner.style.transform = `translateX(-${currentIndex * 100}%)`;
+        carouselInner.children[currentIndex].classList.add("active");
+        dots[currentIndex].classList.add("active");
+
+        clearInterval(intervalId);
+        startAutoPlay();
+    }
+
+    function prevSlide() {
+        switchSlide((currentIndex - 1 + activities.length) % activities.length);
+    }
+
+    function nextSlide() {
+        switchSlide((currentIndex + 1) % activities.length);
+    }
+
+    function startAutoPlay() {
+        const itemCount = document.querySelectorAll(".carousel-item").length;
+        if (itemCount <= 1) return;
+
+        intervalId = setInterval(() => {
+            nextSlide();
+        }, 5000);
+    }
+
+    function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleString("zh-CN", {
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    function renderRecommendActivities(activities) {
+        const activityList = document.getElementById("activity-list");
+        activityList.innerHTML = "";
+
+        activities.forEach(activity => {
+            const card = document.createElement("div");
+            card.className = "activity-card";
+            card.innerHTML = `
+        <img src="${activity.aimg}" alt="${activity.atitle}" class="activity-thumb">
+        <div class="activity-content">
+            <span class="activity-type-tag">${activity.type}</span>
+            <h3 class="activity-card-title">${activity.atitle}</h3>
+            <div class="activity-meta">
+                <i class="fa fa-calendar-o"></i>
+                <span>${formatDate(activity.start_time)}</span>
+            </div>
+            <button class="signup-btn">立即报名</button>
+        </div>
+    `;
+
+            const signupBtn = card.querySelector('.signup-btn');
+            signupBtn.addEventListener('click', () => {
+                window.location.href = `Signup.html?aid=${activity.aid}&atitle=${activity.atitle}`;
+            });
+
+            activityList.appendChild(card);
+        });
+    }
+
+    function goToDiscover(){location.href="Discover3.html"}
+
+    //获取真实天气
+
+    function getRealWeather() {
+        if (!window.AMap) {
+            console.log("地图SDK加载中…");
+            setTimeout(getRealWeather, 500);
+            return;
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(position => {
+                let lat = position.coords.latitude;
+                let lng = position.coords.longitude;
+                console.log("GPS定位成功：", lat, lng);
+
+                fetch(`https://restapi.amap.com/v3/geocode/regeo?location=${lng},${lat}&key=db3c4276faff4f29b35f47ee83177574`)
+                    .then(res => res.json())
+                    .then(data => {
+                        let city = "武汉市";
+                        if (data.status == "1" && data.regeocode) {
+                            city = data.regeocode.addressComponent.city;
+                        }
+                        console.log("真实城市：", city);
+
+                        fetch(`https://restapi.amap.com/v3/weather/weatherInfo?city=${encodeURIComponent(city)}&key=db3c4276faff4f29b35f47ee83177574&extensions=base`)
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.status === "1" && data.lives) {
+                                    let w = data.lives[0];
+                                    console.log("解析后天气：", w);
+
+                                    const weatherCard = document.querySelector(".sidebar-right .sidebar-card:first-child");
+                                    weatherCard.querySelector(".weather-city").innerText = w.city;
+
+                                    // 根据天气文字匹配秃瓢
+                                    let weatherIcon = "☀️";
+                                    const weatherText = w.weather.toLowerCase();
+
+                                    if (weatherText.includes("晴")) weatherIcon = "☀️";
+                                    else if (weatherText.includes("多云")) weatherIcon = "🌥️";
+                                    else if (weatherText.includes("阴")) weatherIcon = "☁️";
+                                    else if (weatherText.includes("雨")) weatherIcon = "🌧️";
+                                    else if (weatherText.includes("雷阵雨")) weatherIcon = "⛈️";
+                                    else if (weatherText.includes("雪")) weatherIcon = "❄️";
+                                    else if (weatherText.includes("雾")) weatherIcon = "🌫️";
+
+                                    // 设置带图标的天气描述
+                                    weatherCard.querySelector(".weather-desc").innerText = w.weather + " " + weatherIcon;
+                                    weatherCard.querySelector(".weather-temp").innerText = w.temperature + "°";
+
+                                    const items = weatherCard.querySelectorAll(".weather-item");
+                                    items[0].querySelector(".value").innerText = getDress(w.temperature);
+                                    items[1].querySelector(".value").innerText = getUV(w.weather);
+                                    items[2].querySelector(".value").innerText = w.windpower + "级";
+                                    items[3].querySelector(".value").innerText = w.humidity + "%";
+                                    items[4].querySelector(".value").innerText = "暂无";
+                                    items[5].querySelector(".value").innerText = w.winddirection + "风";
+                                }
+                            });
+                    });
+            }, err => {
+                console.log("❌ 定位失败，使用武汉");
+                getWeatherByCity("武汉市");
+            });
+        } else {
+            getWeatherByCity("武汉市");
+        }
+    }
+    function getDress(temp) {
+        temp = Number(temp);
+        if (temp <= 0) return "极寒保暖装备";
+        if (temp <= 5) return "加厚羽绒服";
+        if (temp <= 10) return "羽绒服/厚棉服";
+        if (temp <= 15) return "毛呢大衣/风衣";
+        if (temp <= 18) return "针织衫+薄外套";
+        if (temp <= 22) return "长袖T恤/卫衣";
+        if (temp <= 25) return "薄长袖/短袖";
+        if (temp <= 28) return "短袖+透气裤";
+        if (temp <= 32) return "夏季清凉装";
+        return "超轻薄透气装";
+    }
+
+    function getUV(weather) {
+        if (weather.includes("晴")) return "强";
+        if (weather.includes("云") || weather.includes("阴")) return "中等";
+        return "弱";
+    }
+
+    // 户外小贴士
+
+    const tipList = [
+        "天冷注意添衣，登山注意保暖",
+        "天气炎热，记得携带充足饮用水",
+        "雨后路滑，行走注意脚下安全",
+        "晴天紫外线强，记得涂抹防晒",
+        "大风天气，避免在悬崖边逗留",
+        "扭伤先冷敷，不要立即揉搓",
+        "野外迷路先保持冷静，原地等待",
+        "轻微划伤及时清洁消毒",
+        "爬山头晕立刻停下休息补水",
+        "遇雷电远离大树和高处",
+        "随身携带简易急救包，有备无患"
+    ];
+
+    let tipIndex = 0;
+    // 把函数声明提到最前面，防止 window.onload 找不到
+    function showNextTip() {
+        const el = document.getElementById('tipContent');
+        if (!el) return;
+        el.style.opacity = 0;
+        setTimeout(() => {
+            el.innerText = tipList[tipIndex];
+            el.style.opacity = 1;
+            tipIndex = (tipIndex + 1) % tipList.length;
+        }, 200);
+    }
+    // 启动定时器
+    setInterval(showNextTip, 6000);
+    // 手动执行一次
+    showNextTip();
+
+    // ==============================
+    // ✅ 修复：热门动态渲染
+    // 接口路径改为 /getHotDynamics
+    // ==============================
+    // function loadHotDynamic() {
+    //     const listEl = document.getElementById("hotDynamicList");
+    //     if (!listEl) return;
+    //
+    //     $.ajax({
+    //         // 你的后端接口地址是 /getHotDynamics
+    //         url: "getHotDynamics",
+    //         type: "post",
+    //         dataType: "json",
+    //         async: true,
+    //         contentType: "application/json;charset=UTF-8",
+    //         success: function(res) {
+    //             console.log("✅ 热门动态返回：", res);
+    //
+    //             if (!res || res.length === 0) {
+    //                 listEl.innerHTML = "<div style='text-align:center;padding:12px;color:#999'>暂无热门动态</div>";
+    //                 return;
+    //             }
+    //
+    //             let html = "";
+    //             res.forEach(item => {
+    //                 let createTime = formatTime(item.createTime);
+    //                 // 你的字段是 avatar 而不是 uavatar
+    //                 let avatar = item.avatar || '/static/image/img/游客.png';
+    //
+    //                 html += `
+    //                 <div class="hot-dynamic-item">
+    //                     <img src="${avatar}" class="hot-avatar">
+    //                     <div class="hot-item-content">
+    //                         <div class="hot-username">${item.nickname || '匿名用户'}</div>
+    //                         <div class="hot-text">${item.content || '无内容'}</div>
+    //                         <div class="hot-time">${createTime}</div>
+    //                     </div>
+    //                 </div>
+    //                 `;
+    //             });
+    //             listEl.innerHTML = html;
+    //         },
+    //         error: function(xhr, status, err) {
+    //             console.error("❌ 热门动态请求失败：", err);
+    //             listEl.innerHTML = "<div style='text-align:center;padding:12px;color:#f00'>加载失败，请刷新重试</div>";
+    //         }
+    //     });
+    // }
+    // ==============================
+    // ✅ 按你要的样式：封面图 + 头像标题 + 点赞数
+    // ==============================
+    // ==============================
+    // ✅ 按你要的样式：封面图 + 头像标题 + 点赞数 + 点击跳转详情
+    // ==============================
+    function loadHotDynamic() {
+        const listEl = document.getElementById("hotDynamicList");
+        if (!listEl) return;
+
+        $.ajax({
+            url: "getHotDynamics",
+            type: "post",
+            dataType: "json",
+            async: true,
+            contentType: "application/json;charset=UTF-8",
+            success: function(res) {
+                console.log("✅ 热门动态返回：", res);
+
+                if (!res || res.length === 0) {
+                    listEl.innerHTML = "<div style='text-align:center;padding:12px;color:#999'>暂无热门动态</div>";
+                    return;
+                }
+
+                let html = "";
+                res.forEach(item => {
+                    let coverImg = "/static/image/img/cover1.png";
+                    if (item.media && item.media.trim() !== "") {
+                        let medias = item.media.split(",");
+                        if (medias.length > 0) {
+                            let firstMedia = medias[0];
+                            let isVideo = /\.(mp4|mov|avi|wmv|mkv)$/i.test(firstMedia);
+                            if (!isVideo) {
+                                coverImg = firstMedia;
+                            }
+                        }
+                    }
+
+                    let avatar = item.avatar || '/static/image/img/游客.png';
+                    let title = item.dtitle || '无标题';
+                    let likeCount = item.like_count || 0;
+
+                    // 🔥 关键：给整个卡片加 onclick 跳转
+                    html += `
+                <div class="hot-dynamic-card" onclick="goDynamicDetail(${item.did},'${item.dtitle}')" style="
+                    background: #fff;
+                    border-radius: 8px;
+                    overflow: hidden;
+                    margin-bottom: 12px;
+                    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+                    cursor: pointer; /* 鼠标移上去变手指 */
+                ">
+                    <!-- 封面图 -->
+                    <div style="width: 100%; height: 120px; overflow: hidden;">
+                        <img src="${coverImg}" style="
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                        " alt="封面">
+                    </div>
+                    <!-- 头像 + 标题 -->
+                    <div style="padding: 8px 10px; display: flex; align-items: center; gap: 8px;">
+                        <img src="${avatar}" style="
+                            width: 24px;
+                            height: 24px;
+                            border-radius: 50%;
+                            object-fit: cover;
+                        " alt="头像">
+                        <span style="
+                            font-size: 14px;
+                            font-weight: 500;
+                            color: #333;
+                            flex: 1;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            white-space: nowrap;
+                        ">${title}</span>
+                    </div>
+                    <!-- 点赞数 -->
+                    <div style="padding: 0 10px 8px; font-size: 12px; color: #666;">
+                        <span style="color: #ff6b6b;">❤️</span> ${likeCount}
+                    </div>
+                </div>
+                `;
+                });
+                listEl.innerHTML = html;
+            },
+            error: function(xhr, status, err) {
+                console.error("❌ 热门动态请求失败：", err);
+                listEl.innerHTML = "<div style='text-align:center;padding:12px;color:#f00'>加载失败，请刷新重试</div>";
+            }
+        });
+    }
+
+    // 点击卡片跳转到动态详情页
+    function goDynamicDetail(did, dtitle) {
+
+        window.location.href = `dynDetails.html?did=${did}`;
+    }
+
+</script>
+</body>
+</html>

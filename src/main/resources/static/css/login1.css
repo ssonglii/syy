@@ -1,0 +1,149 @@
+@charset "UTF-8";
+#verifyImg {
+	border: 1px solid #ddd;
+	/*vertical-align: middle;*/
+	cursor: pointer;
+}
+
+#verifyCode {
+	border: 1px solid #ddd;
+	padding: 5px;
+	vertical-align: middle;
+	width: 170px;
+}
+/*.verify-code-error {*/
+/*	color: #ff4444;*/
+/*	font-size: 14px;*/
+/*	margin-top: 5px;*/
+/*	text-align: center;*/
+/*}*/
+
+
+body{
+	
+	 font-family: sans-serif; 
+	background-image: url("../image/img/login3.png");
+	background-repeat: no-repeat;
+	background-attachment: fixed;
+	overflow: hidden;
+	background-size: cover;
+}
+.container
+{
+	width:450px;
+	margin: 7% auto;
+	border-radius: 25px;
+	background-color: rgba(255, 255, 255, 0.5);
+	box-shadow: 0 0 17px #a5a3a4;
+}
+/*shanhu*/
+
+/*dsfa*/
+.header
+{
+	text-align: center;
+	padding-top: 45px;
+	
+}
+
+.header h1 {
+	color: #0891dc; /* 标题颜色 */
+	margin-bottom: 80px;
+	font-family: "您选择的字体", Arial, sans-serif; /* 替换为您选择的字体 */
+	font-size: 48px; /* 更大的字体大小 */
+	font-weight: bold; /* 粗体 */
+	line-height: 1.2; /* 调整行高 */
+	text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.4); /* 文本阴影 */
+
+	/* 使用伪元素添加装饰线（可选） */
+	position: relative;
+	display: inline-block;
+}
+/* 伪元素样式 */
+.header h1::before {
+	 content: "";
+	 position: absolute;
+	 bottom: -10px; /* 装饰线位置 */
+	 left: 0;
+	 width: 100%;
+	 height: 2px; /* 装饰线粗细 */
+	 background-color: #1f96ea; /* 装饰线颜色 */
+ }
+
+.main
+{
+	text-align: center;	
+	font-family:youyuan;
+}
+.main input {
+	width: 300px;
+	height: 40px;
+	border: none;
+	font-family:youyuan;
+	/* 选中边框去掉 */
+	outline: none;
+	padding-left: 40px;
+	box-sizing: border-box;
+	font-size: 15px;
+	color: #333;
+	margin-bottom: 40px;
+}
+#login2{
+	padding-left:0 ;
+	background-color: #fffdfd;
+	letter-spacing: 1px;
+	font-weight: bold;
+	margin-bottom: 5px;
+	margin-left: 8px;
+}
+#reg{
+	padding-left:0 ;
+	background-color: #fffdfd;
+	letter-spacing: 1px;
+	font-weight: bold;
+	margin-bottom: 70px;
+	margin-left: 0px;
+
+
+}
+ #login2:hover{
+	box-shadow: 2px 2px 5px #9b9b9b;
+	background-color: rgba(17, 119, 182, 0.82);
+}
+#reg:hover{
+	box-shadow: 2px 2px 5px  #9b9b9b;
+	background-color: rgba(17, 119, 182, 0.82);
+}
+
+.main input:hover{
+	box-shadow: 2px 2px 5px rgba(17, 119, 182, 0.82);
+	background-color: #74bcef;
+	
+}
+.main span{
+	position: relative;
+}
+.img1{
+	position: relative;
+	left: 34px;
+	color: #333;
+	width: 15px;
+	top:2px;
+}
+.uno {
+	margin-left: 10px;
+}
+.img2{
+	position: relative;
+	left: -35px;
+	color: #333;
+	width: 15px;
+	top:2px;
+}
+#form1 input[type="button"]{
+	background-color: rgba(17, 119, 182, 0.82);
+	color: #fff;
+}
+#form1 input[type="button"]:hover {
+	background-color:#74bcef;
+}

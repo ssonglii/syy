@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>山友缘系统 - 达人认证申请</title>
+  <!-- 引入Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 引入Font Awesome -->
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <!-- Tailwind配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF', // 主色调：深蓝色（专业、可信赖）
+            secondary: '#36CFC9', // 辅助色：青绿色（户外、自然）
+            accent: '#FF7D00', // 强调色：橙色（活力、警示）
+            neutral: {
+              100: '#F5F7FA',
+              200: '#E5E9F2',
+              300: '#C0CCDA',
+              400: '#8392A5',
+              500: '#4E5969',
+              600: '#272E3B',
+              700: '#1D2129',
+            }
+          },
+          fontFamily: {
+            inter: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          boxShadow: {
+            'card': '0 4px 20px rgba(0, 0, 0, 0.08)',
+            'hover': '0 8px 30px rgba(0, 0, 0, 0.12)',
+          }
+        },
+      }
+    }
+  </script>
+
+  <!-- 自定义工具类 -->
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .scrollbar-hide {
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .form-input-focus {
+        @apply focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200;
+      }
+      .step-active {
+        @apply bg-primary text-white;
+      }
+      .step-completed {
+        @apply bg-primary/10 text-primary border-primary;
+      }
+      .step-pending {
+        @apply bg-white text-neutral-400 border-neutral-200;
+      }
+    }
+  </style>
+</head>
+<body class="font-inter bg-neutral-100 text-neutral-700 min-h-screen flex flex-col">
+<!-- 顶部导航栏 -->
+<header class="bg-white shadow-sm fixed top-0 left-0 right-0 z-30">
+  <div class="container mx-auto px-4 py-3">
+    <div class="flex items-center justify-between">
+      <!-- Logo -->
+      <div class="flex items-center gap-2">
+        <div class="h-9 w-9 rounded-lg bg-primary flex items-center justify-center">
+          <i class="fa fa-mountain text-white"></i>
+        </div>
+        <span class="text-lg font-semibold text-neutral-700">山有缘户外系统</span>
+      </div>
+
+      <!-- 用户信息 -->
+      <div class="flex items-center gap-4">
+        <div class="hidden md:flex items-center gap-2">
+          <img src="https://picsum.photos/id/1005/40/40" alt="用户头像" class="h-9 w-9 rounded-full object-cover border-2 border-primary/20">
+          <span class="text-sm font-medium">登山小z</span>
+          <span class="text-xs text-neutral-500">普通用户</span>
+        </div>
+
+        <a href="#" class="text-neutral-500 hover:text-primary transition-colors">
+          <i class="fa fa-user-circle-o text-xl"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- 主内容区域 -->
+<main class="flex-1 pt-24 pb-12">
+  <div class="container mx-auto px-4">
+    <!-- 页面标题 -->
+    <div class="mb-8 text-center">
+      <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-neutral-800">户外达人认证申请</h1>
+      <p class="text-neutral-500 mt-2 max-w-2xl mx-auto">通过认证成为官方认可的户外达人，分享你的专业知识，获得更多特权和曝光机会</p>
+    </div>
+
+    <!-- 申请进度步骤 -->
+    <div class="max-w-3xl mx-auto mb-10">
+      <div class="flex items-center justify-between relative">
+        <!-- 进度线 -->
+        <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1 bg-neutral-200 z-0"></div>
+        <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1 bg-primary z-0 transition-all duration-500" style="width: 33%;"></div>
+
+        <!-- 步骤1 -->
+        <div class="relative z-10 flex flex-col items-center">
+          <div class="h-10 w-10 rounded-full border-2 flex items-center justify-center step-active">
+            <i class="fa fa-user"></i>
+          </div>
+          <span class="text-sm font-medium mt-2 text-primary">个人信息</span>
+        </div>
+
+        <!-- 步骤2 -->
+        <div class="relative z-10 flex flex-col items-center">
+          <div class="h-10 w-10 rounded-full border-2 flex items-center justify-center step-pending">
+            <i class="fa fa-map-o"></i>
+          </div>
+          <span class="text-sm font-medium mt-2 text-neutral-400">户外经历</span>
+        </div>
+
+        <!-- 步骤3 -->
+        <div class="relative z-10 flex flex-col items-center">
+          <div class="h-10 w-10 rounded-full border-2 flex items-center justify-center step-pending">
+            <i class="fa fa-file-text-o"></i>
+          </div>
+          <span class="text-sm font-medium mt-2 text-neutral-400">证明材料</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 认证申请表单 -->
+    <div class="max-w-3xl mx-auto bg-white rounded-xl shadow-card overflow-hidden">
+      <div class="p-6 md:p-8">
+        <h2 class="text-xl font-semibold text-neutral-800 mb-6">个人基本信息</h2>
+
+        <form id="expertApplicationForm" class="space-y-6">
+          <!-- 个人信息 -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label for="realName" class="block text-sm font-medium text-neutral-700 mb-1">真实姓名 <span class="text-red-500">*</span></label>
+              <input type="text" id="realName" name="realName" class="w-full px-4 py-2 rounded-lg border border-neutral-300 form-input-focus" placeholder="请输入真实姓名">
+            </div>
+
+            <div>
+              <label for="idNumber" class="block text-sm font-medium text-neutral-700 mb-1">身份证号 <span class="text-red-500">*</span></label>
+              <input type="text" id="idNumber" name="idNumber" class="w-full px-4 py-2 rounded-lg border border-neutral-300 form-input-focus" placeholder="请输入身份证号码">
+            </div>
+
+            <div>
+              <label for="gender" class="block text-sm font-medium text-neutral-700 mb-1">性别 <span class="text-red-500">*</span></label>
+              <div class="flex items-center space-x-4">
+                <label class="inline-flex items-center">
+                  <input type="radio" name="gender" value="male" class="form-radio h-4 w-4 text-primary focus:ring-primary">
+                  <span class="ml-2">男</span>
+                </label>
+                <label class="inline-flex items-center">
+                  <input type="radio" name="gender" value="female" class="form-radio h-4 w-4 text-primary focus:ring-primary">
+                  <span class="ml-2">女</span>
+                </label>
+                <label class="inline-flex items-center">
+                  <input type="radio" name="gender" value="other" class="form-radio h-4 w-4 text-primary focus:ring-primary">
+                  <span class="ml-2">保密</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label for="birthdate" class="block text-sm font-medium text-neutral-700 mb-1">出生日期 <span class="text-red-500">*</span></label>
+              <input type="date" id="birthdate" name="birthdate" class="w-full px-4 py-2 rounded-lg border border-neutral-300 form-input-focus">
+            </div>
+
+            <div>
+              <label for="phone" class="block text-sm font-medium text-neutral-700 mb-1">手机号码 <span class="text-red-500">*</span></label>
+              <input type="tel" id="phone" name="phone" class="w-full px-4 py-2 rounded-lg border border-neutral-300 form-input-focus" placeholder="请输入手机号码">
+            </div>
+
+            <div>
+              <label for="email" class="block text-sm font-medium text-neutral-700 mb-1">电子邮箱 <span class="text-red-500">*</span></label>
+              <input type="email" id="email" name="email" class="w-full px-4 py-2 rounded-lg border border-neutral-300 form-input-focus" placeholder="请输入电子邮箱">
+            </div>
+
+            <div class="md:col-span-2">
+              <label for="address" class="block text-sm font-medium text-neutral-700 mb-1">常住地址 <span class="text-red-500">*</span></label>
+              <input type="text" id="address" name="address" class="w-full px-4 py-2 rounded-lg border border-neutral-300 form-input-focus" placeholder="请输入详细地址">
+            </div>
+          </div>
+
+          <!-- 户外领域与特长 -->
+          <div class="space-y-4">
+            <h3 class="text-lg font-medium text-neutral-800">户外领域与特长 <span class="text-red-500">*</span></h3>
+
+            <div>
+              <label class="block text-sm font-medium text-neutral-700 mb-2">擅长的户外领域（可多选）</label>
+              <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <label class="flex items-center p-3 rounded-lg border border-neutral-300 hover:border-primary cursor-pointer transition-colors">
+                  <input type="checkbox" name="expertise" value="hiking" class="form-checkbox h-4 w-4 text-primary focus:ring-primary">
+                  <span class="ml-2">徒步登山</span>
+                </label>
+                <label class="flex items-center p-3 rounded-lg border border-neutral-300 hover:border-primary cursor-pointer transition-colors">
+                  <input type="checkbox" name="expertise" value="camping" class="form-checkbox h-4 w-4 text-primary focus:ring-primary">
+                  <span class="ml-2">露营野炊</span>
+                </label>
+                <label class="flex items-center p-3 rounded-lg border border-neutral-300 hover:border-primary cursor-pointer transition-colors">
+                  <input type="checkbox" name="expertise" value="climbing" class="form-checkbox h-4 w-4 text-primary focus:ring-primary">
+                  <span class="ml-2">攀岩攀冰</span>
+                </label>
+                <label class="flex items-center p-3 rounded-lg border border-neutral-300 hover:border-primary cursor-pointer transition-colors">
+                  <input type="checkbox" name="expertise" value="cycling" class="form-checkbox h-4 w-4 text-primary focus:ring-primary">
+                  <span class="ml-2">山地骑行</span>
+                </label>
+                <label class="flex items-center p-3 rounded-lg border border-neutral-300 hover:border-primary cursor-pointer transition-colors">
+                  <input type="checkbox" name="expertise" value="water" class="form-checkbox h-4 w-4 text-primary focus:ring-primary">
+                  <span class="ml-2">水上运动</span>
+                </label>
+                <label class="flex items-center p-3 rounded-lg border border-neutral-300 hover:border-primary cursor-pointer transition-colors">
+                  <input type="checkbox" name="expertise" value="other" class="form-checkbox h-4 w-4 text-primary focus:ring-primary">
+                  <span class="ml-2">其他领域</span>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label for="specialty" class="block text-sm font-medium text-neutral-700 mb-1">个人特长描述 <span class="text-red-500">*</span></label>
+              <textarea id="specialty" name="specialty" rows="3" class="w-full px-4 py-2 rounded-lg border border-neutral-300 form-input-focus" placeholder="请简要描述你的户外特长和专业技能（200字以内）"></textarea>
+              <p class="text-xs text-neutral-500 mt-1">已输入 <span id="specialtyCount">0</span>/200 字</p>
+            </div>
+          </div>
+
+          <!-- 联系信息 -->
+          <div>
+            <h3 class="text-lg font-medium text-neutral-800 mb-4">紧急联系人信息 <span class="text-red-500">*</span></h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="emergencyName" class="block text-sm font-medium text-neutral-700 mb-1">联系人姓名</label>
+                <input type="text" id="emergencyName" name="emergencyName" class="w-full px-4 py-2 rounded-lg border border-neutral-300 form-input-focus" placeholder="请输入紧急联系人姓名">
+              </div>
+              <div>
+                <label for="emergencyPhone" class="block text-sm font-medium text-neutral-700 mb-1">联系电话</label>
+                <input type="tel" id="emergencyPhone" name="emergencyPhone" class="w-full px-4 py-2 rounded-lg border border-neutral-300 form-input-focus" placeholder="请输入紧急联系人电话">
+              </div>
+              <div class="md:col-span-2">
+                <label for="relationship" class="block text-sm font-medium text-neutral-700 mb-1">与本人关系</label>
+                <input type="text" id="relationship" name="relationship" class="w-full px-4 py-2 rounded-lg border border-neutral-300 form-input-focus" placeholder="请输入与本人关系（如：配偶、父母、朋友等）">
+              </div>
+            </div>
+          </div>
+
+          <!-- 提交按钮 -->
+          <div class="flex justify-end pt-4">
+            <button type="button" id="saveDraftBtn" class="btn-secondary mr-3">
+              <i class="fa fa-save mr-1"></i> 保存草稿
+            </button>
+            <button type="button" id="nextStepBtn" class="btn-primary">
+              <i class="fa fa-arrow-right mr-1"></i> 下一步
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- 认证说明 -->
+    <div class="max-w-3xl mx-auto mt-8 bg-white rounded-xl shadow-card p-6">
+      <h3 class="text-lg font-semibold text-neutral-800 mb-4">户外达人认证说明</h3>
+      <div class="space-y-3 text-sm text-neutral-600">
+        <div class="flex items-start">
+          <div class="flex-shrink-0 h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-primary mt-0.5">
+            <i class="fa fa-check text-xs"></i>
+          </div>
+          <p class="ml-3">户外达人认证是山友缘系统为专业户外爱好者提供的认证服务，认证通过后将获得专属标识和特权</p>
+        </div>
+        <div class="flex items-start">
+          <div class="flex-shrink-0 h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-primary mt-0.5">
+            <i class="fa fa-check text-xs"></i>
+          </div>
+          <p class="ml-3">认证申请需要提供真实有效的个人信息和相关证明材料，审核周期为3-5个工作日</p>
+        </div>
+        <div class="flex items-start">
+          <div class="flex-shrink-0 h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-primary mt-0.5">
+            <i class="fa fa-check text-xs"></i>
+          </div>
+          <p class="ml-3">认证成功后，您可以获得：专属达人标识、内容优先推荐、活动优先参与权、平台合作机会等</p>
+        </div>
+        <div class="flex items-start">
+          <div class="flex-shrink-0 h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-primary mt-0.5">
+            <i class="fa fa-check text-xs"></i>
+          </div>
+          <p class="ml-3">请确保填写的所有信息真实有效，如发现虚假信息，将取消认证资格并可能限制账号使用</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+
+<!-- JavaScript -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 字数统计
+    const specialtyTextarea = document.getElementById('specialty');
+    const specialtyCount = document.getElementById('specialtyCount');
+
+    specialtyTextarea.addEventListener('input', function() {
+      const count = this.value.length;
+      specialtyCount.textContent = count;
+
+      if (count > 200) {
+        specialtyCount.classList.add('text-red-500');
+        this.value = this.value.substring(0, 200);
+        specialtyCount.textContent = 200;
+      } else {
+        specialtyCount.classList.remove('text-red-500');
+      }
+    });
+
+    // 保存草稿按钮点击事件
+    const saveDraftBtn = document.getElementById('saveDraftBtn');
+    saveDraftBtn.addEventListener('click', function() {
+      // 这里添加保存草稿的逻辑
+      alert('草稿已保存！');
+    });
+
+    // 下一步按钮点击事件
+    const nextStepBtn = document.getElementById('nextStepBtn');
+    nextStepBtn.addEventListener('click', function() {
+      // 表单验证
+      const form = document.getElementById('expertApplicationForm');
+      const requiredFields = form.querySelectorAll('[required], [name="gender"]');
+
+      let isValid = true;
+
+      requiredFields.forEach(field => {
+        if (field.type === 'radio') {
+          // 处理单选按钮
+          const radioGroup = document.querySelectorAll(`[name="${field.name}"]`);
+          let isChecked = false;
+
+          radioGroup.forEach(radio => {
+            if (radio.checked) {
+              isChecked = true;
+            }
+          });
+
+          if (!isChecked) {
+            isValid = false;
+            // 高亮提示
+            radioGroup[0].closest('div').classList.add('border-red-500');
+            setTimeout(() => {
+              radioGroup[0].closest('div').classList.remove('border-red-500');
+            }, 2000);
+          }
+        } else if (!field.value.trim()) {
+          isValid = false;
+          // 高亮提示
+          field.classList.add('border-red-500');
+          setTimeout(() => {
+            field.classList.remove('border-red-500');
+          }, 2000);
+        }
+      });
+
+      if (isValid) {
+        // 表单验证通过，跳转到下一步
+        window.location.href = 'expert-application-step2.html';
+      } else {
+        alert('请填写所有必填信息！');
+      }
+    });
+  });
+</script>
+</body>
+</html>

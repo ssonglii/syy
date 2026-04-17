@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>行安 - 达人认证</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/down.css">
+    <script src="../static/js/jquery-1.8.3.js"></script>
+    <script src="../static/js/syy.js"></script>
+    <style>
+        /* 通用样式重置，让不同设备表现更一致 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin-top: 70px;
+            background-color: #f8f9fa;
+            font-family: "Microsoft YaHei", sans-serif;
+            line-height: 1.6;
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        /*aaaa*/
+        .navbar .logo {
+            /* 保持原本的 inline 或 inline-block 布局（如果没开 flex 的话） */
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .navbar .logo span {
+            font-size: 24px;
+            line-height: 1; /* 避免行高干扰 */
+            font-weight: bold;
+            color: #333;
+        }
+
+        .navbar .logo img {
+            width: 32px;
+            height: 32px;
+            /* 关键：强制图片底部与文字基线对齐 */
+            vertical-align: bottom;
+        }
+        /*aaaa*/
+        .navbar .menu {
+            display: flex;
+            gap: 10px;
+        }
+        .navbar .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar .menu a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .menu a:hover {
+            background-color: #eee;
+        }
+
+        .navbar .user .publish-btn {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .user .publish-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .navbar .user .user-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .navbar .user .user-info img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .navbar .user .user-info span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /*导航下拉图标*/
+        .navbar .user .user-info i img {
+            width: 15px;
+            height: 15px;
+        }
+
+        /* 主体内容容器，适配不同屏幕 */
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 10px;
+        }
+
+        /* 标题区样式，增大标题字号 */
+        .title-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .title-section h1 {
+            font-size: 28px; /* 增大标题字号 */
+            font-weight: 600;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .title-section p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 步骤条样式，适配小屏幕 */
+        .steps {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .step-icon {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            border-radius: 50%;
+            background-color: #e5e7eb;
+            color: #999;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .step.active .step-icon {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .step-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 表单卡片样式，适配小屏幕 */
+        .form-card {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            margin-bottom: 20px;
+        }
+
+        .form-step {
+            display: none;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        .form-step h2 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        /* 按钮化多选框容器：让选项一行排开，换行自适应 */
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px; /* 选项之间的间距 */
+        }
+
+        /* 隐藏原生 checkbox，只保留功能 */
+        .checkbox-btn input[type="checkbox"] {
+            display: none;
+        }
+
+        /* 未选中时的按钮样式 */
+        .checkbox-btn span {
+            display: inline-block;
+            padding: 8px 16px;
+            border: 1px solid #d1d5db; /* 灰色边框 */
+            border-radius: 4px;
+            cursor: pointer;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        /* 选中后的样式：蓝色背景 + 白色文字 + 蓝色边框 */
+        .checkbox-btn input[type="checkbox"]:checked + span {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: #fff;
+        }
+
+        /* 鼠标悬浮时：边框变蓝，文字变蓝（未选中状态下的交互） */
+        .checkbox-btn span:hover {
+            border-color: #007bff;
+            color: #007bff;
+        }
+        /* 认证类型单选框样式 */
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-group input[type="radio"] {
+            accent-color: #007bff;
+        }
+
+        .radio-group input[type="radio"]:checked + span {
+            color: #007bff;
+            font-weight: 500;
+        }
+        /* 操作按钮样式，适配小屏幕 */
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background-color: #545b62;
+        }
+
+        .btn-disabled {
+            background-color: #e9ecef;
+            color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .btn-disabled:hover {
+            background-color: #e9ecef;
+        }
+
+        /* 认证说明样式 */
+        .form-card ul {
+            list-style: inside;
+            padding-left: 10px;
+            line-height: 1.6;
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 响应式适配，针对手机等小屏幕 */
+        @media (max-width: 768px) {
+            .navbar .menu {
+                display: none; /* 若要实现汉堡菜单可调整，这里简化 */
+            }
+
+            .title-section h1 {
+                font-size: 24px;
+            }
+
+            .steps {
+                gap: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<!-- 顶部导航栏 -->
+<header>
+    <div class="navbar">
+        <div class="logo">
+            <img src="/static/image/img/Logo.png" alt="山友缘Logo">
+            <span>行安</span>
+        </div>
+        <div class="menu">
+            <a href="Index.html">首页</a>
+            <a href="AllActivities.html">活动</a>
+            <a href="Discover3.html">动态</a>
+<!--            <a href="myMessages.html">消息</a>-->
+        </div>
+        <div class="user">
+            <div class="user-info">
+                <img src="/static/image/img/游客.png" alt="用户头像">
+                <span>游客</span>
+                <i class="dropdown-trigger">
+                    <img src="/static/image/img/下拉.png" alt="下拉菜单图标">
+                </i>
+                <!-- 下拉菜单 -->
+                <div class="dropdown-menu">
+                    <a href="MySpace.html" class="dropdown-item">我的</a>
+                    <a href="Login.html" class="dropdown-item ">切换账号</a>
+                    <a href="#" class="dropdown-item logout">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- 主体内容 -->
+<main>
+    <div class="container">
+        <!-- 标题区 -->
+        <div class="title-section">
+            <h1>户外达人认证申请</h1>
+            <p>通过认证成为官方认可的户外达人，分享专业知识，获得更多特权</p>
+        </div>
+
+        <!-- 步骤条 -->
+        <div class="steps">
+            <div class="step active" data-step="1">
+                <div class="step-icon">1</div>
+                <div class="step-text">个人信息</div>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-icon">2</div>
+                <div class="step-text">户外经历</div>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-icon">3</div>
+                <div class="step-text">证明材料</div>
+            </div>
+        </div>
+
+        <!-- 表单区域 -->
+        <form id="certificationForm" class="form-card" action="/certaddAll" enctype="multipart/form-data">
+            <div class="form-card">
+                <!-- 步骤1：个人信息 -->
+                <div class="form-step active" data-step="1">
+                    <h2>个人基本信息</h2>
+                    <div class="form-group">
+                        <label>真实姓名</label>
+                        <input type="text" name="real_name" placeholder="请输入真实姓名" required />
+                    </div>
+                    <div class="form-group">
+                        <label>身份证号</label>
+                        <input type="text" name="id_card" placeholder="请输入身份证号" required />
+                    </div>
+                    <div class="form-group">
+                        <label>联系电话</label>
+                        <input type="tel" name="phone" placeholder="请输入手机号" pattern="^1[3-9]\d{9}$" required />
+                    </div>
+                    <div class="form-group">
+                        <label>电子邮箱</label>
+                        <input type="email" name="email" placeholder="请输入邮箱" required />
+                    </div>
+                </div>
+
+                <!-- 步骤2：户外经历 -->
+                <div class="form-step" data-step="2">
+                    <h2>户外经历与专长</h2>
+                    <div class="form-group">
+                        <!-- 新增：认证类型单选框组 -->
+                        <div class="form-group">
+                            <label>认证类型</label>
+                            <div class="radio-group" style="display: flex; gap: 15px; flex-wrap: wrap; margin-top: 8px;">
+                                <label style="display: flex; align-items: center; gap: 5px; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer;">
+                                    <input type="radio" name="cert_type" value="达人认证" checked style="accent-color: #007bff;">
+                                    <span>达人认证</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 5px; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer;">
+                                    <input type="radio" name="cert_type" value="专家认证" style="accent-color: #007bff;">
+                                    <span>专家认证</span>
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 5px; padding: 8px 12px; border: 1px solid #d1d5db; border-radius: 4px; cursor: pointer;">
+                                    <input type="radio" name="cert_type" value="机构认证" style="accent-color: #007bff;">
+                                    <span>机构认证</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <label>擅长领域（可多选）</label>
+                        <div class="checkbox-group">
+                            <!-- 每个选项用 label 包裹，新增 .checkbox-btn 类 -->
+                            <label class="checkbox-btn">
+                                <input type="checkbox" name="expertise" value="徒步" />
+                                <span>徒步</span>
+                            </label>
+                            <label class="checkbox-btn">
+                                <input type="checkbox" name="expertise" value="登山" />
+                                <span>登山</span>
+                            </label>
+                            <label class="checkbox-btn">
+                                <input type="checkbox" name="expertise" value="露营" />
+                                <span>露营</span>
+                            </label>
+                            <label class="checkbox-btn">
+                                <input type="checkbox" name="expertise" value="攀岩" />
+                                <span>攀岩</span>
+                            </label>
+                            <label class="checkbox-btn">
+                                <input type="checkbox" name="expertise" value="其他" />
+                                <span>其他</span>
+                            </label>
+                        </div>
+                    </div>
+                    <!-- 下面的文本域保持不变 -->
+                    <div class="form-group">
+                        <label>户外经历描述</label>
+                        <textarea name="outdoor_experience" placeholder="请详细描述户外经历（如活动、角色、成就等）" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>专业技能与特长</label>
+                        <textarea name="skill_desc" placeholder="如急救认证、装备知识等" required></textarea>
+                    </div>
+                </div>
+
+                <!-- 步骤3：证明材料 -->
+                <div class="form-step" data-step="3">
+                    <h2>证明材料上传</h2>
+                    <div class="form-group">
+                        <label>身份证照片（正反面）</label>
+                        <div>
+                            <div>
+                                <label>正面</label>
+                                <input type="file" name="id_card_front" accept="image/*" required />
+                            </div>
+                            <div>
+                                <label>反面</label>
+                                <input type="file" name="id_card_back" accept="image/*" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>户外经历证明（活动照片、证书等）</label>
+                        <input type="file" name="experience_proofs" accept="image/*,application/pdf" multiple required />
+                        <small class="text-muted" style="display: block; margin-top: 0.5rem;">
+                            支持图片/PDF，最多上传5个文件，单个不超过10MB
+                        </small>
+                    </div>
+                    <div class="form-group">
+                        <label>补充说明（可选）</label>
+                        <textarea name="supplement_info" placeholder="如有其他说明内容，可在此填写"></textarea>
+                    </div>
+                </div>
+
+                <!-- 操作按钮 -->
+                <div class="form-actions">
+                    <button class="btn btn-secondary" id="prevStep" disabled>上一步</button>
+                    <button type="button" class="btn btn-primary" id="nextStep">下一步</button>
+                    <!-- 已删除暂存草稿按钮 -->
+                </div>
+            </div>
+        </form>
+
+        <!-- 认证说明 -->
+        <div class="form-card">
+            <h2>认证说明</h2>
+            <ul>
+                <li>认证需提供真实有效的个人信息和证明材料，审核周期3-5个工作日。</li>
+                <li>通过后可获得专属标识、内容推荐、活动优先参与等特权。</li>
+                <li>虚假信息将取消认证资格并限制账号使用。</li>
+            </ul>
+        </div>
+    </div>
+</main>
+
+<script>
+    $(function () {
+        // 获取步骤、表单步骤、按钮等元素
+        const $steps = $('.step');
+        const $formSteps = $('.form-step');
+        const $prevStepBtn = $('#prevStep');
+        const $nextStepBtn = $('#nextStep');
+        let currentStep = 1; // 当前步骤，从1开始
+
+        // 下一步按钮点击事件
+        $nextStepBtn.on('click', function () {
+            // 校验当前步骤表单
+            const currentFormStep = $formSteps.filter(`[data-step="${currentStep}"]`);
+            let isValid = true;
+
+            currentFormStep.find('input[required], textarea[required]').each(function() {
+                if (!this.value.trim()) {
+                    isValid = false;
+                    $(this).addClass('border-red-500');
+                    setTimeout(() => $(this).removeClass('border-red-500'), 2000);
+                }
+            });
+
+            if (isValid) {
+                if (currentStep < 3) {
+                    // 切换步骤
+                    $formSteps.removeClass('active');
+                    $steps.removeClass('active');
+                    currentStep++;
+                    $formSteps.filter(`[data-step="${currentStep}"]`).addClass('active');
+                    $steps.filter(`[data-step="${currentStep}"]`).addClass('active');
+                    // 更新按钮状态
+                    $prevStepBtn.removeAttr('disabled');
+                    if (currentStep === 3) {
+                        $nextStepBtn.text('提交申请');
+                    }
+                } else {
+                    submitCertification();
+                }
+            } else {
+                alert('请填写所有必填字段！');
+            }
+        });
+        // 上一步按钮点击事件
+        $prevStepBtn.on('click', function () {
+            if (currentStep > 1) {
+                $formSteps.removeClass('active');
+                $steps.removeClass('active');
+                currentStep--;
+                $formSteps.filter(`[data-step="${currentStep}"]`).addClass('active');
+                $steps.filter(`[data-step="${currentStep}"]`).addClass('active');
+                // 更新按钮状态
+                if (currentStep === 1) {
+                    $prevStepBtn.attr('disabled', true);
+                }
+                $nextStepBtn.text('下一步');
+            }
+        });
+// 在文件选择时校验大小
+        $(document).on('change', 'input[type="file"]', function() {
+            const file = this.files[0];
+            if (file) {
+                const maxSize = 10 * 1024 * 1024; // 10MB
+                if (file.size > maxSize) {
+                    alert(`文件大小不能超过 ${maxSize/1024/1024}MB`);
+                    this.value = ''; // 清空文件选择
+                    return false;
+                }
+            }
+        });
+        $(function() {
+            $('#certificationForm').on('submit', function(e) {
+                e.preventDefault(); // 阻止表单默认提交行为
+                submitCertification();
+            });
+        });
+        // 提交认证申请
+        function submitCertification() {
+            const form = document.getElementById('certificationForm');
+            const formData = new FormData(form);
+            const uid = sessionStorage.getItem('uid');
+
+            if (!uid) {
+                alert('请先登录！');
+                return;
+            }
+            formData.append('uid', uid);
+
+            console.log('准备提交表单数据，使用POST方法'); // 添加日志
+
+            $.ajax({
+                url: '/certaddAll',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    console.log('请求成功:', res); // 添加日志
+                },
+                error: function (xhr, status, error) {
+                    console.error('请求失败:', status, error); // 添加日志
+                    console.error('提交失败:', err);
+                    alert('网络异常或服务器错误，请稍后重试');
+                }
+            });
+        }
+
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,1550 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/down.css">
+    <title>行安 - 动态详情</title>
+    <script src="../static/js/jquery-1.8.3.js"></script>
+    <!-- XSS 防御：DOMPurify 过滤恶意脚本 -->
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+    <script src="../static/js/syy.js"></script>
+    <style>
+        body {
+            background-color: rgba(128, 140, 138, 0.1);
+            color: #212121;
+            /*max-width: 800px;*/
+            /*margin: 0 auto;*/
+            position: relative;
+            min-height: 100vh;
+            padding-top: 80px; /* 避开顶部固定导航 */
+            margin: 0px 30px 0px 30px;
+
+        }
+        /* 导航栏样式 */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .navbar .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .navbar .logo span {
+            font-size: 24px;
+            line-height: 1;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .navbar .logo img {
+            width: 32px;
+            height: 32px;
+            vertical-align: bottom;
+        }
+
+        .navbar .menu {
+            display: flex;
+            gap: 10px;
+        }
+
+        .navbar .menu a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .menu a:hover {
+            background-color: #eee;
+        }
+
+        .navbar .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar .user .publish-btn {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .user .publish-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .navbar .user .user-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .navbar .user .user-info img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .navbar .user .user-info span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /*导航下拉图标*/
+        .navbar .user .user-info i img {
+            width: 15px;
+            height: 15px;
+        }
+        .dynamic-content{
+            background-color: #fff;
+            border-radius: 8px;
+
+        }
+        #dynamic-content1{
+            margin: 10px 10px 0px 10px;
+            background-color: #fff;
+        }
+        /* 动态封面区域 */
+        .dynamic-cover {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            overflow: hidden;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        .dynamic-cover img {
+            border-radius: 8px;
+            margin-top:10px;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .dynamic-cover h2 {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            color: #fff;
+            font-size: 24px;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+
+        .dynamic-cover .create-time {
+            position: absolute;
+            bottom: 5px;
+            left: 20px;
+            color: #fff;
+            font-size: 14px;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+        }
+
+        /* 发布者信息 */
+        .publisher-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .publisher-info .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .publisher-info .info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .publisher-info .nickname {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .publisher-info .desc {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* 动态文字内容 */
+        .dynamic-text {
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 20px;
+            margin-left:10px;
+            margin-right:10px;
+        }
+
+        /* 图片列表 */
+        /*.image-list {*/
+        /*    !* 改为自动填充，每个项目最小宽度适配手机，最大占满一行 *!*/
+        /*    display: grid;*/
+        /*    grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));*/
+        /*    gap: 10px;*/
+        /*    margin-bottom: 20px;*/
+        /*    margin-left: 10px;*/
+        /*    align-items: end;*/
+        /*}*/
+
+        /*.image-list img {*/
+        /*    width: 100%;*/
+        /*    height: auto;*/
+        /*    border-radius: 4px;*/
+        /*}*/
+        /* 图片列表：一行两张图 */
+        .image-list {
+            display: grid;
+            /* 核心：一行最多 2 列，每列最小 300px，自动适配 */
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+            margin-left: 10px;
+            align-items: end;
+        }
+
+        .image-list img,
+        .image-list video {
+            width: 100%;
+            height: auto;
+            border-radius: 4px;
+            /* 可选：限制最大高度，避免长图撑太高 */
+            max-height: 400px;
+            object-fit: cover;
+        }
+        /* 互动按钮 */
+        .actions {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .actions button {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .actions button:hover {
+            background-color: #f5f5f5;
+        }
+
+        /* 评论区 */
+        .comment-section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .comment-section h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .comment-input {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .comment-input .comment-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .comment-input textarea {
+            flex: 1;
+            resize: none;
+            border: 1px solid #ddd;
+            border-radius: 14px;
+            padding: 10px;
+            height: 80px;
+        }
+
+        .publish-comment {
+            align-self: flex-end;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .publish-comment:hover {
+            background-color: #0056b3;
+        }
+
+        .comment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* 评论项样式，可根据实际评论数据结构细化 */
+        .comment-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 14px;
+        }
+
+        .comment-item .comment-user-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .comment-item .comment-content {
+            flex: 1;
+            background-color: #fff;
+            padding: 10px;
+            border-radius: 14px;
+            border: 1px solid #eee;
+        }
+
+        /* 子评论相对父评论缩进，实现层级感 */
+        .child-comments .comment-item {
+            margin-left: 40px;
+        }
+
+        /* 回复输入框样式，初始隐藏 */
+        .reply-input {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            padding-left: 45px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .reply-input textarea {
+            flex: 1;
+            resize: none;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 10px;
+            height: 60px;
+            transition: border-color 0.3s;
+        }
+
+        .reply-input textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .reply-input button {
+            align-self: flex-end;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .reply-input button:hover {
+            background-color: #0056b3;
+        }
+
+        /* 子评论样式 */
+        .sub-comment {
+            margin-left: 45px;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 14px;
+        }
+
+        .sub-comment .comment-user-avatar {
+            width: 30px;
+            height: 30px;
+        }
+
+        .sub-comment .comment-content {
+            background-color: transparent;
+            border: none;
+            padding: 0;
+        }
+        /*点赞图标*/
+        .like-icon {
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        .like-text {
+            vertical-align: middle;
+        }
+        /*评论图标*/
+        .comment-icon{
+            width: 20px;
+            height: 20px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+        /*收藏图标*/
+        .collect-icon{
+            width: 24px;
+            height: 24px;
+            vertical-align: middle;
+            margin-right: 5px;
+        }
+
+    </style>
+    <script>
+
+        $(function () {
+            // 从 URL 中获取 did 参数
+            const did = new URLSearchParams(window.location.search).get('did');
+            const uid = sessionStorage.getItem('uid'); // 获取当前用户ID（需用户登录后存在）
+            $.ajax({
+                url: '/findByDid',
+                type: 'GET',
+                data: { did: did },
+                success: function (res) {
+                    if (res && res.length > 0) {
+                        const dynamic = res[0];
+                        // 处理封面图
+                        const mediaArr = dynamic.media ? dynamic.media.split(',') : [];
+                        const coverImage = mediaArr.length > 0 ? mediaArr[0] : '/static/image/img/cover1.png';
+
+                        // ==================== XSS 安全过滤 ====================
+                        const safeTitle = DOMPurify.sanitize(dynamic.dtitle);
+                        const safeContent = DOMPurify.sanitize(dynamic.content);
+                        const safeNickname = DOMPurify.sanitize(dynamic.nickname || "匿名用户");
+                        const safeCreateTime = DOMPurify.sanitize(dynamic.create_time);
+                        const safeDesc = DOMPurify.sanitize(dynamic.desc || '资深徒步爱好者');
+
+
+                        let html = `
+                <!-- 动态封面及标题区域 -->
+                <div class="dynamic-cover">
+                    <img src="${coverImage}" alt="动态封面">
+                    <h2>${safeTitle}</h2>
+                    <p class="create-time">${safeCreateTime}</p>
+                </div>
+                <!-- 发布者信息 -->
+                <div class="publisher-info">
+                    <img src="${dynamic.avatar?dynamic.avatar:'/static/image/img/游客.png'}" alt="用户头像" class="avatar">
+                    <div class="info">
+                        <span class="nickname">${safeNickname}</span>
+                        <p class="desc">${safeDesc}</p>
+                    </div>
+                </div>
+                <!-- 动态内容 -->
+                <div class="dynamic-text">
+                    <p>${safeContent}</p>
+                </div>
+                <!-- 图片列表 -->
+                <div class="image-list">
+                `;
+
+                        // 遍历多图
+                        // if (mediaArr.length > 0) {
+                        //     mediaArr.forEach(img => {
+                        //         const imgPath = img.trim();
+                        //         html += `<img src="${imgPath}" alt="动态图片">`;
+                        //     });
+                        // }
+                        // 遍历媒体
+                        if (mediaArr.length > 0) {
+                            mediaArr.forEach(media => {
+                                const path = media.trim();
+
+                                // 判断是不是视频（只识别 mp4/mov，你原来支持的格式）
+                                if (path.endsWith('.mp4') || path.endsWith('.mov')) {
+                                    // 视频：极简原生播放，不加任何花里胡哨
+                                    html += `
+            <video controls style="width:100%;border-radius:4px;">
+                <source src="${path}" type="video/mp4">
+                您的浏览器不支持播放
+            </video>
+            `;
+                                } else {
+                                    // 图片：完全保留你原来的写法，一字不改！
+                                    html += `<img src="${path}" alt="动态图片">`;
+                                }
+                            });
+                        }
+
+                        html += `</div>
+                <!-- 互动按钮区域 -->
+                <div class="actions">
+                    <button class="like-btn" data-did="${dynamic.did}" data-isliked="${dynamic.isLiked}">
+                         <img src="${dynamic.isLiked ? '/static/image/img/爱心_粉.png' : '/static/image/img/爱心_空.png'}"
+                                   alt="点赞图标" class="like-icon">
+                            <span class="like-text">${dynamic.like_count}</span>
+                    </button>
+                    <button class="comment-btn" data-did="${dynamic.did}">
+                    <img src="/static/image/img/气泡.png" alt="评论图标" class="comment-icon">
+                           <span class="comment-text">${dynamic.comment_count}</span>
+                    </button>
+                     <button class="collect-btn" data-did="${dynamic.did}" data-iscollected="${dynamic.isCollected}">
+                         <img src="${dynamic.isCollected ? '/static/image/img/星星.png' : '/static/image/img/收藏8.png'}"
+                                   alt="收藏图标" class="collect-icon">
+                            <span class="collect-text">${dynamic.collect_count}</span>
+                     </button>
+                </div>
+                <!-- 评论区容器 -->
+                <div class="comment-section" data-did="${dynamic.did}">
+                    <h3>评论区 (${dynamic.comment_count})</h3>
+                    <div class="comment-input">
+                        <img src="/static/image/img/游客.png" alt="游客头像" class="comment-avatar">
+                        <textarea placeholder="分享你的看法..."></textarea>
+                        <button class="publish-comment">发表评论</button>
+                    </div>
+                    <div class="comment-list">
+                        <!-- 评论列表后续通过 Ajax 加载 -->
+                    </div>
+                </div>
+                `;
+                        $('#dynamicInfo').html(html);
+                        if (uid) {
+                            checkLikeStatus(uid, did); // 调用检查点赞状态的函数
+                            checkCollectStatus(uid, did);
+                        }
+                      // 绑定点赞按钮点击事件
+                        $('.like-btn').on('click', function() {
+                            const $btn = $(this);
+                            const btnDid = $btn.data('did');
+                            const currentUid = sessionStorage.getItem('uid');
+                            if (!currentUid) {
+                                alert('请先登录再点赞');
+                                return;
+                            }
+                            // **关键：从data属性获取当前点赞状态**
+                            const isLiked = $btn.data('isLiked') === '1';
+                            if (isLiked) {
+                                // 取消点赞逻辑（需后端支持，后续补充）
+                               // alert('已点赞，点击取消');
+                                // 调用取消点赞接口
+                                cancelLike(btnDid, currentUid, $btn);
+                            } else {
+                                // 点赞逻辑
+                                addLike(btnDid, currentUid, $btn);
+                            }
+                        });
+                        // 绑定收藏按钮点击事件
+                        $('.collect-btn').on('click', function() {
+                            const $btn = $(this);
+                            const btnDid = $btn.data('did');
+                            const currentUid = sessionStorage.getItem('uid');
+                            if (!currentUid) {
+                                alert('请先登录再收藏');
+                                return;
+                            }
+                            // **关键：从data属性获取当前收藏状态**
+                            const isCollected = $btn.data('isCollected') === '1';
+                            if (isCollected) {
+                                // 取消点赞逻辑（需后端支持，后续补充）
+                                // alert('已点赞，点击取消');
+                                // 调用取消点赞接口
+                                cancelCollect(btnDid, currentUid, $btn);
+                            } else {
+                                // 点赞逻辑
+                                addCollect(btnDid, currentUid, $btn);
+                            }
+                        });
+
+
+                        // 加载评论
+                        loadComments(dynamic.did);
+                    } else {
+                        $('#dynamicInfo').html('<p>未找到该动态</p>');
+                    }
+                },
+                error: function (err) {
+                    console.error('获取动态详情失败：', err);
+                    $('#dynamicInfo').html('<p>加载动态详情出错，请稍后重试</p>');
+                }
+
+            });
+            // 检查用户点赞状态
+            function checkLikeStatus(uid, did) {
+                $.ajax({
+                    url: '/checkDlk', // 后端检查点赞状态的接口
+                    type: 'GET',
+                    data: { uid: uid, did: did },
+                    success: function(isLiked) {
+                        const $likeBtn = $(`.like-btn[data-did="${did}"]`);
+                        if (isLiked) {
+                            // 更新点赞状态为已点赞（1）
+                            $likeBtn.data('isLiked', '1');
+                            $likeBtn.find('.like-icon').attr('src', '/static/image/img/爱心_粉.png');
+                        } else {
+                            // 更新点赞状态为未点赞（0）
+                            $likeBtn.data('isLiked', '0');
+                            $likeBtn.find('.like-icon').attr('src', '/static/image/img/爱心_空.png');
+                        }
+                    },
+                    error: function(err) {
+                        console.error('检查点赞状态失败:', err);
+                    }
+                });
+            }
+            //点赞函数
+            // function addLike(did, uid) {
+            //     const $likeBtn = $(`.like-btn[data-did="${did}"]`);
+            //     const now = new Date();
+            //     // 获取年、月、日、时、分、秒，注意月份要 +1（因为 getMonth 返回 0 - 11）
+            //     const year = now.getFullYear();
+            //     const month = String(now.getMonth() + 1).padStart(2, '0'); // 保证月份是两位数，比如 6 月显示为 "06"
+            //     const day = String(now.getDate()).padStart(2, '0'); // 日期补零
+            //     const hour = String(now.getHours()).padStart(2, '0'); // 小时补零
+            //     const minute = String(now.getMinutes()).padStart(2, '0'); // 分钟补零
+            //     const second = String(now.getSeconds()).padStart(2, '0'); // 秒数补零
+            //
+            //     const likeTime = `${year}/${month}/${day} ${hour}:${minute}:${second}`;
+            //
+            //
+            //     // 构造点赞数据
+            //     const dlk = {
+            //         uid: uid,
+            //         did: did,
+            //         like_time: likeTime
+            //     };
+            //
+            //     $.ajax({
+            //         url: '/dlkAdd', // 对应后端点赞接口
+            //         type: 'POST',
+            //         contentType: 'application/json',
+            //         data: JSON.stringify(dlk),
+            //         beforeSend: function() {
+            //             $likeBtn.addClass('loading'); // 添加加载状态（可选）
+            //         },
+            //         success: function(res) {
+            //             if (res == -5) {
+            //                 alert("您点赞过于频繁，请1小时后再试~");
+            //                 return;
+            //             }
+            //             if (res == -1) {
+            //                 alert("请先登录再点赞");
+            //                 return;
+            //             }
+            //             // ====================================================
+            //             if (res > 0) {
+            //                 // 更新点赞状态和计数
+            //                 $likeBtn.data('isLiked', '1'); // 标记为已点赞
+            //                 // 切换爱心图片
+            //                 $likeBtn.find('.like-icon').attr('src', '/static/image/img/爱心_粉.png');
+            //                 // 修复计数解析：先取文本内容，匹配数字，无数字则默认 0
+            //                 const text = $likeBtn.find('.like-text').text();
+            //                 const currentCount = parseInt(text.match(/\d+/)?.[0] || 0);
+            //                 const likeCount = currentCount + 1;
+            //                 $likeBtn.find('.like-text').text(`${likeCount}`);
+            //             } else {
+            //                 alert('点赞失败，请重试');
+            //             }
+            //         },
+            //         error: function(err) {
+            //             console.error('点赞请求失败：', err);
+            //             alert('网络异常，点赞失败');
+            //         },
+            //         complete: function() {
+            //             $likeBtn.removeClass('loading'); // 移除加载状态
+            //         }
+            //     });
+            // }
+            // 取消点赞函数**
+
+            // function addLike(did, uid, $likeBtn) {
+            //     const now = new Date();
+            //     const year = now.getFullYear();
+            //     const month = String(now.getMonth() + 1).padStart(2, '0');
+            //     const day = String(now.getDate()).padStart(2, '0');
+            //     const hour = String(now.getHours()).padStart(2, '0');
+            //     const minute = String(now.getMinutes()).padStart(2, '0');
+            //     const second = String(now.getSeconds()).padStart(2, '0');
+            //     const likeTime = `${year}/${month}/${day} ${hour}:${minute}:${second}`;
+            //
+            //     const dlk = {
+            //         uid: uid,
+            //         did: did,
+            //         like_time: likeTime
+            //     };
+            //
+            //     $.ajax({
+            //         url: '/dlkAdd',
+            //         type: 'POST',
+            //         contentType: 'application/json',
+            //         data: JSON.stringify(dlk),
+            //         beforeSend: function() {
+            //             $likeBtn.addClass('loading');
+            //         },
+            //         success: function(res) {
+            //             // 只加这两段提示，别的全是你原来代码
+            //             if (res == -5) {
+            //                 alert("您点赞过于频繁，请1小时后再试~");
+            //                 return;
+            //             }
+            //             if (res == -1) {
+            //                 alert("请先登录再点赞");
+            //                 return;
+            //             }
+            //
+            //             if (res > 0) {
+            //                 $likeBtn.data('isLiked', '1');
+            //                 $likeBtn.find('.like-icon').attr('src', '/static/image/img/爱心_粉.png');
+            //                 const text = $likeBtn.find('.like-text').text();
+            //                 const currentCount = parseInt(text.match(/\d+/)?.[0] || 0);
+            //                 $likeBtn.find('.like-text').text(`${currentCount + 1}`);
+            //             } else {
+            //                 alert('点赞失败，请重试');
+            //             }
+            //         },
+            //         error: function(err) {
+            //             console.error('点赞请求失败：', err);
+            //             alert('网络异常，点赞失败');
+            //         },
+            //         complete: function() {
+            //             $likeBtn.removeClass('loading');
+            //         }
+            //     });
+            // }
+
+            function addLike(did, uid, $likeBtn) {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hour = String(now.getHours()).padStart(2, '0');
+                const minute = String(now.getMinutes()).padStart(2, '0');
+                const second = String(now.getSeconds()).padStart(2, '0');
+                const likeTime = `${year}/${month}/${day} ${hour}:${minute}:${second}`;
+
+                const dlk = {
+                    uid: uid,
+                    did: did,
+                    like_time: likeTime
+                };
+
+                $.ajax({
+                    url: '/dlkAdd',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(dlk),
+                    beforeSend: function() {
+                        $likeBtn.addClass('loading');
+                    },
+                    success: function(res) {
+
+                        if (res == -6) {
+                            alert("您点赞过于频繁，请10分钟后再试~");
+                            return;
+                        }
+                        if (res == -1) {
+                            alert("请先登录再点赞");
+                            return;
+                        }
+
+                        // ============== 这里修复！==============
+                        // 只要不是 -1 / -5，都算点赞成功！
+                        if (res == 1 || res > 0) {
+                            $likeBtn.data('isLiked', '1');
+                            $likeBtn.find('.like-icon').attr('src', '/static/image/img/爱心_粉.png');
+                            const text = $likeBtn.find('.like-text').text();
+                            const currentCount = parseInt(text.match(/\d+/)?.[0] || 0);
+                            $likeBtn.find('.like-text').text(`${currentCount + 1}`);
+                        } else {
+                            alert('点赞失败，请重试');
+                        }
+                        // ======================================
+                    },
+                    error: function(err) {
+                        console.error('点赞请求失败：', err);
+                        alert('网络异常，点赞失败');
+                    },
+                    complete: function() {
+                        $likeBtn.removeClass('loading');
+                    }
+                });
+            }
+            function cancelLike(did, uid, $btn) {
+                const params = {
+                    "uid": uid,
+                    "did": did
+                };
+
+                $.ajax({
+                    url: '/dlkDel',
+                    type: 'POST',
+                    data: JSON.stringify(params),
+                    contentType: 'application/json',
+                    success: function(res) {
+                        if (res > 0) {
+                            $btn.data('isLiked', '0');
+                            $btn.find('.like-icon').attr('src', '/static/image/img/爱心_空.png');
+                            // 修复计数解析：先取文本内容，匹配数字，无数字则默认 1（避免减到负数）
+                            const text = $btn.find('.like-text').text();
+                            const currentCount = parseInt(text.match(/\d+/)?.[0] || 1);
+                            const likeCount = currentCount - 1;
+                            $btn.find('.like-text').text(`${likeCount}`);
+                        } else {
+                            alert('取消点赞失败，请重试');
+                        }
+                    },
+                    error: function(err) {
+                        console.error('取消点赞失败:', err);
+                        alert('网络异常，取消点赞失败');
+                    }
+                });
+            }
+            // 检查用户收藏状态
+            function checkCollectStatus(uid, did) {
+                $.ajax({
+                    url: '/checkDcl', // 后端检查点赞状态的接口
+                    type: 'GET',
+                    data: { uid: uid, did: did },
+                    success: function(isCollected) {
+                        const $collectBtn = $(`.collect-btn[data-did="${did}"]`);
+                        if (isCollected) {
+                            // 更新点赞状态为已点赞（1）
+                            $collectBtn.data('isCollected', '1');
+                            $collectBtn.find('.collect-icon').attr('src', '/static/image/img/星星.png');
+                        } else {
+                            // 更新点赞状态为未点赞（0）
+                            $collectBtn.data('isCollected', '0');
+                            $collectBtn.find('.collect-icon').attr('src', '/static/image/img/收藏8.png');
+                        }
+                    },
+                    error: function(err) {
+                        console.error('检查收藏状态失败:', err);
+                    }
+                });
+            }
+            //收藏函数
+            // function addCollect(did, uid) {
+            //     const $collectBtn = $(`.collect-btn[data-did="${did}"]`);
+            //     const now = new Date();
+            //     // 获取年、月、日、时、分、秒，注意月份要 +1（因为 getMonth 返回 0 - 11）
+            //     const year = now.getFullYear();
+            //     const month = String(now.getMonth() + 1).padStart(2, '0'); // 保证月份是两位数，比如 6 月显示为 "06"
+            //     const day = String(now.getDate()).padStart(2, '0'); // 日期补零
+            //     const hour = String(now.getHours()).padStart(2, '0'); // 小时补零
+            //     const minute = String(now.getMinutes()).padStart(2, '0'); // 分钟补零
+            //     const second = String(now.getSeconds()).padStart(2, '0'); // 秒数补零
+            //
+            //     const collectTime = `${year}/${month}/${day} ${hour}:${minute}:${second}`;
+            //
+            //
+            //     // 构造点赞数据
+            //     const dcl = {
+            //         uid: uid,
+            //         did: did,
+            //         collect_time: collectTime
+            //     };
+            //
+            //     $.ajax({
+            //         url: '/dclAdd', // 对应后端点赞接口
+            //         type: 'POST',
+            //         contentType: 'application/json',
+            //         data: JSON.stringify(dcl),
+            //         beforeSend: function() {
+            //             $collectBtn.addClass('loading'); // 添加加载状态（可选）
+            //         },
+            //         success: function(res) {
+            //             if (res == -7) {
+            //                 alert("您收藏过于频繁，请1小时后再试~");
+            //                 return;
+            //             }
+            //             if (res == -1) {
+            //                 alert("请先登录再收藏");
+            //                 return;
+            //             }
+            //             // ====================================================
+            //             if (res > 0) {
+            //                 // 更新收藏状态和计数
+            //                 $collectBtn.data('isCollected', '1'); // 标记为已点赞
+            //                 // 切换爱心图片
+            //                 $collectBtn.find('.collect-icon').attr('src', '/static/image/img/星星.png');
+            //                 // 修复计数解析：先取文本内容，匹配数字，无数字则默认 0
+            //                 const text = $collectBtn.find('.collect-text').text();
+            //                 const currentCount = parseInt(text.match(/\d+/)?.[0] || 0);
+            //                 const collectCount = currentCount + 1;
+            //                 $collectBtn.find('.collect-text').text(`${collectCount}`);
+            //             } else {
+            //                 alert('收藏失败，请重试');
+            //             }
+            //         },
+            //         error: function(err) {
+            //             console.error('收藏请求失败：', err);
+            //             alert('网络异常，收藏失败');
+            //         },
+            //         complete: function() {
+            //             $collectBtn.removeClass('loading'); // 移除加载状态
+            //         }
+            //     });
+            // }
+            // 取消收藏函数**
+
+            // function addCollect(did, uid, $collectBtn) {
+            //     const now = new Date();
+            //     const year = now.getFullYear();
+            //     const month = String(now.getMonth() + 1).padStart(2, '0');
+            //     const day = String(now.getDate()).padStart(2, '0');
+            //     const hour = String(now.getHours()).padStart(2, '0');
+            //     const minute = String(now.getMinutes()).padStart(2, '0');
+            //     const second = String(now.getSeconds()).padStart(2, '0');
+            //     const collectTime = `${year}/${month}/${day} ${hour}:${minute}:${second}`;
+            //
+            //     const dcl = {
+            //         uid: uid,
+            //         did: did,
+            //         collect_time: collectTime
+            //     };
+            //
+            //     $.ajax({
+            //         url: '/dclAdd',
+            //         type: 'POST',
+            //         contentType: 'application/json',
+            //         data: JSON.stringify(dcl),
+            //         beforeSend: function() {
+            //             $collectBtn.addClass('loading');
+            //         },
+            //         success: function(res) {
+            //             // 只加这两段提示
+            //             if (res == -7) {
+            //                 alert("您收藏过于频繁，请1小时后再试~");
+            //                 return;
+            //             }
+            //             if (res == -1) {
+            //                 alert("请先登录再收藏");
+            //                 return;
+            //             }
+            //
+            //             if (res > 0) {
+            //                 $collectBtn.data('isCollected', '1');
+            //                 $collectBtn.find('.collect-icon').attr('src', '/static/image/img/星星.png');
+            //                 const text = $collectBtn.find('.collect-text').text();
+            //                 const currentCount = parseInt(text.match(/\d+/)?.[0] || 0);
+            //                 $collectBtn.find('.collect-text').text(`${currentCount + 1}`);
+            //             } else {
+            //                 alert('收藏失败，请重试');
+            //             }
+            //         },
+            //         error: function(err) {
+            //             console.error('收藏请求失败：', err);
+            //             alert('网络异常，收藏失败');
+            //         },
+            //         complete: function() {
+            //             $collectBtn.removeClass('loading');
+            //         }
+            //     });
+            // }
+
+            function addCollect(did, uid, $collectBtn) {
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth() + 1).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                const hour = String(now.getHours()).padStart(2, '0');
+                const minute = String(now.getMinutes()).padStart(2, '0');
+                const second = String(now.getSeconds()).padStart(2, '0');
+                const collectTime = `${year}/${month}/${day} ${hour}:${minute}:${second}`;
+
+                const dcl = {
+                    uid: uid,
+                    did: did,
+                    collect_time: collectTime
+                };
+
+                $.ajax({
+                    url: '/dclAdd',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(dcl),
+                    beforeSend: function() {
+                        $collectBtn.addClass('loading');
+                    },
+                    success: function(res) {
+                        if (res == -7) {
+                            alert("您收藏过于频繁，请10分钟后再试~");
+                            return;
+                        }
+                        if (res == -1) {
+                            alert("请先登录再收藏");
+                            return;
+                        }
+
+                        // 只要不是 -1 / -7，都算收藏成功！
+                        if (res == 1 || res > 0) {
+                            $collectBtn.data('isCollected', '1');
+                            $collectBtn.find('.collect-icon').attr('src', '/static/image/img/星星.png');
+                            const text = $collectBtn.find('.collect-text').text();
+                            const currentCount = parseInt(text.match(/\d+/)?.[0] || 0);
+                            $collectBtn.find('.collect-text').text(`${currentCount + 1}`);
+                        } else {
+                            alert('收藏失败，请重试');
+                        }
+                        // ======================================
+                    },
+                    error: function(err) {
+                        console.error('收藏请求失败：', err);
+                        alert('网络异常，收藏失败');
+                    },
+                    complete: function() {
+                        $collectBtn.removeClass('loading');
+                    }
+                });
+            }
+            function cancelCollect(did, uid, $btn) {
+                const params = {
+                    "uid": uid,
+                    "did": did
+                };
+
+                $.ajax({
+                    url: '/dclDel',
+                    type: 'POST',
+                    data: JSON.stringify(params),
+                    contentType: 'application/json',
+                    success: function(res) {
+                        if (res > 0) {
+                            $btn.data('isCollected', '0');
+                            $btn.find('.collect-icon').attr('src', '/static/image/img/收藏8.png');
+                            // 修复计数解析：先取文本内容，匹配数字，无数字则默认 1（避免减到负数）
+                            const text = $btn.find('.collect-text').text();
+                            const currentCount = parseInt(text.match(/\d+/)?.[0] || 1);
+                            const collectCount = currentCount - 1;
+                            $btn.find('.collect-text').text(`${collectCount}`);
+                        } else {
+                            alert('取消收藏失败，请重试');
+                        }
+                    },
+                    error: function(err) {
+                        console.error('取消收藏失败:', err);
+                        alert('网络异常，取消收藏失败');
+                    }
+                });
+            }
+
+
+
+            // 加载评论（含子评论）
+            // function loadComments(did) {
+            //     const commentSection = $('.comment-section');
+            //     $.ajax({
+            //         url: '/DcomQuery',
+            //         type: 'POST',
+            //         contentType: 'application/json',
+            //         data: JSON.stringify({ did: did }),
+            //         success: function (comments) {
+            //             const parentComments = comments.filter(comment => comment.parent_id === 0 || comment.parent_id === null);
+            //             const childComments = comments.filter(comment => comment.parent_id !== 0 && comment.parent_id !== null);
+            //
+            //             const childMap = {};
+            //             childComments.forEach(comment => {
+            //                 if (!childMap[comment.parent_id]) {
+            //                     childMap[comment.parent_id] = [];
+            //                 }
+            //                 childMap[comment.parent_id].push(comment);
+            //             });
+            //
+            //             let commentHtml = '';
+            //             parentComments.forEach(comment => {
+            //                 commentHtml += `
+            //         <div class="comment-item" data-dcid="${comment.dcid}">
+            //             <img src="${comment.avatar || '/static/image/img/游客.png'}" alt="评论用户头像" class="comment-user-avatar">
+            //             <div class="comment-content">
+            //                 <div class="comment-header">
+            //                     <span class="comment-nickname">${comment.nickname || '匿名用户'}</span>
+            //                     <span class="comment-time">${comment.create_time}</span>
+            //                 </div>
+            //                 <p class="comment-text">${comment.content}</p>
+            //                 <div class="comment-actions">
+            //                     <span class="like-count">${comment.like_count}</span>
+            //                     <button class="reply-btn">回复</button>
+            //                 </div>
+            //             </div>
+            //
+            //             <!-- 子评论区域 -->
+            //             <div class="child-comments" data-parent-id="${comment.dcid}">
+            //                 ${renderChildComments(childMap[comment.dcid] || [])}
+            //             </div>
+            //             <!-- 父评论回复框：新增 .parent-reply 类名 -->
+            //             <div class="reply-input parent-reply" data-parent-dcid="${comment.dcid}">
+            //                 <textarea placeholder="回复这条评论..."></textarea>
+            //                 <button class="publish-reply" data-dcid="${comment.dcid}">发表回复</button>
+            //             </div>
+            //         </div>
+            //         `;
+            //             });
+            //             commentSection.find('.comment-list').html(commentHtml);
+            //         },
+            //         error: function (err) {
+            //             console.error('加载评论失败：', err);
+            //             commentSection.find('.comment-list').html('<p>加载评论出错，请稍后重试</p>');
+            //         }
+            //     });
+            // }
+            function loadComments(did) {
+                const commentSection = $('.comment-section');
+                $.ajax({
+                    url: '/DcomQuery',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ did: did }),
+                    success: function (comments) {
+                        const parentComments = comments.filter(comment => comment.parent_id === 0 || comment.parent_id === null);
+                        const childComments = comments.filter(comment => comment.parent_id !== 0 && comment.parent_id !== null);
+
+                        const childMap = {};
+                        childComments.forEach(comment => {
+                            if (!childMap[comment.parent_id]) {
+                                childMap[comment.parent_id] = [];
+                            }
+                            childMap[comment.parent_id].push(comment);
+                        });
+
+                        let commentHtml = '';
+                        parentComments.forEach(comment => {
+
+                            // ==================== XSS 安全过滤 ====================
+                            const safeNickname = DOMPurify.sanitize(comment.nickname || "匿名用户");
+                            const safeContent = DOMPurify.sanitize(comment.content || "");
+                            const safeCreateTime = DOMPurify.sanitize(comment.create_time || "");
+                            const safeAvatar = DOMPurify.sanitize(comment.avatar || '/static/image/img/游客.png');
+
+                            commentHtml += `
+                <div class="comment-item" data-dcid="${comment.dcid}">
+                    <img src="${safeAvatar}" alt="用户头像" class="comment-user-avatar">
+                    <div class="comment-content">
+                        <div class="comment-header">
+                            <span class="comment-nickname">${safeNickname}</span>
+                            <span class="comment-time">${safeCreateTime}</span>
+                        </div>
+                        <p class="comment-text">${safeContent}</p>
+                        <div class="comment-actions">
+                            <span class="like-count">${comment.like_count}</span>
+                            <button class="reply-btn">回复</button>
+                        </div>
+                    </div>
+                    <div class="child-comments" data-parent-id="${comment.dcid}">
+                        ${renderChildComments(childMap[comment.dcid] || [])}
+                    </div>
+                    <div class="reply-input parent-reply" data-parent-dcid="${comment.dcid}">
+                        <textarea placeholder="回复这条评论..."></textarea>
+                        <button class="publish-reply" data-dcid="${comment.dcid}">发表回复</button>
+                    </div>
+                </div>
+                `;
+                        });
+                        commentSection.find('.comment-list').html(commentHtml);
+                    },
+                    error: function (err) {
+                        console.error('加载评论失败：', err);
+                        commentSection.find('.comment-list').html('<p>加载评论出错，请稍后重试</p>');
+                    }
+                });
+            }
+            // 渲染子评论
+            // function renderChildComments(childComments) {
+            //     let html = '';
+            //     childComments.forEach(comment => {
+            //         html += `
+            // <div class="sub-comment" data-dcid="${comment.dcid}">
+            //     <img src="${comment.avatar || '/static/image/img/游客.png'}" alt="评论用户头像" class="comment-user-avatar">
+            //     <div class="comment-content">
+            //         <div class="comment-header">
+            //             <span class="comment-nickname">${DOMPurify.sanitize(comment.nickname || '匿名用户')}</span>
+            //             <span class="comment-time">${DOMPurify.sanitize(comment.create_time)}</span>
+            //         </div>
+            //         <p class="comment-text">${DOMPurify.sanitize(comment.content)}</p>
+            //         <div class="comment-actions">
+            //             <span class="like-count">${comment.like_count}</span>
+            //             <button class="reply-btn">回复</button>
+            //         </div>
+            //     </div>
+            //     <!-- 子评论回复框：新增 .child-reply 类名 -->
+            //     <div class="reply-input child-reply" data-parent-dcid="${comment.dcid}">
+            //         <textarea placeholder="回复这条评论..."></textarea>
+            //         <button class="publish-reply" data-dcid="${comment.dcid}">发表回复</button>
+            //     </div>
+            //     <!-- 子评论的子评论区域 -->
+            //     <div class="child-comments" data-parent-id="${comment.dcid}">
+            //         <!-- 嵌套的子评论会通过递归渲染 -->
+            //     </div>
+            // </div>
+            // `;
+            //     });
+            //     return html;
+            // }
+            function renderChildComments(childComments) {
+                let html = '';
+                childComments.forEach(comment => {
+
+                    // ==================== XSS 安全过滤 ====================
+                    const safeNickname = DOMPurify.sanitize(comment.nickname || "匿名用户");
+                    const safeContent = DOMPurify.sanitize(comment.content || "");
+                    const safeCreateTime = DOMPurify.sanitize(comment.create_time || "");
+                    const safeAvatar = DOMPurify.sanitize(comment.avatar || '/static/image/img/游客.png');
+
+                    html += `
+        <div class="sub-comment" data-dcid="${comment.dcid}">
+            <img src="${safeAvatar}" alt="用户头像" class="comment-user-avatar">
+            <div class="comment-content">
+                <div class="comment-header">
+                    <span class="comment-nickname">${safeNickname}</span>
+                    <span class="comment-time">${safeCreateTime}</span>
+                </div>
+                <p class="comment-text">${safeContent}</p>
+                <div class="comment-actions">
+                    <span class="like-count">${comment.like_count}</span>
+                    <button class="reply-btn">回复</button>
+                </div>
+            </div>
+            <div class="reply-input child-reply" data-parent-dcid="${comment.dcid}">
+                <textarea placeholder="回复这条评论..."></textarea>
+                <button class="publish-reply" data-dcid="${comment.dcid}">发表回复</button>
+            </div>
+            <div class="child-comments" data-parent-id="${comment.dcid}"></div>
+        </div>
+        `;
+                });
+                return html;
+            }
+
+            // 绑定发表评论事件
+            $(document).on('click', '.publish-comment', function() {
+                const commentSection = $(this).closest('.comment-section');
+                const did = commentSection.data('did');
+                const content = commentSection.find('textarea').val().trim();
+
+                // 从 sessionStorage 获取 uid
+                const uid = sessionStorage.getItem('uid');
+                if (!uid) {
+                    alert('请先登录再发表评论');
+                    return;
+                }
+
+                if (!content) {
+                    alert('请输入评论内容');
+                    return;
+                }
+
+                // 构造评论数据
+                const commentData = {
+                    did: did,
+                    uid: uid,
+                    parent_id: 0, // 顶级评论
+                    content: content,
+                    create_time: new Date().toLocaleString(),
+                };
+
+                // 发送评论请求
+                $.ajax({
+                    url: '/dcomAdd',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(commentData),
+                    // success: function(res) {
+                    //     if(res=="1"){
+                    //         commentSection.find('textarea').val('');
+                    //         loadComments(did); // 刷新评论列表
+                    //         const $commentBtn = $(`.comment-btn[data-did="${did}"]`);
+                    //         // 获取当前评论数（正则匹配数字），默认 0
+                    //         const currentCount = parseInt($commentBtn.find('.comment-text').text().match(/\d+/)?.[0] || 0);
+                    //         // 评论数 +1
+                    //         $commentBtn.find('.comment-text').text(`${currentCount + 1}`);
+                    //         // 同时更新评论区标题的评论数
+                    //         commentSection.find('h3').text(`评论区 (${currentCount + 1})`);
+                    //     }
+                    //     else if(res=="0"){
+                    //         alert("回复包含非法字符，请重新输入！");
+                    //         commentSection.find('textarea').val('');
+                    //     }else if(res=="2"){
+                    //         alert("回复特殊字符比例过高，请重新输入！");
+                    //         commentSection.find('textarea').val('');
+                    //     }else if(res=="3"){
+                    //         alert("回复包含敏感词，请重新输入！");
+                    //         commentSection.find('textarea').val('');
+                    //     }
+                    // }
+                    success: function(res) {
+                        // 未登录
+                        if (res == -1) {
+                            alert("请先登录再发表评论！");
+                            return;
+                        }
+                        // 防频繁提示
+                        if (res == -2) {
+                            alert("评论过快，请10分钟后再试~");
+                            return;
+                        }
+                        // 10分钟内相同评论
+                        if (res == -4) {
+                            alert("10分钟内不能发表相同评论~");
+                            return;
+                        }
+                        // 发布成功
+                        if(res=="1"){
+                            commentSection.find('textarea').val('');
+                            loadComments(did);
+                            const $commentBtn = $(`.comment-btn[data-did="${did}"]`);
+                            const currentCount = parseInt($commentBtn.find('.comment-text').text().match(/\d+/)?.[0] || 0);
+                            $commentBtn.find('.comment-text').text(`${currentCount + 1}`);
+                            commentSection.find('h3').text(`评论区 (${currentCount + 1})`);
+                        }
+                        // 非法字符/高危注入
+                        else if(res=="0"){
+                            alert("回复包含非法字符，请重新输入！");
+                            commentSection.find('textarea').val('');
+                        }
+                        //特殊字符比例过高
+                        else if(res=="2"){
+                            alert("回复特殊字符比例过高，请重新输入！");
+                            commentSection.find('textarea').val('');
+                        }
+                        // AC自动机敏感词拦截
+                        else if(res == 3){
+                            alert("回复包含敏感词，请重新输入！");
+                            commentSection.find('textarea').val('');
+                        }
+                        // 其他失败
+                        else {
+                            alert("评论发布失败，请稍后重试！");
+                        }
+                    }
+                    ,
+                    error: function(err) {
+                        console.error('发布评论失败：', err);
+                        alert('网络异常，发布失败');
+                    }
+                });
+            });
+
+            // 回复按钮点击事件（切换显示/隐藏回复框）
+            $(document).on('click', '.reply-btn', function(e) {
+                // 阻止事件冒泡（避免子评论按钮触发父级逻辑）
+                e.stopPropagation();
+                const $currentItem = $(this).closest('.comment-item, .sub-comment');
+                // 区分父评论/子评论回复框
+                const isParent = $currentItem.hasClass('comment-item');
+                const replyClass = isParent ? '.parent-reply' : '.child-reply';
+                const $currentReply = $currentItem.find(replyClass);
+
+                // 1. 切换当前评论的回复框
+                $currentReply.slideToggle(200, function() {
+                    if ($currentReply.is(':visible')) {
+                        $currentReply.find('textarea').focus();
+                    }
+                });
+
+                // 2. 关闭其他所有同层级评论的回复框（父评论只关父评论的，子评论只关子评论的）
+                if (isParent) {
+                    $('.parent-reply').not($currentReply).slideUp(200);
+                } else {
+                    $('.child-reply').not($currentReply).slideUp(200);
+                }
+            });
+
+            // 发表回复按钮点击事件
+            $(document).on('click', '.publish-reply', function() {
+                const $replyInput = $(this).closest('.reply-input');
+                const $commentItem = $(this).closest('.comment-item, .sub-comment');
+                const did = $('.comment-section').data('did');
+                const parentId = $(this).data('dcid'); // 父评论ID
+                const content = $replyInput.find('textarea').val().trim();
+
+                // 从 sessionStorage 获取 uid
+                const uid = sessionStorage.getItem('uid');
+                if (!uid) {
+                    alert('请先登录再发表回复');
+                    return;
+                }
+
+                if (!content) {
+                    alert('请输入回复内容');
+                    return;
+                }
+
+                // 构造回复数据
+                const replyData = {
+                    did: did,
+                    uid: uid,
+                    parent_id: parentId, // 父评论ID
+                    content: content,
+                    create_time: new Date().toLocaleString(),
+                };
+
+                // 发送回复请求
+                $.ajax({
+                    url: '/dcomAdd',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(replyData),
+                    success: function(res) {
+                        if(res=="1"){
+                            $replyInput.find('textarea').val('');
+                            $replyInput.slideUp(200);
+                            loadComments(did); // 刷新评论列表
+                            const $commentBtn = $(`.comment-btn[data-did="${did}"]`);
+                            const currentCount = parseInt($commentBtn.find('.comment-text').text().match(/\d+/)?.[0] || 0);
+                            $commentBtn.find('.comment-text').text(`${currentCount + 1}`);
+                            $('.comment-section h3').text(`评论区 (${currentCount + 1})`);
+                        }
+                        else if(res=="0"){
+                            alert("回复包含非法字符，请重新输入！");
+                            $replyInput.find('textarea').val('');
+                        }else if(res=="2"){
+                            alert("回复特殊字符比例过高，请重新输入！");
+                            $replyInput.find('textarea').val('');
+                        }else if(res=="3"){
+                            alert("回复包含敏感词，请重新输入！");
+                            $replyInput.find('textarea').val('');
+                        }
+                    },
+                    error: function(err) {
+                        console.error('发布回复失败：', err);
+                        alert('网络异常，发布失败');
+                    }
+                });
+            });
+
+            // 点击其他区域关闭回复框
+            $(document).on('click', function(e) {
+                if (!$(e.target).closest('.comment-item, .sub-comment').length) {
+                    $('.reply-input').slideUp(200);
+
+                }
+            });
+        });
+
+        // 登录用户信息加载
+        $(document).ready(function() {
+            // 从sessionStorage中获取uid
+            var uid = sessionStorage.getItem('uid');
+            if (uid) {
+                $.ajax({
+                    url: "/findByUid",
+                    type: "GET",
+                    data: { "uid": uid },
+                    dataType: "json",
+                    success: function(response) {
+                        if (response && response.length > 0) {
+                            var user = response[0];
+                            // 更新用户信息显示
+                            $('.user-info span').text(user.nickname);
+                            $('.user-info > img').attr('src', user.avatar).attr('alt', user.nickname);
+                            $('.profile .name').text(user.nickname);
+                            $('.profile img').attr('src', user.avatar).attr('alt', user.nickname);
+                            $('.comment-input img.comment-avatar').attr('src', user.avatar).attr('alt', user.nickname);
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error("查询用户信息失败", jqXHR, textStatus, errorThrown);
+                    }
+                });
+            } else {
+                console.warn("未获取到uid，无法查询用户信息");
+            }
+        });
+
+        // 绑定评论按钮点击事件，聚焦到评论输入框
+        $(document).on('click', '.comment-btn', function() {
+            const $commentTextarea = $('.comment-section textarea');
+            $commentTextarea.focus();
+        });
+        $(document).ready(function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('focusComment') === 'true') {
+                const commentInput = $('#commentInput'); // 评论输入框的 ID
+                commentInput && commentInput.focus(); // 自动聚焦
+            }
+        });
+    </script>
+</head>
+<body>
+<!-- 顶部导航栏 -->
+<header>
+    <div class="navbar">
+        <div class="logo">
+            <img src="/static/image/img/Logo.png" alt="山友缘Logo">
+            <span>行安</span>
+        </div>
+        <div class="menu">
+            <a href="Index.html">首页</a>
+            <a href="AllActivities.html">活动</a>
+            <a href="Discover3.html">动态</a>
+<!--            <a href="myMessages.html">消息</a>-->
+        </div>
+        <div class="user">
+            <div class="user-info">
+                <img src="/static/image/img/游客.png" alt="用户头像">
+                <span>游客</span>
+                <i class="dropdown-trigger">
+                    <img src="/static/image/img/下拉.png" alt="下拉菜单图标">
+                </i>
+                <!-- 下拉菜单 -->
+                <div class="dropdown-menu">
+                    <a href="MySpace.html" class="dropdown-item">我的</a>
+                    <a href="Login.html" class="dropdown-item ">切换账号</a>
+                    <a href="#" class="dropdown-item logout">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="dynamic-container">
+    <div class="dynamic-header">
+        <h1>&nbsp&nbsp动态详情</h1>
+    </div>
+    <div class="dynamic-content" >
+        <div id="dynamic-content1">
+        <div id="dynamicInfo">
+            <!-- 活动内容将通过JavaScript动态填充 -->
+        </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

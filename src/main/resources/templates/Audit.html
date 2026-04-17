@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>行安 - 审核</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../static/js/jquery-1.8.3.js"></script>
+    <script src="../static/js/syy.js"></script>
+    <link rel="stylesheet" href="../static/css/down.css">
+    <style>
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            margin-top: 90px;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .navbar .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .navbar .logo span {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .navbar .logo img {
+            width: 32px;
+            height: 32px;
+            vertical-align: bottom;
+        }
+
+        .navbar .menu {
+            display: flex;
+            gap: 20px;
+        }
+
+        .navbar .menu a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .menu a:hover, .navbar .menu a.active {
+            background-color: #eee;
+        }
+
+        .navbar .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar .user .publish-btn {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .user .publish-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .navbar .user .user-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .navbar .user .user-info img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .navbar .user .user-info span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .navbar .user .user-info i img {
+            width: 15px;
+            height: 15px;
+        }
+
+        .main-content {
+            margin: 10px;
+        }
+
+        /* 公共按钮样式 */
+        .all-btn {
+            padding-bottom: 10px;
+        }
+
+        .category-btn,
+        .status-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: #fff;
+            cursor: pointer;
+            margin-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        /* 选中状态样式 */
+        .category-btn.active,
+        .status-btn.active {
+            background-color: #4A90E2;
+            color: #fff;
+            border-color: #4A90E2;
+        }
+
+        .category-btn.active:hover,
+        .status-btn.active:hover {
+            background-color: #357ABD;
+        }
+
+        /* 活动推荐区样式 */
+        .recommend-activities {
+            margin: 0 16px 40px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212121;
+            margin-bottom: 16px;
+            padding-left: 12px;
+        }
+
+        .activity-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            justify-items: center;
+        }
+
+        .activity-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.3s;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 191, 165, 0.1);
+        }
+
+        .activity-thumb {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .activity-content {
+            padding: 16px;
+        }
+
+        .activity-type-tag {
+            display: inline-block;
+            background-color: rgba(0, 191, 165, 0.9);
+            color: white;
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+
+        .activity-card-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            height: 48px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .activity-meta {
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: #616161;
+            margin-bottom: 12px;
+        }
+
+        .activity-meta i {
+            margin-right: 4px;
+            font-size: 14px;
+        }
+
+        .activity-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            color: #616161;
+            margin-bottom: 16px;
+        }
+
+        .stats-item {
+            display: flex;
+            align-items: center;
+        }
+
+        .stats-item i {
+            margin-right: 4px;
+            font-size: 16px;
+        }
+
+        .location {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #616161;
+            margin-bottom: 16px;
+        }
+
+        .location i {
+            margin-right: 4px;
+            font-size: 16px;
+        }
+
+        .detail-btn {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            background-color: #FF9800;
+            color: white;
+            text-align: center;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .detail-btn:hover {
+            background-color: #F57C00;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .refresh-btn {
+            background-color: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 6px 12px;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background-color: #e0e0e0;
+            border-color: #c9c9c9;
+        }
+
+        .refresh-btn i {
+            font-size: 16px;
+            color: #616161;
+        }
+
+        @media (max-width: 600px) {
+            .activity-list {
+                grid-template-columns: 1fr;
+            }
+            .activity-card {
+                max-width: none;
+            }
+        }
+
+        /* 活动报名审核样式 */
+        .activity-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .activity-card报名 {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: row; /* 保持横向布局 */
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .activity-card报名:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .activity-image {
+            width: 280px;
+            height: 100%;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .activity-content报名 {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 活动标题和信息并排显示 */
+        .activity-header {
+            margin-bottom: 15px;
+            display: flex;
+            flex-direction: column; /* 默认垂直布局，移动端友好 */
+        }
+
+        .activity-title-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .activity-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            flex-grow: 1; /* 标题占据剩余空间 */
+        }
+
+        .activity-meta报名 {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 5px;
+        }
+
+        .activity-meta报名 span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background-color: #f0f7ff;
+            color: #3498db;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .activity-meta报名 i {
+            color: #3498db;
+        }
+
+        .registration-list {
+            margin-top: 15px;
+            border-top: 1px solid #f0f0f0;
+            padding-top: 15px;
+        }
+
+        .registration-list-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .registration-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f9f9f9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .registration-item:last-child {
+            border-bottom: none;
+        }
+
+        .registration-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .registration-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .registration-time {
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+
+        .registration-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .action-button.approve {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .action-button.approve:hover {
+            background-color: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2);
+        }
+
+        .action-button.reject {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .action-button.reject:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(244, 67, 54, 0.2);
+        }
+
+        /* 显示全部按钮样式 */
+        .show-more-btn,.show-more-btn0 {
+            display: block;
+            width: 100%;
+            padding: 8px;
+            background-color: #f0f0f0;
+            color: #333;
+            text-align: center;
+            border: none;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+        }
+
+        .show-more-btn,.show-more-btn0:hover {
+            background-color: #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .activity-card报名 {
+                flex-direction: column;
+            }
+
+            .activity-image {
+                width: 100%;
+                height: 200px;
+            }
+
+            .activity-title-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .activity-title {
+                margin-bottom: 10px;
+            }
+        }
+
+        /* 表格样式 */
+        .registration-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .registration-table th,
+        .registration-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eaeaea;
+        }
+
+        .registration-table th {
+            background-color: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 14px;
+        }
+
+        .registration-table td {
+            color: #555;
+        }
+
+        .registration-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .registration-table tr:hover {
+            background-color: #f5f7fa;
+            transition: background-color 0.2s;
+        }
+
+        /* 状态样式 */
+        .status-pending {
+            background-color: #fff;
+        }
+
+        .status-approved {
+            background-color: #f0fff4;
+        }
+
+        .status-rejected {
+            background-color: #fff5f5;
+        }
+
+        /* 操作按钮样式 */
+        .registration-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .action-button.approve {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .action-button.approve:hover:not([disabled]) {
+            background-color: #45a049;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
+        }
+
+        .action-button.reject {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .action-button.reject:hover:not([disabled]) {
+            background-color: #d32f2f;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(244, 67, 54, 0.2);
+        }
+
+        .action-button[disabled] {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* 空状态样式 */
+        .empty-registration {
+            padding: 20px;
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+        }
+
+        .empty-registration i {
+            margin-right: 8px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+<!-- 顶部导航栏 -->
+<header>
+    <div class="navbar">
+        <div class="logo">
+            <img src="/static/image/img/Logo.png" alt="山友缘Logo">
+            <span>行安</span>
+        </div>
+        <div class="menu">
+            <a href="Index.html">首页</a>
+            <a href="AllActivities.html">活动</a>
+            <a href="Discover3.html">动态</a>
+<!--            <a href="myMessages.html">消息</a>-->
+        </div>
+        <div class="user">
+            <div class="user-info">
+                <img src="/static/image/img/游客.png" alt="用户头像">
+                <span>游客</span>
+                <i class="dropdown-trigger">
+                    <img src="/static/image/img/下拉.png" alt="下拉菜单图标">
+                </i>
+                <!-- 下拉菜单 -->
+                <div class="dropdown-menu">
+                    <a href="MySpace.html" class="dropdown-item">我的</a>
+                    <a href="Login.html" class="dropdown-item ">切换账号</a>
+                    <a href="#" class="dropdown-item logout">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<!--主内容-->
+<main>
+    <div class="main-content">
+        <div class="all-btn">
+            <!-- 分类按钮（活动/动态） -->
+            <button class="category-btn activity active">活动</button> <!-- 默认选中状态添加active类 -->
+            <button class="category-btn dynamic">动态</button>
+            <button class="category-btn signup">报名</button>
+        </div>
+
+        <div class="all-btn">
+            <!-- 状态按钮（添加状态类：unreviewed/reviewed/rejected） -->
+            <button class="status-btn all active">全部</button>
+            <button class="status-btn unreviewed">未审核</button> <!-- 默认选中状态添加active类 -->
+            <button class="status-btn reviewed">已审核</button>
+            <button class="status-btn rejected">已驳回</button>
+        </div>
+        <div class="activity-list" id="activity-list"></div>
+        <div class="activity-container" id="activity-container"></div>
+    </div>
+</main>
+<script>
+    // 页面加载完成后执行
+    window.onload = function() {
+        var permissions=sessionStorage.getItem("permissionCodes");
+        var roles=sessionStorage.getItem("roleCodes");
+        const hasPermission =
+            permissions.includes('activity:audit') ||
+            permissions.includes('dynamic:audit') ||
+            roles.includes('admin');
+        console.log('权限+角色',permissions,roles)
+
+        if (!hasPermission) {
+            alert('您没有访问该页面的权限');
+            window.location.href = '/Index.html';
+            return;
+        }
+        findAll("activity","all");
+    };
+    // 获取所有分类按钮和状态按钮
+    const categoryBtns = document.querySelectorAll('.category-btn');
+    const statusBtns = document.querySelectorAll('.status-btn');
+
+    // 定义点击事件处理函数
+    function toggleActive(btns) {
+        btns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 移除所有按钮的active类
+                btns.forEach(b => b.classList.remove('active'));
+                // 添加当前按钮的active类
+                btn.classList.add('active');
+                // 触发筛选逻辑（调用下方的filterData函数）
+                filterData();
+            });
+        });
+    }
+
+    // 初始化事件监听
+    toggleActive(categoryBtns);
+    toggleActive(statusBtns);
+
+    // 数据筛选逻辑（示例：根据选中状态显示内容）
+    function filterData() {
+        const selectedCategory = document.querySelector('.category-btn.active')?.classList[1]; // 获取分类（activity/dynamic）
+        const selectedStatus = document.querySelector('.status-btn.active')?.classList[1]; // 获取状态（unreviewed/reviewed/rejected）
+
+        if (selectedCategory && selectedStatus) {
+            console.log(`当前筛选条件：${selectedCategory}（${selectedStatus}）`);
+            // 这里替换为实际的数据筛选逻辑（如通过AJAX获取数据或显示对应DOM）
+            if(selectedCategory=="activity") {
+                findAll(selectedCategory, selectedStatus);
+            }else if(selectedCategory=="dynamic") {
+                findAll0(selectedCategory,selectedStatus);
+            }else
+            {
+                findAll1(selectedCategory,selectedStatus);
+            }
+        }
+    }
+
+    //查找活动
+    function findAll(selectedCategory,selectedStatus){
+        var data0={};
+        data0.category=selectedCategory;
+        data0.status=selectedStatus;
+        // let url;
+        // if(selectedCategory=="activity"){
+        //     url="findAll";
+        // }else{
+        //     url="findAll0";
+        // }
+        $.ajax({
+            url: "findAll",
+            type: "post",
+            dataType: "json",
+            async: false,
+            contentType: "application/json;charset=UTF-8",
+            data:JSON.stringify(data0),
+            success: function(response) {
+                //alert(JSON.stringify(response));
+                renderRecommendActivities(response);
+            },
+            error: function() {
+                alert("获取活动数据失败，请稍后重试");
+            }
+        });
+    }
+
+    //查找动态
+    function findAll0(selectedCategory,selectedStatus){
+        var data0={};
+        data0.category=selectedCategory;
+        data0.status=selectedStatus;
+        $.ajax({
+            url: "findAll0",
+            type: "post",
+            dataType: "json",
+            async: false,
+            contentType: "application/json;charset=UTF-8",
+            data:JSON.stringify(data0),
+            success: function(response) {
+                //alert(JSON.stringify(response));
+                renderRecommendActivities0(response);
+            },
+            error: function() {
+                alert("获取活动数据失败，请稍后重试");
+            }
+        });
+    }
+
+    //查找报名记录
+    let findAll1Data=null;
+    function findAll1(selectedCategory,selectedStatus){
+        var data0={};
+        data0.category=selectedCategory;
+        data0.status=selectedStatus;
+        // let url;
+        // if(selectedCategory=="activity"){
+        //     url="findAll";
+        // }else{
+        //     url="findAll0";
+        // }
+        $.ajax({
+            url: "findAll1",
+            type: "post",
+            dataType: "json",
+            async: false,
+            contentType: "application/json;charset=UTF-8",
+            data:JSON.stringify(data0),
+            success: function(response) {
+                //alert(JSON.stringify(response));
+                findAll1Data=response;
+                // 按活动ID分组数据
+                const activities = groupByActivity(response);
+
+                // 渲染活动分组
+                renderActivityGroups(activities);
+
+                /*// 为活动标题添加点击事件
+                $(".activity-header").click(function() {
+                    $(this).toggleClass("active");
+                });*/
+            },
+            error: function() {
+                alert("获取活动数据失败，请稍后重试");
+            }
+        });
+    }
+
+    // 按活动ID分组数据
+    function groupByActivity(data) {
+        const activityGroups = {};
+
+        data.forEach(registration => {
+            const aid = registration.aid;
+            const atitle = registration.atitle;
+            const aimg = registration.aimg; // 新增活动图片字段
+
+            if (!activityGroups[aid]) {
+                activityGroups[aid] = {
+                    aid: aid,
+                    atitle: atitle,
+                    aimg: aimg,
+                    registrations: []
+                };
+            }
+
+            activityGroups[aid].registrations.push(registration);
+        });
+
+        // 转换为数组
+        return Object.values(activityGroups);
+    }
+
+    // 渲染活动分组
+    function renderActivityGroups(activities) {
+        const container = $("#activity-container");
+        const activityList = document.getElementById("activity-list");
+        activityList.innerHTML = "";
+        const activityList0 = document.getElementById("activity-container");
+        activityList0.innerHTML = "";
+
+        activities.forEach(activity => {
+            const groupHTML = `
+                    <div class="activity-card报名">
+                        <img src="${activity.aimg}" alt="${activity.atitle}" class="activity-image">
+                        <div class="activity-content报名">
+                            <div class="activity-header">
+                                <div class="activity-title-info">
+                                    <h2 class="activity-title">${activity.atitle}</h2>
+                                    <div class="activity-meta报名">
+                                        <span><i class="fas fa-users"></i> ${activity.registrations.length}人报名</span>
+                                        <span><i class="fas fa-calendar"></i> 活动ID: ${activity.aid}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="registration-list">
+                                <h3 class="registration-list-title"><i class="fas fa-list"></i> 报名列表</h3>
+                                <div class="registration-container" data-total="${activity.registrations.length}">
+                                     ${renderRegistrations(activity.registrations.slice(0, 3))} <!-- 只显示前3条 -->
+                                     <button class="show-more-btn" data-activity-id="${activity.aid}">显示全部${activity.registrations.length}人</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            container.append(groupHTML);
+        });
+
+        // 为审核按钮添加事件监听
+        bindRegistrationEvents();
+        // 为显示全部按钮添加事件监听
+        bindShowMoreEvents();
+    }
+
+    // 渲染报名详情
+    function renderRegistrations(registrations) {
+        let html = "";
+        html = `
+        <table class="registration-table">
+            <thead>
+                <tr>
+                    <th>报名人</th>
+                    <th>报名时间</th>
+                    <th>备注信息</th>
+                    <th>户外经验</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+        registrations.forEach(registration => {
+            let approveBtn, rejectBtn;
+            let statusClass = '';
+
+            // 根据状态生成不同的按钮和样式
+            if (registration.status === "0") { // 未审核
+                approveBtn = `
+                <button class="action-button approve"
+                        data-uid="${registration.uid}"
+                        data-aid="${registration.aid}"
+                        data-sid="${registration.sid}">
+                    <i class="fa fa-check"></i> 通过
+                </button>
+            `;
+                rejectBtn = `
+                <button class="action-button reject"
+                        data-uid="${registration.uid}"
+                        data-aid="${registration.aid}"
+                        data-sid="${registration.sid}">
+                    <i class="fa fa-times"></i> 驳回
+                </button>
+            `;
+                statusClass = 'status-pending';
+            } else if (registration.status === "1") { // 已通过
+                approveBtn = `
+                <button class="action-button approve"
+                        data-uid="${registration.uid}"
+                        data-aid="${registration.aid}"
+                        data-sid="${registration.sid}"
+                        disabled>
+                    <i class="fa fa-check"></i> 已通过
+                </button>
+            `;
+                rejectBtn = "";
+                statusClass = 'status-approved';
+            } else { // 已驳回
+                approveBtn = "";
+                rejectBtn = `
+                <button class="action-button reject"
+                        data-uid="${registration.uid}"
+                        data-aid="${registration.aid}"
+                        data-sid="${registration.sid}"
+                        disabled>
+                    <i class="fa fa-times"></i> 已驳回
+                </button>
+            `;
+                statusClass = 'status-rejected';
+            }
+
+
+            // 处理可能为空的字段
+            const remark = registration.remark || '无';
+            const experience = registration.experience || '无';
+
+            html += `
+            <tr class="${statusClass}">
+                <td class="registration-name">${registration.nickname}</td>
+                <td class="registration-time">${registration.sign_time}</td>
+                <td class="registration-remark">${remark}</td>
+                <td class="registration-experience">${experience}</td>
+                <td class="registration-actions">
+                    ${approveBtn}
+                    ${rejectBtn}
+                </td>
+            </tr>
+        `;
+        });
+
+        html += `
+            </tbody>
+        </table>
+    `;
+
+        return html;
+    }
+
+    // 根据活动ID获取活动数据
+    function getActivityByAid(aid) {
+        const activities = groupByActivity(findAll1Data);
+        return activities.find(activity => activity.aid == aid);
+    }
+
+    // 为审核按钮绑定事件
+    function bindRegistrationEvents() {
+        // 未审核记录的通过按钮
+        $(document).on("click", ".action-button.approve:not([disabled])", function() {
+            const sid = $(this).data("sid");
+            const nickname = $(this).closest(".registration-item").find(".registration-name").text();
+
+            if (confirm(`确定通过用户 ${nickname} 的报名申请吗？`)) {
+                const status = 1;
+                updateSignup(sid, status);
+                addAudit(sid, status);
+
+                // 更新按钮状态
+                $(this).text("已通过").attr("disabled", true);
+                $(this).siblings(".action-button.reject").remove(); // 移除驳回按钮
+                $(this).closest(".registration-item").data("status", status);
+                alert(`已通过用户 ${nickname} 的报名申请`);
+            }
+        });
+
+        // 未审核记录的驳回按钮
+        $(document).on("click", ".action-button.reject:not([disabled])", function() {
+            const sid = $(this).data("sid");
+            const nickname = $(this).closest(".registration-item").find(".registration-name").text();
+
+            const reason = prompt("请输入驳回原因:", "");
+            if (reason && reason.trim() !== "") {
+                const status = 2;
+                updateSignup(sid, status, reason);
+                addAudit(sid, status, reason);
+
+                // 更新按钮状态
+                $(this).text("已驳回").attr("disabled", true);
+                $(this).siblings(".action-button.approve").remove(); // 移除通过按钮
+                $(this).closest(".registration-item").data("status", status);
+                alert(`已驳回用户 ${nickname} 的报名申请，原因: ${reason}`);
+            }
+        });
+    }
+
+    // 为显示全部按钮绑定事件
+    function bindShowMoreEvents() {
+        $(document).on("click", ".show-more-btn", function() {
+            const activityId = $(this).data("activity-id");
+            const total = $(this).closest(".registration-container").data("total");
+            const container = $(this).closest(".registration-container");
+
+            // 从父容器获取活动数据
+            const activity = getActivityByAid(activityId);
+            if (activity) {
+                // 清空现有内容
+                container.html("");
+                // 渲染所有报名记录
+                container.append(renderRegistrations(activity.registrations));
+                // 添加隐藏按钮
+                container.append(`<button class="show-more-btn0" data-activity-id="${activityId}">收起</button>`);
+            }
+        });
+
+        // 为收起按钮绑定事件（动态绑定）
+        $(document).on("click", ".show-more-btn0", function() {
+            const activityId = $(this).data("activity-id");
+            const container = $(this).closest(".registration-container");
+
+            // 从父容器获取活动数据
+            const activity = getActivityByAid(activityId);
+            if (activity) {
+                // 清空现有内容
+                container.html("");
+                // 渲染前3条报名记录
+                container.append(renderRegistrations(activity.registrations.slice(0, 3)));
+                // 恢复显示全部按钮
+                container.append(`<button class="show-more-btn" data-activity-id="${activityId}">显示全部${activity.registrations.length}人</button>`);
+            }
+        });
+    }
+
+
+    // 定义状态码与文字的映射关系
+    const statusMap = {
+        0: "未审核",
+        1: "已审核",
+        2: "已驳回"
+    };
+
+    //渲染活动
+    function renderRecommendActivities(activities) {
+        const activityList = document.getElementById("activity-list");
+        activityList.innerHTML = "";
+        const activityList0 = document.getElementById("activity-container");
+        activityList0.innerHTML = "";
+
+        activities.forEach(activity => {
+            // 获取状态文字，若状态码不存在则默认显示“未知”
+            const statusText = statusMap[activity.status] || "未知";
+            const card = document.createElement("div");
+            card.className = "activity-card";
+            card.innerHTML = `
+                <img src="${activity.aimg}" alt="${activity.atitle}" class="activity-thumb">
+                <div class="activity-content">
+                    <span class="activity-type-tag">${statusText}</span> <!-- 显示转换后的状态文字 -->
+                    <h3 class="activity-card-title">${activity.atitle}</h3>
+                    <div class="activity-meta">
+                        <i class="fa fa-calendar-o"></i>
+                        <span>${formatDate(activity.start_time)}</span>
+                    </div>
+                    <div class="location">
+                        <i class="fa fa-map-marker"></i>
+                        <span>${activity.location || '未指定地点'}</span>
+                    </div>
+                    <button class="detail-btn">去审核</button>
+                </div>
+            `;
+
+            // 为每个卡片的详情按钮添加点击事件
+            const detailBtn = card.querySelector('.detail-btn');
+            detailBtn.addEventListener('click', () => {
+                window.location.href = `ActivityDetails0.html?aid=${activity.aid}&atitle=${activity.atitle}`;
+            });
+
+            activityList.appendChild(card);
+
+        });
+    }
+
+    //渲染动态
+    function renderRecommendActivities0(activities) {
+        const activityList = document.getElementById("activity-list");
+        activityList.innerHTML = "";
+        const activityList0 = document.getElementById("activity-container");
+        activityList0.innerHTML = "";
+
+        activities.forEach(activity => {
+            // 获取状态文字，若状态码不存在则默认显示“未知”
+            const statusText = statusMap[activity.status] || "未知";
+            const card = document.createElement("div");
+            card.className = "activity-card";
+            // 处理 media 字段，按","分割取第一张图片路径
+            let firstMedia = activity.media;
+            if (activity.media && activity.media.includes(',')) {
+                const mediaArr = activity.media.split(',');
+                // 取数组第一个元素，trim 去除可能的首尾空格
+                firstMedia = mediaArr[0].trim();
+            }
+            card.innerHTML = `
+            <img src="${firstMedia}" alt="${activity.dtitle}" class="activity-thumb">
+            <div class="activity-content">
+                <span class="activity-type-tag">${statusText}</span>
+                <h3 class="activity-card-title">${activity.dtitle}</h3>
+                <div class="activity-meta">
+                    <i class="fa fa-calendar-o"></i>
+                    <span>${formatDate(activity.create_time)}</span>
+                </div>
+                <div class="location">
+                    <i class="fa fa-map-marker"></i>
+                    <span>${activity.type || '未指定地点'}</span>
+                </div>
+                <button class="detail-btn">去审核</button>
+            </div>
+        `;
+
+            // 为每个卡片的详情按钮添加点击事件
+            const detailBtn = card.querySelector('.detail-btn');
+            detailBtn.addEventListener('click', () => {
+                window.location.href = `DynamicDetails.html?did=${activity.did}&dtitle=${activity.dtitle}`;
+            });
+
+            activityList.appendChild(card);
+
+        });
+    }
+
+    //提交更新报名表
+    function updateSignup(sid,status){
+        var data0={};
+        data0.sid=sid;
+        data0.status=status;
+        $.ajax({
+            url: "updateSignup",
+            type: "post",
+            dataType: "json",
+            async: false,
+            contentType: "application/json;charset=UTF-8",
+            data: JSON.stringify(data0),
+            success: function(response) {
+                alert("成功");
+            },
+            error: function() {
+                alert("获取活动数据失败，请稍后重试");
+            }
+        });
+    }
+
+    //添加审核记录
+    function addAudit(sid,status,reason){
+        const uid = sessionStorage.getItem('uid');
+        var data0={};
+        data0.content_id=sid;
+        data0.auditor_id=uid;
+        data0.content_type="2";
+        data0.audit_result=status;
+        data0.reject_reason=reason;
+        $.ajax({
+            url: "addAudit",
+            type: "post",
+            dataType: "json",
+            async: false,
+            contentType: "application/json;charset=UTF-8",
+            data: JSON.stringify(data0),
+            success: function(response) {
+                //alert(JSON.stringify(response));
+            },
+            error: function() {
+                alert("获取活动数据失败，请稍后重试");
+            }
+        });
+    }
+
+    // 辅助函数：格式化日期
+    function formatDate(dateStr) {
+        const date = new Date(dateStr);
+        return date.toLocaleString("zh-CN", {
+            month: "2-digit",
+            day: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+</script>
+</body>
+</html>

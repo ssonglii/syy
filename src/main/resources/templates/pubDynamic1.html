@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>行安 - 发布动态</title>
+  <style>
+    body {
+      padding-top: 70px; /* 避开顶部固定导航 */
+      background-color: #f1f1f1;
+    }
+    /* 导航栏样式 */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+    }
+
+    /*aaaa*/
+    .navbar .logo {
+      /* 保持原本的 inline 或 inline-block 布局（如果没开 flex 的话） */
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .navbar .logo span {
+      font-size: 24px;
+      line-height: 1; /* 避免行高干扰 */
+      font-weight: bold;
+      color: #333;
+    }
+
+    .navbar .logo img {
+      width: 32px;
+      height: 32px;
+      /* 关键：强制图片底部与文字基线对齐 */
+      vertical-align: bottom;
+    }
+    /*aaaa*/
+
+    .navbar .menu {
+      display: flex;
+      gap: 10px;
+    }
+
+    .navbar .menu a {
+      text-decoration: none;
+      color: #333;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .navbar .menu a:hover {
+      background-color: #eee;
+    }
+
+    .navbar .user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .navbar .user .publish-btn {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .navbar .user .publish-btn:hover {
+      background-color: #f5f5f5;
+    }
+
+    .navbar .user .user-info {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .navbar .user .user-info img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    .navbar .user .user-info span {
+      font-size: 14px;
+      color: #333;
+    }
+    /*导航下拉图标*/
+    .navbar .user .user-info i img {
+      width: 15px;
+      height: 15px;
+    }
+
+
+    .container {
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .profile img {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .profile .info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .profile .info .name {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .profile .info .desc {
+      font-size: 14px;
+      color: #666;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-group input[type="text"],
+    .form-group textarea,
+    .form-group select {
+      width: 93%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+      resize: none;
+    }
+
+    .form-group textarea {
+      height: 120px;
+    }
+
+    .form-group .editor-toolbar {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+
+    .form-group .editor-toolbar button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #333;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .form-group .editor-toolbar button:hover {
+      background-color: #eee;
+    }
+
+    .upload-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 120px;
+      border: 2px dashed #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: border-color 0.3s;
+    }
+
+    .upload-area:hover {
+      border-color: #007bff;
+    }
+
+    .upload-area i {
+      font-size: 24px;
+      color: #999;
+      margin-bottom: 10px;
+    }
+
+    .upload-area span {
+      color: #666;
+    }
+
+    .category-group {
+      display: flex;
+      gap: 20px;
+      margin-top: 10px;
+    }
+
+    .category-group label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 120px;
+      height: 80px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    /* 在这里加新代码！ */
+    .category-group input[type="radio"]:checked + label {
+      background-color: #14c4bf;
+      border-color: #22b4b0;
+      color: #fff;
+    }
+    .category-group input[type="radio"]:checked + label .category-icon {
+      color: #fff;
+    }
+    .category-group label:hover {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .category-group input[type="radio"] {
+      display: none;
+    }
+
+    .category-group .category-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+      color: #999;
+    }
+
+    .tag-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .tag-group input[type="text"] {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .tag-group button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .tag-group button:hover {
+      background-color: #0056b3;
+    }
+
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .form-actions button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .form-actions .draft {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      color: #333;
+    }
+
+    .form-actions .draft:hover {
+      background-color: #f8f9fa;
+    }
+
+    .form-actions .publish {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .form-actions .publish:hover {
+      background-color: #0056b3;
+    }
+
+    /* 预览区域样式 */
+    .preview-list {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .preview-item {
+      width: 150px;
+      height: 100px;
+      position: relative;
+      border-radius: 4px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .preview-item img,
+    .preview-item video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      width: 24px;
+      height: 24px;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .preview-item:hover .delete-btn {
+      opacity: 1;
+    }
+
+    .hint {
+      color: #999;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    /* 弹窗样式 */
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+    }
+
+    .modal-content {
+      text-align: center;
+    }
+
+    .modal-header {
+      margin-bottom: 15px;
+    }
+
+    .modal-body {
+      margin-bottom: 20px;
+    }
+
+    /* 遮罩层样式 */
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+
+    /* 按钮通用样式，可根据实际需求调整 */
+    .btn {
+      padding: 10px 20px;
+      margin: 0 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      opacity: 0.8;
+    }
+  </style>
+  <link rel="stylesheet" href="../static/css/down.css">
+  <!-- 引入 jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <!-- XSS 防护核心库 -->
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+  <script src="../static/js/syy.js"></script>
+  <script src="../static/js/jquery-1.8.3.js"></script>
+</head>
+<body>
+<!-- 发布成功弹窗 -->
+<div id="successModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>发布成功！</h2>
+    </div>
+    <div class="modal-body">
+      <p>您的动态已成功发布，将在审核后展示给所有山友。</p>
+    </div>
+    <div class="modal-footer">
+      <button id="viewDynamicBtn" class="btn">查看动态</button>
+      <button id="continuePublishBtn" class="btn">继续发布</button>
+    </div>
+  </div>
+</div>
+
+<!-- 遮罩层，用于弹窗背景变暗 -->
+<div id="modalOverlay" class="overlay" style="display: none;"></div>
+<!-- 顶部导航栏 -->
+<header>
+  <div class="navbar">
+    <div class="logo">
+      <img src="/static/image/img/Logo.png" alt="山友缘Logo">
+      <span>行安</span>
+    </div>
+    <div class="menu">
+      <a href="Index.html">首页</a>
+      <a href="AllActivities.html">活动</a>
+      <a href="Discover3.html">动态</a>
+    </div>
+    <div class="user">
+      <div class="user-info">
+        <img src="/static/image/img/游客.png" alt="用户头像">
+        <span>游客</span>
+        <i class="dropdown-trigger">
+          <img src="/static/image/img/下拉.png" alt="下拉菜单图标">
+        </i>
+        <!-- 下拉菜单 -->
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item">我的</a>
+          <a href="Login.html" class="dropdown-item ">切换账号</a>
+          <a href="#" class="dropdown-item logout">退出登录</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+<!-- 内容容器 -->
+<div class="container">
+  <!-- 用户信息 -->
+  <div class="profile">
+    <img src="/static/image/img/游客.png" alt="游">
+    <div class="info">
+      <div class="name">游客</div>
+      <div class="desc">分享你的户外故事...</div>
+    </div>
+  </div>
+
+  <!-- 发布动态表单 -->
+  <form id="form1" method="post" action="/dynaddAll" enctype="multipart/form-data">
+    <!-- 动态标题 -->
+    <div class="form-group">
+      <label for="dtitle">动态标题</label>
+      <input type="text" name="dtitle" id="dtitle" placeholder="请输入动态标题">
+    </div>
+
+    <!-- 动态内容 -->
+    <div class="form-group">
+      <label for="content">动态内容</label>
+      <textarea name="content" id="content" rows="6" placeholder="请输入动态内容"></textarea>
+    </div>
+
+    <!-- 上传图片/视频 -->
+    <div class="form-group">
+      <label for="media">上传图片/视频</label>
+      <div class="upload-area" onclick="document.getElementById('media').click()">
+        <i class="fas fa-cloud-upload-alt"></i>
+        <span>点击或拖拽文件到此处上传</span>
+        <input type="file" name="media" id="media" style="display: none;" multiple>
+      </div>
+      <!-- 新增预览列表容器 -->
+      <div class="preview-list" id="previewList"></div>
+      <p class="hint">支持 JPG、PNG、GIF、MP4 格式，最大 10MB</p>
+    </div>
+
+    <!-- 动态分类（已修复结构） -->
+    <div class="form-group">
+      <label>动态分类</label>
+      <div class="category-group">
+
+        <input type="radio" id="lvxingyouji" name="type" value="旅行游记">
+        <label for="lvxingyouji">
+          <div class="category-icon"><i class="fas fa-map-marked-alt"></i></div>
+          <span>旅行游记</span>
+        </label>
+
+        <input type="radio" id="huwaizhishi" name="type" value="户外知识">
+        <label for="huwaizhishi">
+          <div class="category-icon"><i class="fas fa-book"></i></div>
+          <span>户外知识</span>
+        </label>
+
+        <input type="radio" id="zhuangbeiceping" name="type" value="装备测评">
+        <label for="zhuangbeiceping">
+          <div class="category-icon"><i class="fas fa-briefcase"></i></div>
+          <span>装备测评</span>
+        </label>
+
+        <input type="radio" id="sheyingfenxiang" name="type" value="摄影分享">
+        <label for="sheyingfenxiang">
+          <div class="category-icon"><i class="fas fa-users"></i></div>
+          <span>摄影分享</span>
+        </label>
+
+        <input type="radio" id="huodongzhaomu" name="type" value="活动招募">
+        <label for="huodongzhaomu">
+          <div class="category-icon"><i class="fas fa-users"></i></div>
+          <span>活动招募</span>
+        </label>
+
+        <input type="radio" id="gonggaofabu" name="type" value="公告发布">
+        <label for="gonggaofabu">
+          <div class="category-icon"><i class="fas fa-users"></i></div>
+          <span>公告发布</span>
+        </label>
+
+      </div>
+    </div>
+
+    <!-- 表单操作按钮 -->
+    <div class="form-actions">
+      <button type="button" class="publish" onclick="addDyn('form1', 'dynaddAll')">发布动态</button>
+    </div>
+  </form>
+</div>
+
+<script>
+  // 全局维护已选择的文件数组
+  let selectedFiles = [];
+  const fileInput = document.getElementById('media');
+  const previewList = document.getElementById('previewList');
+
+  // 监听文件选择变化（改为合并文件）
+  fileInput.addEventListener('change', function (e) {
+    const newFiles = Array.from(e.target.files); // 获取新选择的文件
+    selectedFiles = [...selectedFiles, ...newFiles]; // 合并到全局数组
+
+    // 同步到 fileInput（关键：让表单提交时包含所有文件）
+    const dataTransfer = new DataTransfer();
+    selectedFiles.forEach(file => dataTransfer.items.add(file));
+    fileInput.files = dataTransfer.files;
+
+    // 调试：确认合并后的文件数量
+    console.log("合并后文件数量：", selectedFiles.length);
+    handleFiles(selectedFiles);
+  });
+
+
+  // 监听拖拽事件（上传区域）
+  const uploadArea = document.querySelector('.upload-area');
+  uploadArea.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    uploadArea.style.borderColor = '#007bff';
+  });
+  uploadArea.addEventListener('dragleave', function (e) {
+    e.preventDefault();
+    uploadArea.style.borderColor = '#ddd';
+  });
+
+  // 监听拖拽事件
+  uploadArea.addEventListener('drop', function (e) {
+    e.preventDefault();
+    const newFiles = Array.from(e.dataTransfer.files);
+    selectedFiles = [...selectedFiles, ...newFiles]; // 合并
+
+    // 同步到 fileInput
+    const dataTransfer = new DataTransfer();
+    selectedFiles.forEach(file => dataTransfer.items.add(file));
+    fileInput.files = dataTransfer.files;
+
+    handleFiles(selectedFiles);
+  });
+
+  // 处理文件预览（基于合并后的数组）
+  function handleFiles(files) {
+    // 清空旧预览，避免重复渲染
+    previewList.innerHTML = '';
+
+    files.forEach(file => {
+      const fileType = file.type;
+      const reader = new FileReader();
+
+      if (fileType.startsWith('image/')) {
+        reader.onload = function (event) {
+          const previewItem = createPreviewItem(event.target.result, 'image', file);
+          previewList.appendChild(previewItem);
+        };
+        reader.readAsDataURL(file);
+      } else if (fileType.startsWith('video/')) {
+        reader.onload = function (event) {
+          const previewItem = createPreviewItem(event.target.result, 'video', file);
+          previewList.appendChild(previewItem);
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  // 创建预览项（包含删除按钮）
+  function createPreviewItem(src, type, file) {
+    const div = document.createElement('div');
+    div.className = 'preview-item';
+
+    // 图片/视频预览
+    if (type === 'image') {
+      const img = document.createElement('img');
+      img.src = src;
+      div.appendChild(img);
+    } else {
+      const video = document.createElement('video');
+      video.controls = true;
+      const source = document.createElement('source');
+      source.src = src;
+      source.type = file.type;
+      video.appendChild(source);
+      div.appendChild(video);
+    }
+
+    // 删除按钮（始终可见，方便操作）
+    const deleteBtn = document.createElement('button');
+    deleteBtn.className = 'delete-btn';
+    deleteBtn.innerHTML = '&times;';
+    deleteBtn.style.opacity = '1'; // 让删除按钮一直显示，不用 hover
+
+    // 点击删除：移除预览 + 更新文件列表 + 同步到 input
+    deleteBtn.addEventListener('click', function () {
+      div.remove();
+      selectedFiles = selectedFiles.filter(f => f !== file);
+
+      // 同步到 file input
+      const dataTransfer = new DataTransfer();
+      selectedFiles.forEach(f => dataTransfer.items.add(f));
+      fileInput.files = dataTransfer.files;
+    });
+
+    div.appendChild(deleteBtn);
+    return div;
+  }
+
+  // ==================== 发布动态 + XSS 安全过滤 ====================
+  function addDyn(formId, controlUrl) {
+    // 1. 获取用户输入
+    let rawTitle = $('#dtitle').val();
+    let rawContent = $('#content').val();
+
+    // 2. XSS 净化（核心防护）
+    let safeTitle = DOMPurify.sanitize(rawTitle);
+    let safeContent = DOMPurify.sanitize(rawContent);
+
+    // 3. 回填净化后的值
+    $('#dtitle').val(safeTitle);
+    $('#content').val(safeContent);
+
+    // 4. 提交表单
+    var form = $('#' + formId)[0];
+    var formData = new FormData(form);
+
+    $.ajax({
+      type: 'post',
+      url: controlUrl,
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function(response) {
+        if (response === -1) {
+          alert('请先登录后再发布动态！');
+          window.location.href = 'Login.html';
+        } else {
+          $('#successModal').show();
+          $('#modalOverlay').show();
+        }
+      },
+      error: function(xhr, status, error) {
+        console.error('发布失败：', error);
+        alert('动态发布失败，请稍后重试！');
+      }
+    });
+  }
+
+  // 弹窗按钮事件
+  $('#viewDynamicBtn').click(function(){
+    window.location.href = 'Discover3.html';
+  });
+  $('#continuePublishBtn').click(function(){
+    $('#successModal').hide();
+    $('#modalOverlay').hide();
+    $('#form1')[0].reset();
+    selectedFiles = [];
+    $('#previewList').empty();
+  });
+</script>
+</body>
+</html>

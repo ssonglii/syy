@@ -1,0 +1,999 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>行安 - 管理员管理</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../static/css/down.css">
+  <script src="../static/js/jquery-1.8.3.js"></script>
+  <script src="../static/js/syy.js"></script>
+  <style>
+
+    /* 驳回备注模态框textarea样式 */
+    #reject-remark {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      resize: vertical;
+    }
+    .user-avatar {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    /* 通用样式重置，让不同设备表现更一致 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      margin-top: 70px;
+      background-color: #f8f9fa;
+      font-family: "Microsoft YaHei", sans-serif;
+      line-height: 1.6;
+    }
+
+    /* 导航栏样式 */
+    .navbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background-color: #fff;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+    }
+
+    .navbar .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .navbar .logo span {
+      font-size: 24px;
+      line-height: 1;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .navbar .logo img {
+      width: 32px;
+      height: 32px;
+      vertical-align: bottom;
+    }
+
+    .navbar .menu {
+      display: flex;
+      gap: 10px;
+    }
+
+    .navbar .user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .navbar .menu a {
+      text-decoration: none;
+      color: #333;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s;
+    }
+
+    .navbar .menu a:hover {
+      background-color: #eee;
+    }
+
+    .navbar .user .publish-btn {
+      background-color: #fff;
+      border: 1px solid #ddd;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .navbar .user .publish-btn:hover {
+      background-color: #f5f5f5;
+    }
+
+    .navbar .user .user-info {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .navbar .user .user-info img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    .navbar .user .user-info span {
+      font-size: 14px;
+      color: #333;
+    }
+
+    .navbar .user .user-info i img {
+      width: 15px;
+      height: 15px;
+    }
+
+    /* 下拉菜单 */
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: 40px;
+      right: 20px;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      z-index: 101;
+    }
+
+    .dropdown-menu a {
+      display: block;
+      padding: 8px 12px;
+      text-decoration: none;
+      color: #333;
+      transition: background-color 0.3s;
+    }
+
+    .dropdown-menu a:hover {
+      background-color: #f5f5f5;
+    }
+
+    .dropdown-trigger:hover + .dropdown-menu,
+    .dropdown-menu:hover {
+      display: block;
+    }
+
+    /* 主体内容通用样式 */
+    .container {
+      width: 90%;
+      max-width: 1200px;
+      margin: 20px auto;
+    }
+
+    .title {
+      font-size: 20px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    /* 用户账号状态管理模块 */
+    .user-management,
+    .cert-audit-management {
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .search-filter {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .search-input {
+      width: 300px;
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .filter-select {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-right: 10px;
+    }
+
+    .filter-btn {
+      background-color: #007bff;
+      color: #fff;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .filter-btn:hover {
+      background-color: #0056b3;
+    }
+
+    .user-table,
+    .cert-audit-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .user-table thead,
+    .cert-audit-table thead {
+      background-color: #f5f5f5;
+    }
+
+    .user-table th,
+    .user-table td,
+    .cert-audit-table th,
+    .cert-audit-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+
+    .user-table tbody tr:hover,
+    .cert-audit-table tbody tr:hover {
+      background-color: #fafafa;
+    }
+
+    .status-tag {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .status-normal {
+      background-color: #28a745;
+    }
+
+    .status-pending {
+      background-color: #ffc107;
+    }
+
+    .status-banned {
+      background-color: #dc3545;
+    }
+
+    .status-passed {
+      background-color: #17a2b8;
+    }
+
+    .status-rejected {
+      background-color: #6c757d;
+    }
+
+    .action-btn {
+      text-decoration: none;
+      color: #007bff;
+      margin-right: 8px;
+      transition: color 0.3s;
+    }
+
+    .action-btn:hover {
+      color: #0056b3;
+    }
+
+    .danger-btn {
+      color: #dc3545;
+    }
+
+    .danger-btn:hover {
+      color: #b02a37;
+    }
+
+    /* 分页样式 */
+    .pagination {
+      display: flex;
+      justify-content: end;
+      gap: 5px;
+      margin-top: 15px;
+    }
+
+    .pagination li {
+      list-style: none;
+    }
+
+    .pagination li a {
+      display: inline-block;
+      padding: 6px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      text-decoration: none;
+      color: #007bff;
+      transition: background-color 0.3s, color 0.3s;
+    }
+
+    .pagination li a:hover {
+      background-color: #007bff;
+      color: #fff;
+    }
+
+    .pagination li.active a {
+      background-color: #007bff;
+      color: #fff;
+      border: 1px solid #007bff;
+    }
+
+    /* 用户认证申请审核模块 */
+    .cert-audit-item {
+      border-bottom: 1px solid #eee;
+      padding-bottom: 15px;
+      margin-bottom: 15px;
+    }
+
+    .cert-audit-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .cert-audit-item .info {
+      margin-bottom: 10px;
+    }
+
+    .cert-audit-item .btn-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .cert-audit-item .btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .cert-audit-item .view-btn {
+      background-color: #17a2b8;
+      color: #fff;
+    }
+
+    .cert-audit-item .pass-btn {
+      background-color: #28a745;
+      color: #fff;
+    }
+
+    .cert-audit-item .reject-btn {
+      background-color: #dc3545;
+      color: #fff;
+    }
+
+    .cert-audit-item .btn:hover {
+      opacity: 0.8;
+    }
+
+    /* 模态框基础样式 */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .modal-content {
+      background-color: #fff;
+      width: 70%;
+      max-width: 800px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px;
+      background-color: #f8f9fa;
+      border-bottom: 1px solid #eee;
+    }
+    .modal-header h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+    .modal-header button {
+      background: transparent;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #999;
+    }
+    .modal-body {
+      padding: 20px;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+
+<body>
+<!-- 顶部导航栏 -->
+<header>
+  <div class="navbar">
+    <div class="logo">
+      <img src="/static/image/img/Logo.png" alt="山友缘Logo">
+      <span>行安</span>
+    </div>
+    <div class="menu">
+      <a href="Index.html">首页</a>
+      <a href="AllActivities.html">活动</a>
+      <a href="Discover3.html">动态</a>
+<!--      <a href="myMessages.html">消息</a>-->
+      <a href="UserAudit.html" class="menu-item">用户管理</a>
+    </div>
+    <div class="user">
+      <div class="user-info">
+        <img src="/static/image/img/游客.png" alt="用户头像">
+        <span>游客</span>
+        <!-- 给触发图标加 class，方便 JS 绑定事件 -->
+        <i class="dropdown-trigger" id="dropdownTrigger">
+          <img src="/static/image/img/下拉.png" alt="下拉菜单图标">
+        </i>
+        <!-- 下拉菜单加 class + id，方便控制 -->
+        <div class="dropdown-menu" id="dropdownMenu">
+          <a href="MySpace.html" class="dropdown-item">我的</a>
+          <a href="Login.html" class="dropdown-item ">切换账号</a>
+          <a href="#" class="dropdown-item logout">退出登录</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!--&lt;!&ndash; 用户账号状态管理 &ndash;&gt;-->
+
+
+<!-- 认证详情模态框 -->
+<div id="detail-modal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modal-title">认证详情</h3>
+      <button id="close-modal">&times;</button>
+    </div>
+    <div class="modal-body" id="modal-body">
+      <!-- 模态框内容将通过JavaScript动态生成 -->
+    </div>
+  </div>
+</div>
+<!-- 主体内容 -->
+<main>
+  <div class="container">
+    <!-- 用户认证申请审核 -->
+    <div class="cert-audit-management">
+      <div class="title">用户认证申请审核</div>
+      <div class="search-filter">
+        <input type="text" class="search-input" placeholder="搜索用户ID、昵称...">
+        <div>
+          <select class="filter-select">
+            <option value="">全部状态</option>
+            <option value="pending">待审核</option> <!-- 对应后端0 -->
+            <option value="approved">已通过</option> <!-- 对应后端1 -->
+            <option value="rejected">已驳回</option> <!-- 对应后端2 -->
+          </select>
+          <select class="filter-select">
+            <option value="">全部类型</option>
+            <option value="达人认证">达人认证</option>
+            <option value="专家认证">专家认证</option>
+            <option value="机构认证">机构认证</option>
+          </select>
+          <select class="filter-select">
+            <option value="">全部时间</option>
+            <option value="time1">近一周</option>
+            <option value="time2">近一个月</option>
+          </select>
+          <button class="filter-btn">筛选</button>
+        </div>
+      </div>
+
+      <!-- 待审核列表 -->
+      <div class="cert-audit-list" id="pending-audit-list">
+        <div class="cert-audit-item">
+        </div>
+      </div>
+
+      <!-- 分页控件 -->
+      <div class="pagination">
+
+      </div>
+
+    </div>
+    <!-- 驳回备注模态框 -->
+    <div id="reject-modal" class="modal" style="display: none;">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>驳回备注</h3>
+          <button id="close-reject-modal">&times;</button>
+        </div>
+        <div class="modal-body">
+          <textarea id="reject-remark" rows="5" placeholder="请输入驳回备注..."></textarea>
+          <button id="confirm-reject-btn" class="btn reject-btn mt-3">确认驳回</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // 基础配置
+    let currentCertId = null; // 当前操作的认证ID
+
+    // DOM元素引用
+    const modal = document.getElementById('detail-modal');
+    const pendingAuditList = document.getElementById('pending-audit-list');
+    const pagination = document.querySelector('.pagination');
+    const searchInput = document.querySelector('.search-input');
+    const statusSelect = document.querySelector('.filter-select');
+    const typeSelect = document.querySelectorAll('.filter-select')[1]; // 认证类型下拉框
+    const timeSelect = document.querySelectorAll('.filter-select')[2]; // 时间下拉框
+    const filterBtn = document.querySelector('.filter-btn');
+
+    checkPermissionAndInit();
+    // 初始化页面
+    initPage();
+
+    function checkPermissionAndInit() {
+      let permissionCodes = [];
+      try {
+        permissionCodes = JSON.parse(sessionStorage.getItem('permissionCodes') || '[]');
+      } catch (e) {
+        permissionCodes = [];
+      }
+
+      if (permissionCodes.indexOf('user_certification:audit') === -1) {
+        alert('无权限访问该页面');
+        window.location.replace('Index.html');
+        return;
+      }
+
+      initPage();
+    }
+    // 页面初始化函数
+    function initPage() {
+      loadCertList();
+
+       // 修改筛选按钮点击事件
+      filterBtn.addEventListener('click', function() {
+        const statusSelect = document.querySelector('.filter-select');
+        const auditStatus = getStatusValue(statusSelect.value);
+        const certType = typeSelect.value;
+        const timeRange = timeSelect.value;
+        const keyword = searchInput.value.trim();
+
+        loadCertList(auditStatus, keyword, 1, certType, timeRange);
+      });
+
+      // 绑定搜索框回车事件
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          const auditStatus = getStatusValue(statusSelect.value);
+          const certType = typeSelect.value;
+          const timeRange = timeSelect.value;
+          const keyword = searchInput.value.trim();
+
+          loadCertList(auditStatus, keyword, 1, certType, timeRange);
+        }
+      });
+    }
+
+
+    // 加载认证列表
+    function loadCertList(audit_status = null, keyword = '', pageNum = 1, certType = '', timeRange = '') {
+      console.log('audit_status传参:', audit_status); // 选“待审核”时，看是否为0
+      console.log('loadCertList参数:', { audit_status, keyword, pageNum, certType, timeRange });
+      // 显示加载状态
+      pendingAuditList.innerHTML = '<div class="loading text-center py-10">加载中...</div>';
+
+      // 构造请求参数
+      const params = new URLSearchParams({
+        audit_status: audit_status !== null ? audit_status : '',
+        keyword: keyword || '',
+        pageNum: pageNum.toString(),
+        pageSize: '10',
+        cert_type: certType,
+        time_range: timeRange
+      });
+
+      // 发送AJAX请求
+      fetch(`/getClist?${params}`)
+              .then(response => {
+                if (!response.ok) throw new Error('网络响应错误');
+                return response.json();
+              })
+              .then(data => {
+                renderCertList(data.list);
+                updatePagination(data.total, pageNum);
+              })
+              .catch(error => {
+                console.error('加载认证列表失败:', error);
+                pendingAuditList.innerHTML = '<div class="error text-center py-10 text-red-500">加载失败，请重试</div>';
+              });
+    }
+
+    //渲染认证列表
+    function renderCertList(certList) {
+      pendingAuditList.innerHTML = '';
+
+      if (certList.length === 0) {
+        pendingAuditList.innerHTML = '<div class="empty text-center py-10">暂无符合要求的的认证申请</div>';
+        return;
+      }
+
+      certList.forEach(cert => {
+        console.log('认证详情数据:', cert);
+        const item = document.createElement('div');
+        item.className = 'cert-audit-item';
+        item.dataset.cert_id = cert.cert_id;
+
+        // 认证类型文本
+        const certTypeText = getCertTypeText(cert.cert_type);
+
+        // 状态标签样式
+        let statusClass = 'status-pending';
+        let statusText = '待审核';
+        let showActionButtons = true;
+
+        if (cert.audit_status === 1) {
+          statusClass = 'status-passed';
+          statusText = '已通过';
+          showActionButtons = false;
+        } else if (cert.audit_status === 2) {
+          statusClass = 'status-rejected';
+          statusText = '已驳回';
+          showActionButtons = false;
+        }
+
+        // 构建认证项HTML
+        item.innerHTML = `
+               <div class="info">
+                   <div class="flex justify-between items-center">
+                       <div>
+                           <span class="font-bold">${certTypeText}申请</span>
+                           <span class="status-tag ${statusClass} ml-2">${statusText}</span>
+                       </div>
+                       <div class="text-gray-500 text-sm">申请时间：${cert.create_time}</div>
+                   </div>
+                   <div class="flex items-center gap-3 mt-3">
+                       <img src="${cert.avatar || '/static/image/img/游客.png'}" alt="用户头像" class="user-avatar">
+                   </div>
+                   <div class="mt-3 space-y-1">
+                       <p>认证人：${cert.real_name}</p>
+                       <p>证件号码：${maskIdCard(cert.id_card)}</p>
+                   </div>
+                   ${cert.audit_remark ?
+                `<div class="mt-2 p-2 bg-red-50 text-red-600 text-sm rounded">
+                           <span class="font-medium">驳回备注：</span>${cert.audit_remark}
+                       </div>` : ''}
+               </div>
+               <div class="btn-group flex gap-2 mt-4">
+                   <button class="btn view-btn flex-1">查看详情</button>
+                   <button class="btn pass-btn flex-1 ${showActionButtons ? '' : 'opacity-50 cursor-not-allowed'}" ${showActionButtons ? '' : 'disabled'}>通过</button>
+                   <button class="btn reject-btn flex-1 ${showActionButtons ? '' : 'opacity-50 cursor-not-allowed'}" ${showActionButtons ? '' : 'disabled'}>驳回</button>
+               </div>
+           `;
+
+        // 先把 item 添加到 pendingAuditList，确保 DOM 元素存在后再绑定事件
+        pendingAuditList.appendChild(item);
+
+        // 找到“查看详情”按钮并绑定点击事件
+        const viewBtn = item.querySelector('.view-btn');
+        viewBtn.addEventListener('click', () => {
+          const certId = cert.cert_id;
+          getCertDetail(certId);
+        });
+
+        // 找到“通过”按钮并绑定点击事件
+        const passBtn = item.querySelector('.pass-btn');
+        passBtn.addEventListener('click', () => {
+          if (!showActionButtons) return;
+          const certId = cert.cert_id;
+          auditCert(certId, 1, '');
+        });
+
+        // 找到“驳回”按钮并绑定点击事件
+        const rejectBtn = item.querySelector('.reject-btn');
+        rejectBtn.addEventListener('click', () => {
+          if (!showActionButtons) return;
+          const certId = cert.cert_id;
+          const rejectModal = document.getElementById('reject-modal');
+          rejectModal.style.display = 'flex';
+          const confirmBtn = document.getElementById('confirm-reject-btn');
+          confirmBtn.onclick = () => {
+            const remark = document.getElementById('reject-remark').value.trim();
+            auditCert(certId, 2, remark);
+            rejectModal.style.display = 'none';
+            document.getElementById('reject-remark').value = '';
+            confirmBtn.onclick = null;
+          };
+        });
+
+        // 给驳回备注模态框的关闭按钮绑定事件
+        const closeRejectModalBtn = document.getElementById('close-reject-modal');
+        closeRejectModalBtn.addEventListener('click', () => {
+          const rejectModal = document.getElementById('reject-modal');
+          rejectModal.style.display = 'none';
+          document.getElementById('reject-remark').value = '';
+          const confirmBtn = document.getElementById('confirm-reject-btn');
+          confirmBtn.onclick = null;
+        });
+      });
+    }
+// 新增获取认证详情并展示到模态框的函数
+    function getCertDetail(certId) {
+      fetch(`/detail/${certId}`)
+              .then(response => {
+                if (!response.ok) throw new Error('网络响应错误');
+                return response.json();
+              })
+              .then(data => {
+                // 填充模态框内容，参考设计样式排版
+                const modalBody = document.getElementById('modal-body');
+                const modalTitle = document.getElementById('modal-title');
+                modalTitle.textContent = `认证详情 - ${getCertTypeText(data.cert_type)}申请`;
+
+                // 拼接模态框 HTML 内容，按板块展示
+                let modalHtml = `
+        <div class="user-detail-header">
+          <div class="avatar-box">
+            <img src="${data.avatar || '/static/image/img/游客.png'}" alt="用户头像" class="user-avatar-big">
+            <div class="nickname-role">
+              <span class="nickname">${data.nickname || '未设置昵称'}</span>
+            </div>
+          </div>
+        </div>
+        <div class="user-detail-info">
+          <div class="basic-info">
+            <p><strong>认证ID：</strong>${data.cert_id}</p>
+            <p><strong>用户ID：</strong>${data.uid}</p>
+            <p><strong>真实姓名：</strong>${data.real_name}</p>
+            <p><strong>身份证号：</strong>${maskIdCard(data.id_card)}</p>
+            <p><strong>认证类型：</strong>${getCertTypeText(data.cert_type)}</p>
+            <p><strong>手机号：</strong>${data.phone}</p>
+            <p><strong>邮箱：</strong>${data.email || '未填写'}</p>
+            <p><strong>性别：</strong>${data.sex || '未设置'}</p>
+          </div>
+          <div class="cert-info">
+            <p><strong>身份证正面：</strong>
+              <a href="${data.id_card_front}" target="_blank" class="file-link">查看图片</a>
+            </p>
+            <p><strong>身份证反面：</strong>
+              <a href="${data.id_card_back}" target="_blank" class="file-link">查看图片</a>
+            </p>
+            <p><strong>经验证明材料：</strong>
+              <a href="${data.experience_proofs}" target="_blank" class="file-link">查看材料</a>
+            </p>
+
+            <p><strong>特长技能描述：</strong>${data.expertise || '无'}</p>
+            <p><strong>户外经验描述：</strong>${data.outdoor_experience || '无'}</p>
+            <p><strong>技能描述：</strong>${data.skill_desc || '无'}</p>
+             <p><strong>补充信息描述：</strong>${data.supplement_info || '无'}</p>
+          </div>
+          <div class="audit-info">
+            <p><strong>审核状态：</strong>${data.audit_status === 0 ? '待审核' : data.audit_status === 1 ? '已通过' : '已驳回'}</p>
+            <p><strong>审核备注：</strong>${data.audit_remark || '无'}</p>
+            <p><strong>创建时间：</strong>${data.create_time}</p>
+            <p><strong>状态更新时间：</strong>${data.update_time || '无'}</p>
+          </div>
+        </div>
+      `;
+
+                modalBody.innerHTML = modalHtml;
+                // 显示模态框
+                const modal = document.getElementById('detail-modal');
+                modal.style.display = 'flex';
+
+                // 若需要给图片/文件链接添加样式，可在这里动态添加（也可写在全局 CSS）
+                const fileLinks = document.querySelectorAll('.file-link');
+                fileLinks.forEach(link => {
+                  link.style.color = '#007bff';
+                  link.style.textDecoration = 'underline';
+                  link.addEventListener('mouseover', () => {
+                    link.style.opacity = '0.8';
+                  });
+                  link.addEventListener('mouseout', () => {
+                    link.style.opacity = '1';
+                  });
+                });
+              })
+              .catch(error => {
+                console.error('获取认证详情失败:', error);
+                alert('获取认证详情失败，请重试');
+              });
+    }
+
+// 新增用于设置头像样式的 CSS（也可写在页面 style 标签或外部 CSS 文件）
+    const style = document.createElement('style');
+    style.textContent = `
+  .user-detail-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .avatar-box {
+    display: flex;
+    align-items: center;
+  }
+  .user-avatar-big {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 15px;
+  }
+  .nickname {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+  }
+  .user-detail-info {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+  }
+  .basic-info, .cert-info, .audit-info {
+    flex: 1;
+    min-width: 220px;
+  }
+  .user-detail-info p {
+    margin: 8px 0;
+    line-height: 1.6;
+  }
+`;
+    document.head.appendChild(style);
+
+// 给模态框关闭按钮绑定事件，用于隐藏模态框
+    const closeModalBtn = document.getElementById('close-modal');
+    closeModalBtn.addEventListener('click', () => {
+      const modal = document.getElementById('detail-modal');
+      modal.style.display = 'none';
+    });
+    // 更新分页控件
+    function updatePagination(totalItems, currentPage) {
+      const totalPages = Math.max(1, Math.ceil(totalItems / 10));
+
+      if (!pagination || totalPages <= 1) {
+        if (pagination) pagination.innerHTML = '';
+        return;
+      }
+
+      let paginationHtml = `
+               <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                   <a class="page-link" href="#" data-page="${currentPage > 1 ? currentPage - 1 : 1}">上一页</a>
+               </li>
+           `;
+
+      // 简化分页，只显示当前页和前后页
+      const startPage = Math.max(1, currentPage - 2);
+      const endPage = Math.min(totalPages, startPage + 4);
+
+      for (let i = startPage; i <= endPage; i++) {
+        paginationHtml += `
+                   <li class="page-item ${i === currentPage ? 'active' : ''}">
+                       <a class="page-link" href="#" data-page="${i}">${i}</a>
+                   </li>
+               `;
+      }
+
+      paginationHtml += `
+               <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                   <a class="page-link" href="#" data-page="${currentPage < totalPages ? currentPage + 1 : totalPages}">下一页</a>
+               </li>
+           `;
+
+      pagination.innerHTML = paginationHtml;
+
+      // 绑定分页点击事件
+      document.querySelectorAll('.page-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (this.parentElement.classList.contains('disabled')) return;
+
+          const pageNum = parseInt(this.dataset.page);
+          const statusSelect = document.querySelector('.filter-select');
+          const auditStatus = getStatusValue(statusSelect.value); // 直接获取value
+          const certType = typeSelect.value;
+          const timeRange = timeSelect.value;
+          const keyword = searchInput.value.trim();
+
+          loadCertList(auditStatus, keyword, pageNum, certType, timeRange);
+        });
+      });
+    }
+
+    // 辅助工具函数
+    function getCertTypeText(type) {
+      const types = {
+        'identity': '达人',
+        'expert': '专家',
+        'organization': '机构'
+      };
+      return types[type] || type || '未知';
+    }
+
+    function getStatusValue(statusText) {
+      console.log('原始输入:', statusText, typeof statusText);
+
+      // 处理可能的空值或非字符串类型
+      if (!statusText || typeof statusText !== 'string') {
+        console.log('输入无效:', statusText);
+        return null;
+      }
+
+      // 去除首尾空格
+      const cleanText = statusText.trim();
+      console.log('处理后输入:', cleanText);
+
+      const statusMap = {
+        'pending': 0,
+        'approved': 1,
+        'rejected': 2
+      };
+      const result = statusMap[cleanText] !== undefined ? statusMap[cleanText] : null;
+      console.log('映射结果:', result);
+      return result;
+    }
+    function maskIdCard(idCard) {
+      if (!idCard || idCard.length < 11) return idCard;
+      return idCard.substring(0, 6) + '********' + idCard.substring(idCard.length - 4);
+    }
+    // 审核认证申请函数
+    function auditCert(certId, auditStatus, auditRemark) {
+      // 构造请求体
+      const requestBody = {
+        cert_id: certId,
+        audit_status: auditStatus,
+        audit_remark: auditRemark
+      };
+
+      // 调用后端接口
+      fetch('/certAudit', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      })
+              .then(response => {
+                if (!response.ok) throw new Error('审核请求失败');
+                return response.json();
+              })
+              .then(data => {
+                if (data > 0) {
+                  // 审核成功，重新加载列表（可优化为局部刷新单条数据，这里简单处理）
+                  const statusSelect = document.querySelector('.filter-select');
+                  const auditStatus = getStatusValue(statusSelect.value);
+                  const certType = typeSelect.value;
+                  const timeRange = timeSelect.value;
+                  const keyword = searchInput.value.trim();
+                  loadCertList(auditStatus, keyword, 1, certType, timeRange);
+                  alert('审核操作成功');
+                } else {
+                  alert('审核操作失败，请重试');
+                }
+              })
+              .catch(error => {
+                console.error('审核认证失败:', error);
+                alert('审核认证失败，请重试');
+              });
+    }
+  });
+
+
+</script>
+</body>
+</html>

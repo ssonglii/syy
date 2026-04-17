@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>山友缘 - 动态详情</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <!-- Tailwind CSS 配置 -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#165DFF',
+            secondary: '#00BFA5',
+            accent: '#FF9800',
+            dark: '#333333',
+            light: '#F5F7FA',
+            muted: '#999999'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        }
+      }
+    }
+  </script>
+
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .card-hover {
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+      .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.5s ease-in-out;
+      }
+      .animate-slide-up {
+        animation: slideUp 0.5s ease-out;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+      @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+    }
+  </style>
+</head>
+<body class="bg-light text-dark">
+<!-- 导航栏 -->
+<header class="sticky top-0 z-50 bg-white shadow-md transition-all duration-300">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16 md:h-20">
+      <div class="flex items-center">
+        <a href="#" class="text-primary font-bold text-xl md:text-2xl">
+          <i class="fa fa-tree mr-2"></i>山友缘
+        </a>
+      </div>
+
+      <nav class="hidden md:flex space-x-6">
+        <a href="#" class="text-dark hover:text-primary transition-colors duration-200">首页</a>
+        <a href="#" class="text-dark hover:text-primary transition-colors duration-200">活动</a>
+        <a href="#" class="text-primary font-medium">动态</a>
+        <a href="#" class="text-dark hover:text-primary transition-colors duration-200">装备</a>
+        <a href="#" class="text-dark hover:text-primary transition-colors duration-200">社区</a>
+      </nav>
+
+      <div class="flex items-center space-x-4">
+        <button class="hidden md:flex items-center bg-white border border-gray-300 rounded-full px-4 py-2 text-sm hover:bg-gray-50 transition-colors duration-200">
+          <i class="fa fa-plus mr-2 text-primary"></i>发布动态
+        </button>
+
+        <div class="relative group">
+          <div class="flex items-center cursor-pointer">
+            <img src="https://picsum.photos/id/1005/40/40" alt="用户头像" class="w-8 h-8 rounded-full object-cover border-2 border-primary">
+            <span class="ml-2 hidden md:inline-block font-medium">山野行者</span>
+            <i class="fa fa-caret-down ml-1 text-gray-500"></i>
+          </div>
+
+          <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hidden group-hover:block animate-fade-in">
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">个人主页</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">我的动态</a>
+            <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">我的收藏</a>
+            <div class="border-t border-gray-100 my-1"></div>
+            <a href="#" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">退出登录</a>
+          </div>
+        </div>
+
+        <button class="md:hidden text-gray-500 hover:text-primary">
+          <i class="fa fa-bars text-xl"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- 主要内容 -->
+<main class="container mx-auto px-4 py-6 md:py-10">
+  <!-- 动态详情卡片 -->
+  <article class="bg-white rounded-2xl shadow-lg overflow-hidden mb-8 animate-fade-in">
+    <!-- 动态封面图 -->
+    <div class="relative h-64 md:h-80 lg:h-96">
+      <img src="https://picsum.photos/id/10/1200/600" alt="动态封面图" class="w-full h-full object-cover">
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+      <div class="absolute bottom-4 left-4 right-4 text-white">
+        <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-shadow mb-2">徒步穿越黄山：云海日出的震撼体验</h1>
+        <div class="flex items-center text-sm text-gray-200">
+          <span class="mr-4"><i class="fa fa-calendar-o mr-1"></i> 2023-05-15</span>
+<!--          <span><i class="fa fa-eye mr-1"></i> 1,248 次浏览</span>-->
+        </div>
+      </div>
+    </div>
+
+    <!-- 发布者信息 -->
+    <div class="p-6 border-b border-gray-100">
+      <div class="flex items-center">
+        <img src="https://picsum.photos/id/1005/60/60" alt="发布者头像" class="w-12 h-12 rounded-full object-cover mr-4">
+        <div>
+          <h3 class="font-bold text-lg">山野行者</h3>
+          <p class="text-gray-500 text-sm">资深徒步爱好者 · 山友缘认证用户</p>
+        </div>
+<!--        <button class="ml-auto bg-primary text-white rounded-full px-4 py-1.5 text-sm hover:bg-primary/90 transition-colors duration-200">-->
+<!--&lt;!&ndash;          <i class="fa fa-plus mr-1"></i> 关注&ndash;&gt;-->
+<!--        </button>-->
+      </div>
+    </div>
+
+    <!-- 动态内容 -->
+    <div class="p-6 md:p-8">
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 leading-relaxed mb-6">
+          黄山，天下第一奇山，以奇松、怪石、云海、温泉、冬雪"五绝"著称于世。今年五一假期，我终于完成了心心念念的黄山徒步之旅，三天两夜的行程，让我深刻感受到了大自然的鬼斧神工和徒步的魅力。
+        </p>
+
+        <h3 class="text-xl font-bold mt-8 mb-4">第一天：云谷寺 → 白鹅岭 → 始信峰</h3>
+        <p class="text-gray-700 leading-relaxed mb-6">
+          早上从屯溪出发，乘坐大巴抵达黄山风景区云谷寺。我们选择徒步登山，沿着步道一路向上，沿途欣赏到了黄山特有的奇松和怪石。到达白鹅岭后，前往始信峰，这里是黄山观赏奇松的最佳地点，黑虎松、连理松、龙爪松等名松尽收眼底。
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-8">
+          <img src="https://picsum.photos/id/28/600/400" alt="黄山松" class="rounded-xl shadow-md w-full h-64 object-cover card-hover">
+          <img src="https://picsum.photos/id/29/600/400" alt="黄山云海" class="rounded-xl shadow-md w-full h-64 object-cover card-hover">
+        </div>
+
+        <h3 class="text-xl font-bold mt-8 mb-4">第二天：狮子峰 → 排云亭 → 西海大峡谷</h3>
+        <p class="text-gray-700 leading-relaxed mb-6">
+          凌晨四点起床，前往狮子峰观日出。当第一缕阳光洒在群峰之上，整个黄山瞬间被染成金黄色，云海在脚下翻滚，这种震撼的景象让我终生难忘。早餐后，我们前往排云亭，这里是观赏黄山怪石的绝佳位置，仙人晒靴、仙女弹琴等奇石形态各异。
+        </p>
+
+        <p class="text-gray-700 leading-relaxed mb-6">
+          下午挑战西海大峡谷，这是黄山最险峻的一段路程，但也是风景最美的地方。徒步在悬崖峭壁之间，脚下是万丈深渊，头顶是蓝天白云，这种体验让人心潮澎湃。
+        </p>
+
+        <div class="my-8">
+          <img src="https://picsum.photos/id/30/1200/600" alt="西海大峡谷" class="rounded-xl shadow-md w-full h-80 object-cover card-hover">
+        </div>
+
+        <h3 class="text-xl font-bold mt-8 mb-4">第三天：光明顶 → 迎客松 → 玉屏楼</h3>
+        <p class="text-gray-700 leading-relaxed mb-6">
+          第三天早起前往光明顶，这里是黄山的第二高峰，也是观赏云海的最佳地点。站在光明顶上，四周云海茫茫，群峰若隐若现，仿佛置身于仙境之中。
+        </p>
+
+        <p class="text-gray-700 leading-relaxed mb-6">
+          之后前往黄山的标志性景点——迎客松。这棵千年古松，以其独特的姿态迎接每一位游客，成为了黄山的象征。最后从玉屏楼乘坐缆车下山，结束了这次难忘的黄山之旅。
+        </p>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-8">
+          <img src="https://picsum.photos/id/31/400/300" alt="光明顶" class="rounded-xl shadow-md w-full h-48 object-cover card-hover">
+          <img src="https://picsum.photos/id/32/400/300" alt="迎客松" class="rounded-xl shadow-md w-full h-48 object-cover card-hover">
+          <img src="https://picsum.photos/id/33/400/300" alt="黄山日出" class="rounded-xl shadow-md w-full h-48 object-cover card-hover">
+        </div>
+
+        <div class="mt-10 bg-blue-50 border-l-4 border-primary p-4 rounded-r-lg">
+          <h4 class="font-medium text-primary mb-2">徒步小贴士</h4>
+          <ul class="text-gray-700 space-y-2">
+            <li><i class="fa fa-check-circle text-primary mr-2"></i> 黄山气候变化大，建议携带轻便雨衣和保暖衣物</li>
+            <li><i class="fa fa-check-circle text-primary mr-2"></i> 徒步鞋要选择防滑、舒适的专业登山鞋</li>
+            <li><i class="fa fa-check-circle text-primary mr-2"></i> 景区内食物和水价格较高，建议自带足够的饮用水和零食</li>
+            <li><i class="fa fa-check-circle text-primary mr-2"></i> 住宿需提前预订，尤其是节假日期间</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 标签和分享 -->
+      <div class="flex flex-wrap items-center justify-between mt-10 pt-6 border-t border-gray-100">
+<!--        <div class="flex flex-wrap gap-2">-->
+<!--          <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">#黄山</span>-->
+<!--          <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">#徒步</span>-->
+<!--          <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">#旅行</span>-->
+<!--          <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">#自然风光</span>-->
+<!--        </div>-->
+
+        <div class="flex items-center space-x-3 mt-4 sm:mt-0">
+          <span class="text-gray-500 text-sm">分享：</span>
+          <button class="text-gray-500 hover:text-primary transition-colors">
+            <i class="fa fa-weixin text-xl"></i>
+          </button>
+          <button class="text-gray-500 hover:text-primary transition-colors">
+            <i class="fa fa-weibo text-xl"></i>
+          </button>
+          <button class="text-gray-500 hover:text-primary transition-colors">
+            <i class="fa fa-link text-xl"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- 操作按钮 -->
+      <div class="flex flex-wrap gap-3 mt-8">
+        <button class="flex items-center bg-white border border-gray-200 rounded-full px-5 py-2 hover:bg-gray-50 transition-colors">
+          <i class="fa fa-heart-o text-primary mr-2"></i>
+          <span>点赞 (128)</span>
+        </button>
+        <button class="flex items-center bg-white border border-gray-200 rounded-full px-5 py-2 hover:bg-gray-50 transition-colors">
+          <i class="fa fa-comment-o text-primary mr-2"></i>
+          <span>评论 (46)</span>
+        </button>
+        <button class="flex items-center bg-white border border-gray-200 rounded-full px-5 py-2 hover:bg-gray-50 transition-colors">
+          <i class="fa fa-star-o text-primary mr-2"></i>
+          <span>收藏</span>
+        </button>
+<!--        <button class="flex items-center bg-white border border-gray-200 rounded-full px-5 py-2 hover:bg-gray-50 transition-colors">-->
+<!--          <i class="fa fa-share-alt text-primary mr-2"></i>-->
+<!--          <span>分享</span>-->
+<!--        </button>-->
+      </div>
+    </div>
+  </article>
+
+  <!-- 评论区 -->
+  <section class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8 animate-slide-up">
+    <h2 class="text-2xl font-bold mb-6">评论区 (46)</h2>
+
+    <!-- 评论输入框 -->
+    <div class="mb-8">
+      <div class="flex items-start space-x-4">
+        <img src="https://picsum.photos/id/1005/50/50" alt="用户头像" class="w-10 h-10 rounded-full object-cover">
+        <div class="flex-1">
+                        <textarea
+                                placeholder="分享你的看法..."
+                                class="w-full border border-gray-200 rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none h-24"
+                        ></textarea>
+          <div class="flex justify-end mt-3">
+            <button class="bg-primary text-white rounded-lg px-5 py-2 hover:bg-primary/90 transition-colors">
+              发表评论
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 评论列表 -->
+    <div class="space-y-6">
+      <!-- 评论项 1 -->
+      <div class="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
+        <div class="flex items-start space-x-4">
+          <img src="https://picsum.photos/id/1012/50/50" alt="评论用户头像" class="w-10 h-10 rounded-full object-cover">
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-1">
+              <h4 class="font-medium">云海漫步</h4>
+              <span class="text-gray-500 text-sm">2小时前</span>
+            </div>
+            <p class="text-gray-700 mb-3">
+              写得太棒了！黄山的云海日出真的是一绝，我去年也去过一次，完全被震撼到了。西海大峡谷确实很险峻，但风景也确实美，值得一去。
+            </p>
+            <div class="flex items-center text-sm text-gray-500">
+              <button class="flex items-center hover:text-primary transition-colors">
+                <i class="fa fa-heart-o mr-1"></i> 32
+              </button>
+              <span class="mx-3">·</span>
+              <button class="hover:text-primary transition-colors">回复</button>
+            </div>
+
+            <!-- 回复 -->
+            <div class="mt-4 bg-gray-50 rounded-lg p-4">
+              <div class="flex items-start space-x-3">
+                <img src="https://picsum.photos/id/1005/40/40" alt="回复用户头像" class="w-8 h-8 rounded-full object-cover">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <h5 class="font-medium">山野行者 <span class="text-xs text-primary ml-1">作者</span></h5>
+                    <span class="text-gray-500 text-xs">1小时前</span>
+                  </div>
+                  <p class="text-gray-700 text-sm">
+                    谢谢支持！西海大峡谷确实是黄山的精华所在，虽然徒步有些累，但看到美景的那一刻，一切都值得了。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 评论项 2 -->
+      <div class="border-b border-gray-100 pb-6 last:border-0 last:pb-0">
+        <div class="flex items-start space-x-4">
+          <img src="https://picsum.photos/id/1025/50/50" alt="评论用户头像" class="w-10 h-10 rounded-full object-cover">
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-1">
+              <h4 class="font-medium">星空摄影师</h4>
+              <span class="text-gray-500 text-sm">昨天 14:30</span>
+            </div>
+            <p class="text-gray-700 mb-3">
+              请问楼主，黄山看日出最佳的时间和地点是什么？我打算下个月去，想拍些日出的照片。
+            </p>
+            <div class="flex items-center text-sm text-gray-500">
+              <button class="flex items-center hover:text-primary transition-colors">
+                <i class="fa fa-heart-o mr-1"></i> 18
+              </button>
+              <span class="mx-3">·</span>
+              <button class="hover:text-primary transition-colors">回复</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 评论项 3 -->
+      <div>
+        <div class="flex items-start space-x-4">
+          <img src="https://picsum.photos/id/1074/50/50" alt="评论用户头像" class="w-10 h-10 rounded-full object-cover">
+          <div class="flex-1">
+            <div class="flex items-center justify-between mb-1">
+              <h4 class="font-medium">徒步爱好者</h4>
+              <span class="text-gray-500 text-sm">3天前</span>
+            </div>
+            <p class="text-gray-700 mb-3">
+              非常详细的攻略，对我很有帮助。想问下楼主，你们是自己规划的路线还是找的向导？黄山景区内的住宿条件如何？
+            </p>
+            <div class="flex items-center text-sm text-gray-500">
+              <button class="flex items-center hover:text-primary transition-colors">
+                <i class="fa fa-heart-o mr-1"></i> 25
+              </button>
+              <span class="mx-3">·</span>
+              <button class="hover:text-primary transition-colors">回复</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 加载更多评论 -->
+    <div class="mt-8 text-center">
+      <button class="text-primary hover:text-primary/80 transition-colors">
+        加载更多评论 <i class="fa fa-angle-down ml-1"></i>
+      </button>
+    </div>
+  </section>
+
+  <!-- 相关推荐 -->
+  <section class="mb-10">
+    <h2 class="text-2xl font-bold mb-6">相关推荐</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- 推荐项 1 -->
+      <article class="bg-white rounded-xl shadow-md overflow-hidden card-hover animate-slide-up" style="animation-delay: 0.1s">
+        <div class="relative h-48">
+          <img src="https://picsum.photos/id/42/600/400" alt="推荐动态封面" class="w-full h-full object-cover">
+          <div class="absolute top-3 right-3 bg-primary text-white text-xs font-bold px-2 py-1 rounded">
+            热门
+          </div>
+        </div>
+        <div class="p-4">
+          <h3 class="font-bold text-lg mb-2 line-clamp-2">三清山徒步攻略：云海、奇峰与道教文化的完美结合</h3>
+          <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+            三清山以其独特的花岗岩峰林地貌和深厚的道教文化闻名于世，本文详细介绍了三清山的徒步路线和注意事项...
+          </p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <img src="https://picsum.photos/id/1062/30/30" alt="作者头像" class="w-6 h-6 rounded-full mr-2">
+              <span class="text-xs text-gray-500">山水间</span>
+            </div>
+            <div class="flex items-center space-x-3 text-xs text-gray-500">
+              <span><i class="fa fa-heart-o mr-1"></i> 89</span>
+              <span><i class="fa fa-comment-o mr-1"></i> 23</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 推荐项 2 -->
+      <article class="bg-white rounded-xl shadow-md overflow-hidden card-hover animate-slide-up" style="animation-delay: 0.2s">
+        <div class="relative h-48">
+          <img src="https://picsum.photos/id/21/600/400" alt="推荐动态封面" class="w-full h-full object-cover">
+        </div>
+        <div class="p-4">
+          <h3 class="font-bold text-lg mb-2 line-clamp-2">武功山露营：云海星空下的极致体验</h3>
+          <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+            武功山的高山草甸和云海日出是徒步爱好者的天堂，本文分享了在武功山露营的详细攻略和装备清单...
+          </p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <img src="https://picsum.photos/id/1074/30/30" alt="作者头像" class="w-6 h-6 rounded-full mr-2">
+              <span class="text-xs text-gray-500">星空守望者</span>
+            </div>
+            <div class="flex items-center space-x-3 text-xs text-gray-500">
+              <span><i class="fa fa-heart-o mr-1"></i> 124</span>
+              <span><i class="fa fa-comment-o mr-1"></i> 36</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- 推荐项 3 -->
+      <article class="bg-white rounded-xl shadow-md overflow-hidden card-hover animate-slide-up" style="animation-delay: 0.3s">
+        <div class="relative h-48">
+          <img src="https://picsum.photos/id/22/600/400" alt="推荐动态封面" class="w-full h-full object-cover">
+        </div>
+        <div class="p-4">
+          <h3 class="font-bold text-lg mb-2 line-clamp-2">户外摄影技巧：如何拍出震撼人心的风景照片</h3>
+          <p class="text-gray-600 text-sm mb-3 line-clamp-2">
+            本文分享了户外摄影的基本技巧和后期处理方法，帮助你在徒步旅行中拍摄出更加精美的风景照片...
+          </p>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <img src="https://picsum.photos/id/1027/30/30" alt="作者头像" class="w-6 h-6 rounded-full mr-2">
+              <span class="text-xs text-gray-500">光影记忆</span>
+            </div>
+            <div class="flex items-center space-x-3 text-xs text-gray-500">
+              <span><i class="fa fa-heart-o mr-1"></i> 76</span>
+              <span><i class="fa fa-comment-o mr-1"></i> 18</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<!-- 底部导航栏（移动端） -->
+<footer class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-2 px-4 z-40">
+  <div class="flex justify-around">
+    <a href="#" class="flex flex-col items-center text-primary">
+      <i class="fa fa-home text-xl"></i>
+      <span class="text-xs mt-1">首页</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-gray-500">
+      <i class="fa fa-compass text-xl"></i>
+      <span class="text-xs mt-1">发现</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-gray-500">
+      <i class="fa fa-plus-circle text-2xl text-primary"></i>
+      <span class="text-xs mt-1">发布</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-gray-500">
+      <i class="fa fa-bell-o text-xl"></i>
+      <span class="text-xs mt-1">消息</span>
+    </a>
+    <a href="#" class="flex flex-col items-center text-gray-500">
+      <i class="fa fa-user-o text-xl"></i>
+      <span class="text-xs mt-1">我的</span>
+    </a>
+  </div>
+</footer>
+
+<!-- 回到顶部按钮 -->
+<button id="backToTop" class="fixed bottom-20 right-4 md:bottom-8 bg-primary text-white w-10 h-10 rounded-full flex items-center justify-center shadow-lg opacity-0 invisible transition-all duration-300 hover:bg-primary/90">
+  <i class="fa fa-angle-up text-xl"></i>
+</button>
+
+<script>
+  // 回到顶部功能
+  const backToTopButton = document.getElementById('backToTop');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 300) {
+      backToTopButton.classList.remove('opacity-0', 'invisible');
+      backToTopButton.classList.add('opacity-100', 'visible');
+    } else {
+      backToTopButton.classList.remove('opacity-100', 'visible');
+      backToTopButton.classList.add('opacity-0', 'invisible');
+    }
+  });
+
+  backToTopButton.addEventListener('click', () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  });
+
+  // 导航栏滚动效果
+  const header = document.querySelector('header');
+
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      header.classList.add('py-2');
+      header.classList.remove('py-4');
+    } else {
+      header.classList.add('py-4');
+      header.classList.remove('py-2');
+    }
+  });
+
+  // 评论点赞交互
+  document.querySelectorAll('.fa-heart-o').forEach(icon => {
+    icon.parentElement.addEventListener('click', () => {
+      const count = icon.nextElementSibling;
+      let currentCount = parseInt(count.textContent);
+
+      if (icon.classList.contains('fa-heart-o')) {
+        icon.classList.remove('fa-heart-o');
+        icon.classList.add('fa-heart');
+        count.textContent = currentCount + 1;
+      } else {
+        icon.classList.remove('fa-heart');
+        icon.classList.add('fa-heart-o');
+        count.textContent = currentCount - 1;
+      }
+    });
+  });
+
+  // 动态卡片点击事件
+  document.querySelectorAll('.activity-card').forEach(card => {
+    card.addEventListener('click', () => {
+      window.location.href = 'activity_detail.html';
+    });
+  });
+
+  // 初始化
+  document.addEventListener('DOMContentLoaded', () => {
+    // 初始化评论区动画
+    const comments = document.querySelectorAll('.border-b');
+    comments.forEach((comment, index) => {
+      comment.style.animationDelay = `${index * 0.1}s`;
+      comment.classList.add('animate-fade-in');
+    });
+  });
+</script>
+</body>
+</html>

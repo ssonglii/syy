@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的空间 - 行安户外社交生态系统</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1E88E5',
+            secondary: '#42A5F5',
+            accent: '#FF9800',
+            neutral: '#F5F7FA',
+            dark: '#334155'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      }
+    }
+  </script>
+
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .card-hover {
+        @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+      }
+      .section-transition {
+        @apply transition-all duration-500 ease-in-out;
+      }
+      .nav-item {
+        @apply relative px-4 py-2 text-gray-600 hover:text-primary transition-colors;
+      }
+      .nav-item::after {
+        @apply content-[''] absolute w-0 h-0.5 bg-primary left-0 -bottom-1 transition-all duration-300;
+      }
+      .nav-item:hover::after {
+        @apply w-full;
+      }
+      .nav-item.active {
+        @apply text-primary font-medium;
+      }
+      .nav-item.active::after {
+        @apply w-full;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 font-sans text-dark">
+<!-- 顶部导航栏 -->
+<header class="sticky top-0 z-50 bg-white shadow-sm">
+  <div class="container mx-auto px-4">
+    <div class="flex items-center justify-between h-16">
+      <div class="flex items-center space-x-2">
+        <img src="https://picsum.photos/40/40?random=logo" alt="山友缘Logo" class="h-8 w-8 rounded-full">
+        <span class="text-xl font-bold text-primary">行安</span>
+      </div>
+
+      <nav class="hidden md:flex space-x-1">
+        <a href="#" class="nav-item">首页</a>
+        <a href="#" class="nav-item">活动</a>
+        <a href="#" class="nav-item">动态</a>
+<!--        <a href="#" class="nav-item">消息</a>-->
+      </nav>
+
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <button class="flex items-center space-x-2 focus:outline-none">
+            <img src="https://picsum.photos/32/32?random=user" alt="用户头像" class="h-8 w-8 rounded-full object-cover border-2 border-primary">
+            <span class="hidden md:inline text-sm font-medium">用户名</span>
+            <i class="fa fa-angle-down text-gray-500"></i>
+          </button>
+        </div>
+        <button class="md:hidden focus:outline-none">
+          <i class="fa fa-bars text-gray-600"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- 主内容区 -->
+<main class="container mx-auto px-4 py-8">
+  <div class="mb-8">
+    <h1 class="text-[clamp(1.5rem,3vw,2.5rem)] font-bold text-dark">我的空间</h1>
+    <p class="text-gray-500">探索你的户外旅程和社交圈子</p>
+  </div>
+
+  <!-- 个人资料卡片 -->
+  <div class="bg-white rounded-xl shadow-md p-6 mb-8 transform hover:shadow-lg transition-shadow duration-300">
+    <div class="flex flex-col md:flex-row items-center">
+      <div class="mb-4 md:mb-0 md:mr-6">
+        <img src="https://picsum.photos/120/120?random=profile" alt="用户头像" class="h-24 w-24 rounded-full object-cover border-4 border-primary/20">
+      </div>
+      <div class="flex-1">
+        <div class="flex flex-wrap items-center mb-2">
+          <h2 class="text-xl font-bold mr-4">户外探索者</h2>
+          <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">活跃用户</span>
+        </div>
+        <p class="text-gray-600 mb-4">热爱户外，追求自由，用脚步丈量世界</p>
+        <div class="flex flex-wrap gap-4">
+          <div class="flex items-center">
+            <i class="fa fa-calendar text-primary mr-2"></i>
+            <span class="text-sm text-gray-600">加入时间: 2024-03-15</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fa fa-map-marker text-primary mr-2"></i>
+            <span class="text-sm text-gray-600">来自: 北京</span>
+          </div>
+          <div class="flex items-center">
+            <i class="fa fa-user-friends text-primary mr-2"></i>
+            <span class="text-sm text-gray-600">关注: 24 | 粉丝: 138</span>
+          </div>
+        </div>
+      </div>
+      <div class="mt-4 md:mt-0">
+        <button class="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg transition-colors duration-300 flex items-center">
+          <i class="fa fa-edit mr-2"></i>
+          <span>编辑资料</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 数据统计 -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white rounded-lg shadow p-5 transform hover:shadow-md transition-shadow duration-300">
+      <div class="flex items-center">
+        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mr-4">
+          <i class="fa fa-calendar-check-o text-primary text-xl"></i>
+        </div>
+        <div>
+          <p class="text-gray-500 text-sm">参加活动</p>
+          <p class="text-2xl font-bold">12</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-5 transform hover:shadow-md transition-shadow duration-300">
+      <div class="flex items-center">
+        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mr-4">
+          <i class="fa fa-bullhorn text-green-600 text-xl"></i>
+        </div>
+        <div>
+          <p class="text-gray-500 text-sm">发布动态</p>
+          <p class="text-2xl font-bold">34</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-5 transform hover:shadow-md transition-shadow duration-300">
+      <div class="flex items-center">
+        <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mr-4">
+          <i class="fa fa-flag text-purple-600 text-xl"></i>
+        </div>
+        <div>
+          <p class="text-gray-500 text-sm">发布活动</p>
+          <p class="text-2xl font-bold">5</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-lg shadow p-5 transform hover:shadow-md transition-shadow duration-300">
+      <div class="flex items-center">
+        <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mr-4">
+          <i class="fa fa-star text-orange-600 text-xl"></i>
+        </div>
+        <div>
+          <p class="text-gray-500 text-sm">获得点赞</p>
+          <p class="text-2xl font-bold">276</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 主要内容区域 -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- 我参加的活动 -->
+    <div class="lg:col-span-2">
+      <div class="bg-white rounded-xl shadow-md overflow-hidden mb-6">
+        <div class="flex items-center justify-between p-5 border-b">
+          <h3 class="text-lg font-bold flex items-center">
+            <i class="fa fa-calendar-plus-o text-primary mr-2"></i>
+            我参加的活动
+          </h3>
+          <a href="#" class="text-primary text-sm hover:underline">查看全部</a>
+        </div>
+
+        <div class="divide-y">
+          <div class="p-5 hover:bg-gray-50 transition-colors duration-200">
+            <div class="flex items-start">
+              <img src="https://picsum.photos/100/100?random=1" alt="徒步挑战千佛山" class="w-20 h-20 rounded-lg object-cover mr-4">
+              <div class="flex-1">
+                <div class="flex justify-between">
+                  <h4 class="font-semibold text-lg">徒步挑战千佛山</h4>
+                  <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">进行中</span>
+                </div>
+                <p class="text-gray-600 text-sm mt-1">周六清晨出发，挑战千佛山环线，全程15公里，适合有经验的户外爱好者</p>
+                <div class="flex items-center mt-2 text-sm text-gray-500">
+                  <div class="flex items-center mr-4">
+                    <i class="fa fa-calendar mr-1"></i>
+                    <span>2025-07-12</span>
+                  </div>
+                  <div class="flex items-center">
+                    <i class="fa fa-map-marker mr-1"></i>
+                    <span>千佛山国家森林公园</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 hover:bg-gray-50 transition-colors duration-200">
+            <div class="flex items-start">
+              <img src="https://picsum.photos/100/100?random=2" alt="夏日溯溪清凉行" class="w-20 h-20 rounded-lg object-cover mr-4">
+              <div class="flex-1">
+                <div class="flex justify-between">
+                  <h4 class="font-semibold text-lg">夏日溯溪清凉行</h4>
+                  <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">报名中</span>
+                </div>
+                <p class="text-gray-600 text-sm mt-1">跟随专业领队，探索隐秘溪谷，体验夏日玩水乐趣</p>
+                <div class="flex items-center mt-2 text-sm text-gray-500">
+                  <div class="flex items-center mr-4">
+                    <i class="fa fa-calendar mr-1"></i>
+                    <span>2025-07-19</span>
+                  </div>
+                  <div class="flex items-center">
+                    <i class="fa fa-map-marker mr-1"></i>
+                    <span>清凉溪谷</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 hover:bg-gray-50 transition-colors duration-200">
+            <div class="flex items-start">
+              <img src="https://picsum.photos/100/100?random=3" alt="秋季登山露营" class="w-20 h-20 rounded-lg object-cover mr-4">
+              <div class="flex-1">
+                <div class="flex justify-between">
+                  <h4 class="font-semibold text-lg">秋季登山露营</h4>
+                  <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">已结束</span>
+                </div>
+                <p class="text-gray-600 text-sm mt-1">秋季登高望远，体验露营生活，欣赏红叶美景</p>
+                <div class="flex items-center mt-2 text-sm text-gray-500">
+                  <div class="flex items-center mr-4">
+                    <i class="fa fa-calendar mr-1"></i>
+                    <span>2025-10-01</span>
+                  </div>
+                  <div class="flex items-center">
+                    <i class="fa fa-map-marker mr-1"></i>
+                    <span>红叶谷</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 我发布的动态 -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="flex items-center justify-between p-5 border-b">
+          <h3 class="text-lg font-bold flex items-center">
+            <i class="fa fa-comment text-primary mr-2"></i>
+            我发布的动态
+          </h3>
+          <a href="#" class="text-primary text-sm hover:underline">查看全部</a>
+        </div>
+
+        <div class="divide-y">
+          <div class="p-5 hover:bg-gray-50 transition-colors duration-200">
+            <div class="flex">
+              <img src="https://picsum.photos/100/100?random=4" alt="分享户外美景" class="w-16 h-16 rounded-lg object-cover mr-4">
+              <div class="flex-1">
+                <h4 class="font-semibold">分享户外美景</h4>
+                <p class="text-gray-600 text-sm mt-1">周末徒步拍到的绝美日出，大自然的馈赠太震撼啦~</p>
+                <div class="flex items-center mt-2 text-sm text-gray-500">
+                  <span>2025-07-05 14:20</span>
+                  <div class="ml-auto flex items-center space-x-4">
+                    <button class="flex items-center hover:text-primary transition-colors">
+                      <i class="fa fa-heart-o mr-1"></i>
+                      <span>36</span>
+                    </button>
+                    <button class="flex items-center hover:text-primary transition-colors">
+                      <i class="fa fa-comment-o mr-1"></i>
+                      <span>8</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 hover:bg-gray-50 transition-colors duration-200">
+            <div class="flex">
+              <img src="https://picsum.photos/100/100?random=5" alt="装备推荐" class="w-16 h-16 rounded-lg object-cover mr-4">
+              <div class="flex-1">
+                <h4 class="font-semibold">装备推荐</h4>
+                <p class="text-gray-600 text-sm mt-1">给大家推荐一款轻便又耐用的登山鞋，户外出行好帮手</p>
+                <div class="flex items-center mt-2 text-sm text-gray-500">
+                  <span>2025-06-30 16:10</span>
+                  <div class="ml-auto flex items-center space-x-4">
+                    <button class="flex items-center hover:text-primary transition-colors">
+                      <i class="fa fa-heart-o mr-1"></i>
+                      <span>42</span>
+                    </button>
+                    <button class="flex items-center hover:text-primary transition-colors">
+                      <i class="fa fa-comment-o mr-1"></i>
+                      <span>12</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 hover:bg-gray-50 transition-colors duration-200">
+            <div class="flex">
+              <img src="https://picsum.photos/100/100?random=6" alt="户外安全小知识" class="w-16 h-16 rounded-lg object-cover mr-4">
+              <div class="flex-1">
+                <h4 class="font-semibold">户外安全小知识</h4>
+                <p class="text-gray-600 text-sm mt-1">分享一些户外急救小知识，希望大家都能安全出行</p>
+                <div class="flex items-center mt-2 text-sm text-gray-500">
+                  <span>2025-06-22 09:35</span>
+                  <div class="ml-auto flex items-center space-x-4">
+                    <button class="flex items-center hover:text-primary transition-colors">
+                      <i class="fa fa-heart-o mr-1"></i>
+                      <span>28</span>
+                    </button>
+                    <button class="flex items-center hover:text-primary transition-colors">
+                      <i class="fa fa-comment-o mr-1"></i>
+                      <span>5</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 右侧栏 -->
+    <div class="space-y-6">
+      <!-- 我发布的活动 -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="flex items-center justify-between p-5 border-b">
+          <h3 class="text-lg font-bold flex items-center">
+            <i class="fa fa-flag text-primary mr-2"></i>
+            我发布的活动
+          </h3>
+          <a href="#" class="text-primary text-sm hover:underline">查看全部</a>
+        </div>
+
+        <div class="divide-y">
+          <div class="p-5 hover:bg-gray-50 transition-colors duration-200">
+            <h4 class="font-semibold">周末休闲露营</h4>
+            <p class="text-gray-600 text-sm mt-1">在近郊营地，享受悠闲周末，一起烧烤、看星空</p>
+            <div class="flex items-center mt-2 text-sm text-gray-500">
+              <div class="flex items-center mr-4">
+                <i class="fa fa-calendar mr-1"></i>
+                <span>2025-07-13</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fa fa-users mr-1"></i>
+                <span>12/20人</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="p-5 hover:bg-gray-50 transition-colors duration-200">
+            <h4 class="font-semibold">亲子户外采摘</h4>
+            <p class="text-gray-600 text-sm mt-1">带孩子体验田园乐趣，采摘新鲜果蔬，亲近大自然</p>
+            <div class="flex items-center mt-2 text-sm text-gray-500">
+              <div class="flex items-center mr-4">
+                <i class="fa fa-calendar mr-1"></i>
+                <span>2025-07-20</span>
+              </div>
+              <div class="flex items-center">
+                <i class="fa fa-users mr-1"></i>
+                <span>8/15人</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="p-4 bg-gray-50">
+          <button class="w-full bg-primary hover:bg-primary/90 text-white py-2 rounded-lg transition-colors duration-300 flex items-center justify-center">
+            <i class="fa fa-plus mr-2"></i>
+            <span>发布新活动</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- 我的成就 -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="p-5 border-b">
+          <h3 class="text-lg font-bold flex items-center">
+            <i class="fa fa-trophy text-primary mr-2"></i>
+            我的成就
+          </h3>
+        </div>
+
+        <div class="p-5">
+          <div class="grid grid-cols-3 gap-3 mb-4">
+            <div class="flex flex-col items-center">
+              <div class="w-16 h-16 rounded-full bg-blue-100 flex items-center justify-center mb-2">
+                <i class="fa fa-mountain text-primary text-xl"></i>
+              </div>
+              <span class="text-xs text-center">徒步达人</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center mb-2">
+                <i class="fa fa-tree text-green-600 text-xl"></i>
+              </div>
+              <span class="text-xs text-center">环保先锋</span>
+            </div>
+            <div class="flex flex-col items-center">
+              <div class="w-16 h-16 rounded-full bg-purple-100 flex items-center justify-center mb-2">
+                <i class="fa fa-camera text-purple-600 text-xl"></i>
+              </div>
+              <span class="text-xs text-center">摄影大师</span>
+            </div>
+          </div>
+
+          <div class="text-sm text-gray-600">
+            <p>完成了12次户外活动</p>
+            <p>获得了276个点赞</p>
+            <p>发布了5个精彩活动</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 即将到来的活动 -->
+      <div class="bg-white rounded-xl shadow-md overflow-hidden">
+        <div class="p-5 border-b">
+          <h3 class="text-lg font-bold flex items-center">
+            <i class="fa fa-clock-o text-primary mr-2"></i>
+            即将到来的活动
+          </h3>
+        </div>
+
+        <div class="p-5">
+          <div class="space-y-4">
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center mr-3">
+                <span class="text-primary font-bold text-sm">7/12</span>
+              </div>
+              <div>
+                <h4 class="font-medium text-sm">徒步挑战千佛山</h4>
+                <p class="text-gray-500 text-xs">还有2天开始</p>
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center mr-3">
+                <span class="text-green-600 font-bold text-sm">7/13</span>
+              </div>
+              <div>
+                <h4 class="font-medium text-sm">周末休闲露营</h4>
+                <p class="text-gray-500 text-xs">还有3天开始</p>
+              </div>
+            </div>
+
+            <div class="flex items-center">
+              <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center mr-3">
+                <span class="text-purple-600 font-bold text-sm">7/19</span>
+              </div>
+              <div>
+                <h4 class="font-medium text-sm">夏日溯溪清凉行</h4>
+                <p class="text-gray-500 text-xs">还有9天开始</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- 页脚 -->
+<footer class="bg-dark text-white py-10 mt-12">
+  <div class="container mx-auto px-4">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div>
+        <h4 class="text-lg font-bold mb-4">山友缘</h4>
+        <p class="text-gray-400 text-sm">连接户外爱好者，探索自然之美</p>
+        <div class="flex space-x-4 mt-4">
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <i class="fa fa-weibo"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <i class="fa fa-wechat"></i>
+          </a>
+          <a href="#" class="text-gray-400 hover:text-white transition-colors">
+            <i class="fa fa-instagram"></i>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <h4 class="text-lg font-bold mb-4">快速链接</h4>
+        <ul class="space-y-2 text-sm text-gray-400">
+          <li><a href="#" class="hover:text-white transition-colors">首页</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">活动</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">动态</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">攻略</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-lg font-bold mb-4">关于我们</h4>
+        <ul class="space-y-2 text-sm text-gray-400">
+          <li><a href="#" class="hover:text-white transition-colors">公司介绍</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">联系我们</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">加入我们</a></li>
+          <li><a href="#" class="hover:text-white transition-colors">隐私政策</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="text-lg font-bold mb-4">联系我们</h4>
+        <ul class="space-y-2 text-sm text-gray-400">
+          <li class="flex items-center">
+            <i class="fa fa-map-marker mr-2"></i>
+            <span>北京市朝阳区户外大厦501</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fa fa-phone mr-2"></i>
+            <span>400-123-4567</span>
+          </li>
+          <li class="flex items-center">
+            <i class="fa fa-envelope mr-2"></i>
+            <span>contact@shanyouyuan.com</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="border-t border-gray-700 mt-8 pt-8 text-center text-sm text-gray-500">
+      <p>© 2026 行安户外社交生态系统. 保留所有权利.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // 导航栏滚动效果
+  window.addEventListener('scroll', function() {
+    const header = document.querySelector('header');
+    if (window.scrollY > 50) {
+      header.classList.add('shadow-md');
+    } else {
+      header.classList.remove('shadow-md');
+    }
+  });
+
+  // 卡片悬停动画
+  document.querySelectorAll('.card-hover').forEach(card => {
+    card.addEventListener('mouseenter', function() {
+      this.style.transform = 'translateY(-5px)';
+      this.style.boxShadow = '0 10px 25px -5px rgba(0, 0, 0, 0.1)';
+    });
+
+    card.addEventListener('mouseleave', function() {
+      this.style.transform = 'translateY(0)';
+      this.style.boxShadow = '0 1px 3px 0 rgba(0, 0, 0, 0.1)';
+    });
+  });
+
+  // 点赞功能模拟
+  document.querySelectorAll('.fa-heart-o').forEach(heart => {
+    heart.parentElement.addEventListener('click', function() {
+      const countEl = this.querySelector('span');
+      const currentCount = parseInt(countEl.textContent);
+
+      if (heart.classList.contains('fa-heart-o')) {
+        heart.classList.remove('fa-heart-o');
+        heart.classList.add('fa-heart');
+        heart.style.color = '#f43f5e';
+        countEl.textContent = currentCount + 1;
+      } else {
+        heart.classList.remove('fa-heart');
+        heart.classList.add('fa-heart-o');
+        heart.style.color = '';
+        countEl.textContent = currentCount - 1;
+      }
+    });
+  });
+</script>
+</body>
+</html>

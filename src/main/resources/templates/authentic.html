@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>山有缘户外系统 - 户外达人认证申请</title>
+  <!-- 引入基础样式（可替换为系统UI库） -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Microsoft YaHei", sans-serif;
+    }
+    body {
+      background: #f8f9fa;
+      color: #343a40;
+    }
+    header {
+      background: #fff;
+      padding: 1rem 2rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .header-logo i {
+      font-size: 1.5rem;
+      color: #0d6efd;
+    }
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: #6c757d;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .title-section {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .title-section h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+    .title-section p {
+      color: #6c757d;
+    }
+    /* 步骤条样式 */
+    .steps {
+      display: flex;
+      justify-content: center;
+      gap: 4rem;
+      margin-bottom: 2rem;
+    }
+    .step {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .step-icon {
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      border-radius: 50%;
+      background: #e9ecef;
+      color: #6c757d;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+    .step.active .step-icon {
+      background: #0d6efd;
+      color: #fff;
+    }
+    .step.done .step-icon {
+      background: #198754;
+      color: #fff;
+    }
+    .step-text {
+      font-size: 0.9rem;
+      color: #6c757d;
+    }
+    /* 表单区域 */
+    .form-card {
+      background: #fff;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      margin-bottom: 2rem;
+    }
+    .form-card h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: 500;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.6rem;
+      border: 1px solid #ced4da;
+      border-radius: 4px;
+      font-size: 0.95rem;
+    }
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+    .btn {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .btn-primary {
+      background: #0d6efd;
+      color: #fff;
+    }
+    .btn-primary:hover {
+      background: #0b5ed7;
+    }
+    .btn-secondary {
+      background: #6c757d;
+      color: #fff;
+    }
+    .btn-secondary:hover {
+      background: #5c636a;
+    }
+    .btn-disabled {
+      background: #e9ecef;
+      color: #6c757d;
+      cursor: not-allowed;
+    }
+    .btn-disabled:hover {
+      background: #e9ecef;
+    }
+    /* 步骤切换动画 */
+    .form-step {
+      display: none;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+    .form-step.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+  <!-- 引入图标（Font Awesome） -->
+  <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+  />
+</head>
+<body>
+<!-- 顶部导航 -->
+<header>
+  <div class="header-logo">
+    <i class="bi bi-mountain"></i>
+    <span>山有缘户外系统</span>
+  </div>
+  <div class="header-user">
+    <img
+            src="https://via.placeholder.com/32"
+            alt="头像"
+            class="rounded-circle"
+    />
+    <span>登山小z</span>
+    <span class="text-muted">(普通用户)</span>
+  </div>
+</header>
+
+<!-- 主体内容 -->
+<div class="container">
+  <!-- 标题区 -->
+  <div class="title-section">
+    <h1>户外达人认证申请</h1>
+    <p>通过认证成为官方认可的户外达人，分享专业知识，获得更多特权</p>
+  </div>
+
+  <!-- 步骤条 -->
+  <div class="steps">
+    <div class="step active" data-step="1">
+      <div class="step-icon">1</div>
+      <div class="step-text">个人信息</div>
+    </div>
+    <div class="step" data-step="2">
+      <div class="step-icon">2</div>
+      <div class="step-text">户外经历</div>
+    </div>
+    <div class="step" data-step="3">
+      <div class="step-icon">3</div>
+      <div class="step-text">证明材料</div>
+    </div>
+  </div>
+
+  <!-- 表单区域 -->
+  <div class="form-card">
+    <!-- 步骤1：个人信息 -->
+    <div class="form-step active" data-step="1">
+      <h2>个人基本信息</h2>
+      <div class="form-group">
+        <label>真实姓名</label>
+        <input type="text" placeholder="请输入真实姓名" required />
+      </div>
+      <div class="form-group">
+        <label>身份证号</label>
+        <input type="text" placeholder="请输入身份证号" required />
+      </div>
+      <div class="form-group">
+        <label>联系电话</label>
+        <input type="tel" placeholder="请输入手机号" pattern="^1[3-9]\d{9}$" required />
+      </div>
+      <div class="form-group">
+        <label>电子邮箱</label>
+        <input type="email" placeholder="请输入邮箱" required />
+      </div>
+      <div class="form-group">
+        <label>常住地址</label>
+        <input type="text" placeholder="请输入详细地址" required />
+      </div>
+    </div>
+
+    <!-- 步骤2：户外经历 -->
+    <div class="form-step" data-step="2">
+      <h2>户外经历与专长</h2>
+      <div class="form-group">
+        <label>擅长领域（可多选）</label>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <label style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" name="expertise" value="徒步" /> 徒步
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" name="expertise" value="登山" /> 登山
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" name="expertise" value="露营" /> 露营
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" name="expertise" value="攀岩" /> 攀岩
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem;">
+            <input type="checkbox" name="expertise" value="其他" /> 其他
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>户外经历描述</label>
+        <textarea placeholder="请详细描述户外经历（如活动、角色、成就等）" required></textarea>
+      </div>
+      <div class="form-group">
+        <label>专业技能与特长</label>
+        <textarea placeholder="如急救认证、装备知识等" required></textarea>
+      </div>
+      <div class="form-group">
+        <label>户外经验年限</label>
+        <select required>
+          <option value="">请选择</option>
+          <option value="1年以内">1年以内</option>
+          <option value="1-3年">1-3年</option>
+          <option value="3-5年">3-5年</option>
+          <option value="5-10年">5-10年</option>
+          <option value="10年以上">10年以上</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>熟悉的户外区域</label>
+        <input type="text" placeholder="如山脉、景区等，用逗号分隔" required />
+      </div>
+    </div>
+
+    <!-- 步骤3：证明材料 -->
+    <div class="form-step" data-step="3">
+      <h2>证明材料上传</h2>
+      <div class="form-group">
+        <label>身份证照片（正反面）</label>
+        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+          <div style="flex: 1;">
+            <label>正面</label>
+            <input type="file" accept="image/*" required />
+          </div>
+          <div style="flex: 1;">
+            <label>反面</label>
+            <input type="file" accept="image/*" required />
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>户外经历证明（活动照片、证书等）</label>
+        <input type="file" accept="image/*,application/pdf" multiple required />
+        <small class="text-muted" style="display: block; margin-top: 0.5rem;">
+          支持图片/PDF，最多上传5个文件，单个不超过10MB
+        </small>
+      </div>
+      <div class="form-group">
+        <label>补充说明（可选）</label>
+        <textarea placeholder="如有其他说明内容，可在此填写"></textarea>
+      </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="form-actions">
+      <button class="btn btn-secondary" id="prevStep" disabled>上一步</button>
+      <button class="btn btn-primary" id="nextStep">下一步</button>
+      <button class="btn btn-secondary" id="saveDraft">暂存草稿</button>
+    </div>
+  </div>
+
+  <!-- 认证说明 -->
+  <div class="form-card">
+    <h2>认证说明</h2>
+    <ul style="list-style: inside; padding-left: 1rem; line-height: 1.6;">
+      <li>认证需提供真实有效的个人信息和证明材料，审核周期3-5个工作日。</li>
+      <li>通过后可获得专属标识、内容推荐、活动优先参与等特权。</li>
+      <li>虚假信息将取消认证资格并限制账号使用。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- JS交互逻辑 -->
+<script>
+  const steps = document.querySelectorAll('.step');
+  const formSteps = document.querySelectorAll('.form-step');
+  const prevStepBtn = document.getElementById('prevStep');
+  const nextStepBtn = document.getElementById('nextStep');
+  let currentStep = 1; // 当前步骤（从1开始）
+
+  // 切换步骤函数
+  function switchStep(newStep) {
+    // 校验当前步骤表单
+    const currentForm = formSteps[currentStep - 1];
+    if (currentForm.checkValidity()) {
+      // 更新步骤状态
+      steps.forEach(step => step.classList.remove('active', 'done'));
+      formSteps.forEach(step => step.classList.remove('active'));
+
+      currentStep = newStep;
+      // 标记已完成的步骤
+      for (let i = 0; i < currentStep; i++) {
+        steps[i].classList.add('done');
+      }
+      steps[currentStep - 1].classList.add('active');
+      formSteps[currentStep - 1].classList.add('active');
+
+      // 控制按钮状态
+      prevStepBtn.disabled = currentStep === 1;
+      nextStepBtn.textContent = currentStep === 3 ? '提交申请' : '下一步';
+    } else {
+      // 触发HTML5表单校验提示
+      currentForm.reportValidity();
+    }
+  }
+
+  // 下一步点击
+  nextStepBtn.addEventListener('click', () => {
+    if (currentStep === 3) {
+      // 提交逻辑（可对接后端）
+      const formData = new FormData(formSteps[2]);
+      alert('申请已提交！审核结果将通过系统通知~');
+      console.log('提交数据：', Object.fromEntries(formData));
+      // 实际可替换为：
+      // fetch('/api/submit-cert', { method: 'POST', body: formData })
+    } else {
+      switchStep(currentStep + 1);
+    }
+  });
+
+  // 上一步点击
+  prevStepBtn.addEventListener('click', () => {
+    switchStep(currentStep - 1);
+  });
+
+  // 暂存草稿（模拟本地存储）
+  document.getElementById('saveDraft').addEventListener('click', () => {
+    const formData = {};
+    formSteps.forEach(step => {
+      const inputs = step.querySelectorAll('input, select, textarea, checkbox');
+      inputs.forEach(input => {
+        if (input.type === 'checkbox') {
+          formData[input.name] = Array.from(step.querySelectorAll(`[name="${input.name}"]:checked`)).map(el => el.value);
+        } else if (input.type === 'file') {
+          // 文件无法直接存本地，可提示用户
+          formData[input.name] = '【文件暂存需后端支持】';
+        } else {
+          formData[input.name] = input.value;
+        }
+      });
+    });
+    localStorage.setItem('certDraft', JSON.stringify(formData));
+    alert('草稿已保存至本地~');
+  });
+
+  // 加载草稿（页面刷新后恢复）
+  window.addEventListener('load', () => {
+    const draft = localStorage.getItem('certDraft');
+    if (draft) {
+      const data = JSON.parse(draft);
+      formSteps.forEach(step => {
+        const inputs = step.querySelectorAll('input, select, textarea, checkbox');
+        inputs.forEach(input => {
+          if (input.type === 'checkbox') {
+            input.checked = data[input.name]?.includes(input.value) || false
+            if (input.type === 'checkbox') {
+              input.checked = data[input.name]?.includes(input.value) || false;
+            } else if (input.type !== 'file') {
+              input.value = data[input.name] || '';
+            }
+          }
+        });
+        });
+        alert('已恢复草稿内容~');
+      }
+    });
+</script>
+</body>
+</html>

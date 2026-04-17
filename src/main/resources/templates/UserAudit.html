@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>行安 - 账号管理</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="../static/js/jquery-1.8.3.js"></script>
+    <link rel="stylesheet" href="../static/css/down.css">
+    <script src="../static/js/jquery-1.8.3.js"></script>
+    <script src="../static/js/syy.js"></script>
+    <style>
+        /* 基础样式 */
+        /*body {*/
+        /*    font-family: 'Inter', system-ui, sans-serif;*/
+        /*    background-color: #f9fafb;*/
+        /*    margin: 0;*/
+        /*    padding: 0;*/
+        /*    color: #1f2937;*/
+        /*}*/
+
+        /* 基础样式重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            /*font-family: 'PingFang SC', 'Helvetica Neue', Arial, sans-serif;*/
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background-color: #F5F5F5;
+            color: #212121;
+            padding: 0;
+
+
+            margin: 0 auto;
+            margin-top:70px;
+            position: relative;
+            min-height: 100vh;
+
+        }
+
+        /* 导航栏样式 */
+        .navbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        /*aaaa*/
+        .navbar .logo {
+            /* 保持原本的 inline 或 inline-block 布局（如果没开 flex 的话） */
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .navbar .logo span {
+            font-size: 24px;
+            line-height: 1; /* 避免行高干扰 */
+            font-weight: bold;
+            color: #333;
+        }
+
+        .navbar .logo img {
+            width: 32px;
+            height: 32px;
+            /* 关键：强制图片底部与文字基线对齐 */
+            vertical-align: bottom;
+        }
+        /*aaaa*/
+        .navbar .menu {
+            display: flex;
+            gap: 10px;
+        }
+        .navbar .user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .navbar .menu a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .menu a:hover {
+            background-color: #eee;
+        }
+
+
+
+        .navbar .user .publish-btn {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .navbar .user .publish-btn:hover {
+            background-color: #f5f5f5;
+        }
+
+        .navbar .user .user-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .navbar .user .user-info img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .navbar .user .user-info span {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /*导航下拉图标*/
+        .navbar .user .user-info i img {
+            width: 15px;
+            height: 15px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p {
+            text-align: center;
+            color: #6b7280;
+            margin-bottom: 2rem;
+        }
+
+        /* 搜索和筛选区域 */
+        .search-filter {
+            background-color: white;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .search-filter-inner {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .search-container {
+            position: relative;
+            display: flex;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .search-input {
+            flex-grow: 1;
+            padding: 0.5rem 0.75rem 0.5rem 2rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem 0 0 0.375rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            border-right: none;
+        }
+
+        .search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 0.75rem;
+            top: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .search-button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            padding: 0 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+
+        .filter-selects {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .filter-select {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            background-color: white;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .filter-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+        }
+
+        .filter-button {
+            padding: 0.5rem 1.5rem;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-button:hover {
+            background-color: #2563eb;
+            transform: scale(1.02);
+        }
+
+        /* 表格样式 */
+        .user-table-container {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .user-table th, .user-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .user-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        .user-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .user-table tr:hover {
+            background-color: #f9fafb;
+            transition: background-color 0.2s;
+        }
+
+        /* 状态标签样式 */
+        .status-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-normal {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-banned {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-icon {
+            margin-right: 0.25rem;
+        }
+
+        /* 操作按钮样式 */
+        .action-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-right: 0.75rem;
+            transition: color 0.2s;
+        }
+
+        .action-button:hover {
+            transform: scale(1.05);
+        }
+
+        .view-button {
+            color: #3b82f6;
+        }
+
+        .approve-button {
+            color: #10b981;
+        }
+
+        .ban-button {
+            color: #ef4444;
+        }
+
+        .unban-button {
+            color: #10b981;
+        }
+
+        /* 空状态样式 */
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+        }
+
+        .empty-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 4rem;
+            height: 4rem;
+            border-radius: 9999px;
+            background-color: #f3f4f6;
+            color: #9ca3af;
+            margin-bottom: 1rem;
+        }
+
+        .empty-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-message {
+            color: #6b7280;
+            margin-bottom: 1.5rem;
+        }
+
+        .reload-button {
+            padding: 0.5rem 1rem;
+            border: 1px solid #3b82f6;
+            color: #3b82f6;
+            background-color: white;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .reload-button:hover {
+            background-color: #eff6ff;
+        }
+
+        .hidden{
+            display: none;
+        }
+
+        /* 模态框样式 */
+        .modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #9ca3af;
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: #4b5563;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .close-modal-btn {
+            padding: 0.5rem 1.5rem;
+            background-color: #e5e7eb;
+            color: #4b5563;
+            border: none;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .close-modal-btn:hover {
+            background-color: #d1d5db;
+        }
+
+        /* 详情卡片样式 */
+        .detail-card {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .detail-item {
+            margin-bottom: 1rem;
+        }
+
+        .detail-label {
+            font-size: 0.875rem;
+            color: #6b7280;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            font-size: 1rem;
+            font-weight: 500;
+        }
+
+        .detail-item.full-width {
+            grid-column: span 2;
+        }
+
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+    </style>
+</head>
+<body>
+<!-- 顶部导航栏 -->
+<header>
+    <div class="navbar">
+        <div class="logo">
+            <img src="/static/image/img/Logo.png" alt="山友缘Logo">
+            <span>行安</span>
+        </div>
+        <div class="menu">
+            <a href="Index.html">首页</a>
+            <a href="AllActivities.html">活动</a>
+            <a href="Discover3.html">动态</a>
+<!--            <a href="myMessages.html">消息</a>-->
+            <a href="Mana.html" class="menu-item">认证审核</a>
+        </div>
+        <div class="user">
+            <div class="user-info">
+                <img src="/static/image/img/游客.png" alt="用户头像">
+                <span>游客</span>
+                <i class="dropdown-trigger">
+                    <img src="/static/image/img/下拉.png" alt="下拉菜单图标">
+                </i>
+                <!-- 下拉菜单 -->
+                <div class="dropdown-menu">
+                    <a href="MySpace.html" class="dropdown-item">我的</a>
+                    <a href="Login.html" class="dropdown-item ">切换账号</a>
+                    <a href="#" class="dropdown-item logout">退出登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+<div class="container">
+    <!-- 页面标题 -->
+    <h1>用户账号状态管理</h1>
+    <p>管理和监控所有用户的账号状态</p>
+
+    <!-- 搜索和筛选区域 -->
+    <div class="search-filter fade-in">
+        <div class="search-filter-inner">
+            <div class="search-container">
+                <span class="search-icon"><i class="fa fa-search"></i></span>
+                <input type="text" placeholder="搜索用户ID、昵称或手机号..." id="searchInput" class="search-input">
+                <button id="filterButton0" class="search-button">
+                    <i class="fa fa-filter"></i>
+                    <span>搜索</span>
+                </button>
+            </div>
+
+            <div class="filter-selects">
+                <select id="statusFilter" class="filter-select">
+                    <option value="all">全部状态</option>
+                    <option value="1">正常</option>
+                    <option value="2">待审核</option>
+                    <option value="3">已封禁</option>
+                </select>
+
+                <!--<select id="typeFilter" class="filter-select">
+                    <option value="all">全部类型</option>
+                    <option value="普通用户">普通用户</option>
+                    <option value="达人">达人</option>
+                </select>-->
+
+                <select id="timeFilter" class="filter-select">
+                    <option value="all">全部时间</option>
+                    <option value="lastWeek">近一周</option>
+                    <option value="lastMonth">近一月</option>
+                    <option value="lastMonth0">近六月</option>
+                    <option value="lastYear">近一年</option>
+                </select>
+
+                <button id="filterButton" class="filter-button">
+                    <i class="fa fa-filter"></i>
+                    <span>筛选</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用户表格 -->
+    <div class="user-table-container fade-in">
+        <table class="user-table" id="userTable">
+            <thead>
+            <tr>
+                <th><input type="checkbox" id="selectAll"></th>
+                <th>用户ID</th>
+                <th>昵称</th>
+                <th>手机号</th>
+                <th>创建时间</th>
+                <th>上次登录</th>
+                <th>账号状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="userTableBody">
+            <!-- 表格内容将通过JavaScript动态生成 -->
+            </tbody>
+        </table>
+
+        <!-- 无数据状态 -->
+        <div id="emptyState" class="empty-state hidden">
+            <div class="empty-icon">
+                <i class="fa fa-users text-xl"></i>
+            </div>
+            <h3 class="empty-title">暂无用户数据</h3>
+            <p class="empty-message">请检查筛选条件或尝试重新加载数据</p>
+            <button id="reloadButton" class="reload-button">
+                <i class="fa fa-refresh mr-1"></i> 重新加载
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- 模态框 - 查看用户详情 -->
+<div id="viewModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 class="modal-title">用户详情</h3>
+            <button id="closeModal" class="close-modal">
+                <i class="fa fa-times text-xl"></i>
+            </button>
+        </div>
+        <div class="modal-body" id="modalContent">
+            <!-- 模态框内容将通过JavaScript动态生成 -->
+        </div>
+        <div class="modal-footer">
+            <button id="closeModalBtn" class="close-modal-btn">关闭</button>
+        </div>
+    </div>
+</div>
+<script>
+    // 页面加载完成后执行
+    window.onload = function() {
+        var permissions=sessionStorage.getItem("permissionCodes");
+        var roles=sessionStorage.getItem("roleCodes");
+        const hasPermission =
+            permissions.includes('user:manage') ||
+            roles.includes('admin');
+        console.log('权限+角色',permissions,roles)
+
+        if (!hasPermission) {
+            alert('您没有访问该页面的权限');
+            window.location.href = '/Index.html';
+            return;
+        }
+        findAllUsers();
+        setupEventListeners();
+    };
+
+    let id_type=null;
+    let allUser=null;
+
+    // 设置事件监听器
+    function setupEventListeners() {
+
+        document.getElementById('filterButton0').addEventListener('click',function (){
+            searchUser(allUser);
+        });
+
+        // 筛选按钮点击事件
+        document.getElementById('filterButton').addEventListener('click', function() {
+            applyFilters(allUser);
+        });
+
+        // 全选复选框事件
+        document.getElementById('selectAll').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('#userTableBody input[type="checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+
+        // 重新加载按钮事件
+        document.getElementById('reloadButton').addEventListener('click', findAllUsers);
+
+        // 关闭模态框按钮事件
+        document.getElementById('closeModal').addEventListener('click', function() {
+            document.getElementById('viewModal').classList.remove('active');
+        });
+
+        document.getElementById('closeModalBtn').addEventListener('click', function() {
+            document.getElementById('viewModal').classList.remove('active');
+        });
+
+        // 点击模态框背景关闭
+        document.getElementById('viewModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                this.classList.remove('active');
+            }
+        });
+    }
+
+    //获取全部数据
+    function findAllUsers(){
+        $.ajax({
+            url: "findAllUsers",
+            type: "post",
+            dataType: "json",
+            async: false,
+            contentType: "application/json;charset=UTF-8",
+            success: function(response) {
+                //alert(JSON.stringify(response));
+                allUser=response;
+                console.log(JSON.stringify(response));
+                renderUsersDetails(response);
+            },
+            error: function() {
+                alert("获取活动数据失败，请稍后重试");
+            }
+        });
+    }
+
+    // 渲染用户详情表格
+    function renderUsersDetails(users) {
+        const userTableBody = document.getElementById('userTableBody');
+        userTableBody.innerHTML = '';
+
+        // 显示或隐藏空状态
+        if (users.length === 0) {
+            document.getElementById('emptyState').classList.remove('hidden');
+            return;
+        } else {
+            document.getElementById('emptyState').classList.add('hidden');
+        }
+
+        users.forEach(user => {
+            const row = document.createElement('tr');
+
+            // 复选框列
+            const checkboxCell = document.createElement('td');
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkboxCell.appendChild(checkbox);
+            row.appendChild(checkboxCell);
+
+            // 用户ID列
+            const uidCell = document.createElement('td');
+            uidCell.textContent = user.uid;
+            row.appendChild(uidCell);
+
+            // 昵称列
+            const nicknameCell = document.createElement('td');
+            nicknameCell.textContent = user.nickname;
+            row.appendChild(nicknameCell);
+
+            // 手机号列
+            const telCell = document.createElement('td');
+            var maskedTel = maskPhoneNumber(user.tel);
+            telCell.textContent = maskedTel;
+            row.appendChild(telCell);
+
+            // 创建时间列
+            const createTimeCell = document.createElement('td');
+            createTimeCell.textContent = user.create_time;
+            row.appendChild(createTimeCell);
+
+            // 上次登录时间列
+            const lastLoginTimeCell = document.createElement('td');
+            lastLoginTimeCell.textContent = user.last_login_time;
+            row.appendChild(lastLoginTimeCell);
+
+            // 账号状态列
+            const accountStatusCell = document.createElement('td');
+            const statusSpan = document.createElement('span');
+            statusSpan.className = 'status-tag';
+
+            if (user.id_type === "1") {
+                statusSpan.className = 'status-tag status-normal';
+                statusSpan.innerHTML = '<i class="fa fa-check-circle status-icon"></i> 正常';
+            } else if (user.id_type === "2") {
+                statusSpan.className = 'status-tag status-pending';
+                statusSpan.innerHTML = '<i class="fa fa-clock-o status-icon"></i> 待审核';
+            } else if (user.id_type === "3") {
+                statusSpan.className = 'status-tag status-banned';
+                statusSpan.innerHTML = '<i class="fa fa-ban status-icon"></i> 已封禁';
+            }
+
+            accountStatusCell.appendChild(statusSpan);
+            row.appendChild(accountStatusCell);
+
+            // 操作列
+            const operationCell = document.createElement('td');
+
+            // 查看按钮
+            const viewButton = document.createElement('button');
+            viewButton.className = 'action-button view-button';
+            viewButton.innerHTML = '<i class="fa fa-eye mr-1"></i> 查看';
+            viewButton.addEventListener('click', function() {
+                showUserDetails(user);
+            });
+
+            // 审核按钮 (仅对待审核用户显示)
+            const approveButton = document.createElement('button');
+            if (user.id_type === "2") {
+                approveButton.className = 'action-button approve-button';
+                approveButton.innerHTML = '<i class="fa fa-check mr-1"></i> 审核';
+                approveButton.addEventListener('click', function() {
+                    approveUser(user.uid);
+                });
+            } else {
+                approveButton.style.display = 'none';
+            }
+
+            // 封禁/解封按钮
+            const actionButton = document.createElement('button');
+            if (user.id_type === "1") {
+                actionButton.className = 'action-button ban-button';
+                actionButton.innerHTML = '<i class="fa fa-lock mr-1"></i> 封禁';
+                actionButton.addEventListener('click', function() {
+                    banUser(user.uid);
+                });
+            } else if (user.id_type === "3") {
+                actionButton.className = 'action-button unban-button';
+                actionButton.innerHTML = '<i class="fa fa-unlock mr-1"></i> 解封';
+                actionButton.addEventListener('click', function() {
+                    unbanUser(user.uid);
+                });
+            } else {
+                actionButton.style.display = 'none';
+            }
+
+            operationCell.appendChild(viewButton);
+            operationCell.appendChild(approveButton);
+            operationCell.appendChild(actionButton);
+            row.appendChild(operationCell);
+
+            userTableBody.appendChild(row);
+        });
+    }
+    // 手机号脱敏函数
+    function maskPhoneNumber(phone) {
+        // 验证手机号格式
+        if (!phone || phone.length !== 11 || isNaN(phone)) {
+            return phone || "";
+        }
+        // 将中间四位替换为星号
+        return phone.replace(/(\d{3})\d{4}(\d{4})/, "$1****$2");
+    }
+    // 显示用户详情模态框
+    function showUserDetails(user) {
+        const modalContent = document.getElementById('modalContent');
+        modalContent.innerHTML = `
+                <div class="detail-card">
+                    <div class="detail-item">
+                        <div class="detail-label">用户ID</div>
+                        <div class="detail-value">${user.uid}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">昵称</div>
+                        <div class="detail-value">${user.nickname}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">手机号</div>
+                        <div class="detail-value">${user.tel}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">账号状态</div>
+                        <div class="detail-value">
+                            ${user.id_type === "1" ?
+            '<span class="status-normal"><i class="fa fa-check-circle mr-1"></i> 正常</span>' :
+            user.id_type === "2" ?
+                '<span class="status-pending"><i class="fa fa-clock-o mr-1"></i> 待审核</span>' :
+                '<span class="status-banned"><i class="fa fa-ban mr-1"></i> 已封禁</span>'
+        }
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">创建时间</div>
+                        <div class="detail-value">${user.create_time}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">上次登录时间</div>
+                        <div class="detail-value">${user.last_login_time}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">性别</div>
+                        <div class="detail-value">${user.sex}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">出生日期</div>
+                        <div class="detail-value">${user.birth}</div>
+                    </div>
+                    <div class="detail-item full-width">
+                        <div class="detail-label">个人简介</div>
+                        <div class="detail-value">${user.intr}</div>
+                    </div>
+                </div>
+            `;
+
+        document.getElementById('viewModal').classList.add('active');
+    }
+
+    function searchUser(alluser) {
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+        const filteredUsers = alluser.filter(user => {
+            const matchesSearch =
+                user.uid.toString().includes(searchText) ||
+                user.nickname.toLowerCase().includes(searchText) ||
+                user.tel.includes(searchText);
+
+            return matchesSearch;
+        });
+        renderUsersDetails(filteredUsers);
+    }
+
+    // 筛选用户
+    function applyFilters(alluser) {
+        const statusFilter = document.getElementById('statusFilter').value;
+        //const typeFilter = document.getElementById('typeFilter').value;
+        const timeFilter = document.getElementById('timeFilter').value;
+
+        // 应用筛选条件
+        const filteredUsers = alluser.filter(user => {
+            const matchesStatus = statusFilter === 'all' || user.id_type === statusFilter;
+
+            // 注意：这里假设user.fav代表用户类型，实际应根据真实数据结构调整
+            //const matchesType = typeFilter === 'all' || user.fav === typeFilter;
+
+            // 注意：这里简单根据日期字符串比较，实际应使用日期对象比较
+            const matchesTime = timeFilter === 'all' ||
+                (timeFilter === 'lastWeek' && isWithinLastWeek(user.last_login_time)) ||
+                (timeFilter === 'lastMonth' && isWithinLastMonth(user.last_login_time))||
+                (timeFilter === 'lastMonth0' && isWithinLastMonth0(user.last_login_time))||
+                (timeFilter === 'lastYear' && isWithinLastYear(user.last_login_time));
+
+            return matchesStatus && matchesTime;
+        });
+
+        renderUsersDetails(filteredUsers);
+    }
+
+    // 检查日期是否在最近一周内
+    function isWithinLastWeek(dateString) {
+        const date = new Date(dateString);
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+        return date >= oneWeekAgo;
+    }
+
+    // 检查日期是否在最近一月内
+    function isWithinLastMonth(dateString) {
+        const date = new Date(dateString);
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+        return date >= oneMonthAgo;
+    }
+
+    // 检查日期是否在最近六个月内
+    function isWithinLastMonth0(dateString) {
+        const date = new Date(dateString);
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 6);
+        return date >= oneMonthAgo;
+    }
+
+    // 检查日期是否在最近一年内
+    function isWithinLastYear(dateString) {
+        const date = new Date(dateString);
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 12);
+        return date >= oneMonthAgo;
+    }
+
+    // 封禁用户
+    function banUser(userId) {
+        if (confirm('确定要封禁此用户吗？此操作将限制用户访问平台。')) {
+            // 模拟API请求
+            console.log(`封禁用户ID: ${userId}`);
+            // 实际应用中需要发送API请求
+            // 成功后刷新数据
+            id_type="3";
+            updateUser(userId,id_type);
+            findAllUsers();
+        }
+    }
+
+    // 解封用户
+    function unbanUser(userId) {
+        if (confirm('确定要解封此用户吗？此操作将恢复用户访问权限。')) {
+            // 模拟API请求
+            console.log(`解封用户ID: ${userId}`);
+            // 实际应用中需要发送API请求
+            // 成功后刷新数据
+            id_type="1";
+            updateUser(userId,id_type);
+            findAllUsers();
+        }
+    }
+
+    // 审核用户
+    function approveUser(userId) {
+        if (confirm('确定要审核通过此用户吗？')) {
+            // 模拟API请求
+            console.log(`审核用户ID: ${userId}`);
+            // 实际应用中需要发送API请求
+            // 成功后刷新数据
+            id_type="1";
+            updateUser(userId,id_type);
+            findAllUsers();
+        }
+    }
+
+    //更新user表
+    function updateUser(uid,id_type){
+        var data0={};
+        data0.uid=uid;
+        data0.id_type=id_type;
+        $.ajax({
+            url: "updateUser",
+            type: "post",
+            dataType: "json",
+            async: false,
+            contentType: "application/json;charset=UTF-8",
+            data: JSON.stringify(data0),
+            success: function(response) {
+                alert("成功");
+            },
+            error: function() {
+                alert("获取活动数据失败，请稍后重试");
+            }
+        });
+    }
+    // 定义状态码与文字的映射关系
+    const statusMap = {
+        1: "正常",
+        2: "待审核",
+        3: "已封禁"
+    };
+</script>
+</body>
+</html>

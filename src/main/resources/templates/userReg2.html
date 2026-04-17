@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>行安 - 用户注册</title>
+    <link rel="stylesheet" href="../static/css/bcss1.css">
+  <script src="../static/js/jquery-1.8.3.js"></script>
+    <script src="../static/js/syy.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <script>
+
+  </script>
+</head>
+<body id="d1">
+<div class="container1">
+    <div id="div2">
+        <h2>用户信息注册</h2><br/>
+    </div>
+<form id="form1" method="post" enctype="multipart/form-data">
+    <table >
+        <tr>
+            <td>手机号：</td><td><input type="tel" name="tel" id="tel" /></td>
+        </tr>
+        <tr>
+            <td>密码：</td><td><input type="password" name="pwd" id="pwd" value="123456"/></td>
+        </tr>
+        <tr>
+            <td>确认密码：</td><td><input type="password" name="confirmPwd" id="confirmPwd" value="123456"/></td>
+        </tr>
+        <tr>
+            <td>昵称：</td><td><input type="text" name="nickname" id="nickname" value="山友*"/></td>
+        </tr>
+        <tr>
+            <td>性别： </td><td><input type="radio"id="nan"name="sex" value="男"  />男
+            <input type="radio" id="nv"name="sex" value="女"/>女
+            <input type="radio" id="weizhi"name="sex" value="未知"checked="checked"/>未知</td>
+        </tr>
+        <tr>
+            <td> 生日： </td><td><input type="date" id="birth" name="birth"/></td>
+        </tr>
+        <tr>
+            <td>头像：</td><td><input type="file" name="avatar" id="avatar" /></td>
+        </tr>
+        <tr>
+            <td>爱好：</td><td><input type="checkbox" name="fav" value="登山"/>登山
+            <input type="checkbox" name="fav" value="徒步"/>徒步
+            <input type="checkbox"  name="fav" value="攀岩"/>攀岩
+            <input type="checkbox"  name="fav" value="交友"/>交友
+            <input type="checkbox"  name="fav" value="露营"/>露营
+            <input type="checkbox"  name="fav" value="划船"/>划船</td>
+        </tr>
+        <tr>
+            <td> 地址：</td><td><select name="addr"><option>四川省</option>
+            <option>云南省</option>
+            <option>浙江省</option>
+            <option>甘肃省</option>
+        </select >
+            <select name="addr"><option>成都市</option>
+                <option>内江市</option>
+                <option>资阳市</option>
+                <option>宜宾市</option>
+            </select>
+            <input type="text" name="addr"/></td>
+        </tr>
+        <tr>
+            <td>个性签名：</td><td><textarea name="intr" id="intr" rows="4" cols="30"></textarea></td>
+        </tr>
+        <tr>
+            <td class="bt"><input type="button" value="提交注册" onclick="addAll('form1','useraddAll');"/>
+            </td>
+            <td class="bt"><input type="reset" value="回到登录"id="log" />
+            </td>
+        </tr>
+    </table>
+</form></div>
+</body>
+</html>
